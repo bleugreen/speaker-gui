@@ -1,0 +1,39 @@
+{
+  "name": "nodebootstraper-client",
+  "version": "0.2.0",
+  "private": true,
+  "dependencies": {
+    "@popperjs/core": "^2.6.0",
+    "antd": "^4.13.0",
+    "axios": "^0.21.1",
+    "bootstrap": "^5.0.0-beta1",
+    "flow-bin": "^0.145.0",
+    "react": "^17.0.1",
+    "react-colorful": "^5.0.0",
+    "react-create-app": "^2.0.6",
+    "react-dom": "^17.0.1",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "flow": "flow"
+  },
+  "proxy": "http://localhost:3000",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
