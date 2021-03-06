@@ -1,0 +1,12 @@
+div.sketch-picker {
+    margin: auto;
+    border: none;
+    box-shadow: 0 0 0 !important; 
+    padding: 0% !important;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 1);
+};
+
+.round {
+    border-radius: 10%;
+}
