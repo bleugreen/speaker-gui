@@ -8,7 +8,6 @@ import './style.css';
 class SwatchCircle extends React.Component {
   state = {
     visible: false,
-    color: this.props.color,
   };
 
   handleClick = () => {
@@ -16,27 +15,27 @@ class SwatchCircle extends React.Component {
   };
 
   handleClose = () => {
-    this.setState({ visible: false }, this.props.onChange(this.props.index, this.state.color));
+    this.setState({ visible: false });
   };
 
   handleChange = (color) => {
-    this.setState({ color: color.hex })
+    this.props.onChange(this.props.index, color.hex);
   };
 
   handleComplete = (color) => {
-    this.setState({ color: color.hex });
+    this.props.onChange(this.props.index, color.hex);
   };
 
   render() {
-
     const styles = reactCSS({
       'default': {
         color: {
           width: '80%',
-          height: '36px',
+          height: '60px',
           borderRadius: '15px',
           boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-          background: this.state.color,
+          background: this.props.color,
+          margin: 'auto'
         },
         swatch: {
           padding: '5px',
@@ -64,7 +63,7 @@ class SwatchCircle extends React.Component {
           <div className="picker">
           <SketchPicker   
             className="picker"
-            color={ this.state.color } 
+            color={ this.props.color } 
             onChange={ this.handleChange } 
             onChangeComplete= {this.handleComplete}
             disableAlpha={true}

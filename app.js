@@ -65,51 +65,82 @@ app.get('/mode/curr', (req,res) => {
   });
 });
 
-app.get('/palette/exists', (req,res) => {
-  console.log("EXISTS: "+req.query.key);
-  client.hlen('palette-'+req.query.key, function(err, reply){
+
+// create/save palette
+//  set (palette+name) name color1
+//  sadd palettes (name)
+app.post('/palette', (req,res) => {
+  console.log("SET: palette: "+req.body.name+"="
+  +" name:"+req.body.name
+  +" color1:"+req.body.color1
+  +" color2:"+req.body.color2
+  +" color3:"+req.body.color3);
+  client.hmset("palette-"+req.body.name, 
+    "name", req.body.name, 
+    "color1", req.body.color1,
+    "color2", req.body.color2,
+    "color3", req.body.color3,
+    function(err, reply){
+      console.log(reply);
+      client.sadd('palettes', req.body.name, function(err, reply){
+        console.log(reply);
+      });
+      res.send(reply);
+  });
+  
+});
+
+// get palette
+//  get (palette+name)
+app.get('/palette', (req,res) => {
+  console.log("GET: palette:"+req.query.name);
+  client.hgetall("palette-"+req.query.name, function(err, reply){
+    //console.log(reply);
+    res.send(reply);
+  });
+});
+
+// delete palette
+//  hdel (palette+id) name color1 color2 color3
+//  srem palettes id
+app.get('/palette/del', (req,res) => {
+  console.log("DELETE: palette:"+req.query);
+  client.hdel("palette-"+req.query.name, 'name', 'color1', 'color2', 'color3', function(err, reply){
+    console.log(reply);
+    client.srem('palettes', req.query.name, function(err, reply){
+      console.log(reply);
+      res.send('deleted');
+    });
+  });
+});
+
+// get all palettes
+//  smembers palettes
+//    for each palette:
+app.get('/palette/list', (req,res) => {
+  console.log("GETALL: palettes");
+  client.smembers("palettes", function(err, reply){
+    res.send(reply);
+  });
+});
+
+app.get('/palette-exists', (req,res) => {
+  console.log("EXISTS: palette:"+req.query);
+  client.hlen("palette-"+req.query.name, function(err, reply){
     if(reply == 0){
-      // doesnt exist
-      res.send('false');
+      res.send(false);
     }
     else{
-      res.send({
-        r: 5,
-        g:6,
-        b: 7,
-      });
+      res.send(true);
     }
   });
 });
 
-app.get('/palette/get', (req,res) => {
-  console.log("GET: palette:"+req.query.key);
-  client.hgetall("palette-"+req.query.key, function(err, reply){
-    console.log(reply);
-    res.send(reply);
-  });
-});
 
-app.post('/palette/saveall', (req,res) => {
-  console.log(req);
-  // console.log("SETALL: palette: "+req.body.id
-  // +" - 1:"+req.body.r1+","+req.body.g1+","+req.body.b1
-  // +" - 2:"+req.body.r2+","+req.body.g2+","+req.body.b2
-  // +" - 3:"+req.body.r3+","+req.body.g3+","+req.body.b3
-  // );
-  client.hmset("palette-"+req.body.id, 
-  "r1", req.body.r1, "g1", req.body.g1, "b1", req.body.b1,
-  "r2", req.body.r2, "g2", req.body.g2, "b2", req.body.b2,
-  "r3", req.body.r3, "g3", req.body.g3, "b3", req.body.b3,
-  function(err, reply){
-    console.log(reply);
-    res.send(reply);
-  });
-  client.sadd('palettes', req.body.id, function(err, reply){
-    console.log(reply);
-    res.send(reply);
-  });
-});
+
+
+
+
 
 app.get('/mode', (req,res) => {
   console.log("GET: "+req.query.hash+"."+req.query.key);
