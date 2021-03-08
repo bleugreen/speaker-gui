@@ -5,27 +5,22 @@ import React, { Component } from 'react';
 import { SketchPicker } from 'react-color'
 
 import SpectrumForm from '../Spectrum/spectrumform';
-import SwatchCircle from '../Swatch';
+import Palette from '../Palette';
 
 import './style.css';
 
 function Home() {
   
   return (
-      <div>
-        
-        <SpectrumForm/>
-        <Row>
-          <Col span={8}>
-          <SwatchCircle/>
-          </Col>
-          <Col span={8}>
-          <SwatchCircle/>
-          </Col>
-          <Col span={8}>
-          <SwatchCircle/>
-          </Col>
-        </Row>
+      <div>        
+        <Palette 
+          numColors={3} 
+          id={'default'} 
+          color1={{
+            r:150,
+            g:0,
+            b:255,
+          }}/>
       </div>
   );
   

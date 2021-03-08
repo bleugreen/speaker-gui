@@ -1,38 +1,30 @@
 import React from 'react'
 import reactCSS from 'reactcss'
 import { SketchPicker } from 'react-color'
-import { Modal, Button } from 'antd';
-import Draggable from 'react-draggable';
+import { Modal } from 'antd';
 
 import './style.css';
 
 class SwatchCircle extends React.Component {
   state = {
     visible: false,
-    color: {
-      r: '241',
-      g: '112',
-      b: '19',
-      a: '1',
-    },
+    color: this.props.color,
   };
 
   handleClick = () => {
-    console.log("swatch clicked");
     this.setState({ visible: true });
   };
 
   handleClose = () => {
-    this.setState({ visible: false })
+    this.setState({ visible: false }, this.props.onChange(this.props.index, this.state.color));
   };
 
   handleChange = (color) => {
-    this.setState({ color: color.rgb })
+    this.setState({ color: color.hex })
   };
 
   handleComplete = (color) => {
-    console.log("change complete");
-    this.setState({ color: color.rgb })
+    this.setState({ color: color.hex });
   };
 
   render() {
@@ -40,22 +32,19 @@ class SwatchCircle extends React.Component {
     const styles = reactCSS({
       'default': {
         color: {
-          width: '36px',
+          width: '80%',
           height: '36px',
           borderRadius: '15px',
           boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-          background: `rgba(${ this.state.color.r }, ${ this.state.color.g }, ${ this.state.color.b }, ${ this.state.color.a })`,
+          background: this.state.color,
         },
         swatch: {
           padding: '5px',
+          width: '100%',
           background: '#fff',
           display: 'inline-block',
           cursor: 'pointer',
         },
-
-        modal: {
-          width: '200px',
-        }
       },
     });
 
@@ -71,7 +60,6 @@ class SwatchCircle extends React.Component {
           onCancel={this.handleClose}
           closable={false}
           width={'60%'}
-
         >
           <div className="picker">
           <SketchPicker   
@@ -82,7 +70,6 @@ class SwatchCircle extends React.Component {
             disableAlpha={true}
             presetColors={[]}
             width={'100%'}
-            
           />
           </div>
         </Modal>
