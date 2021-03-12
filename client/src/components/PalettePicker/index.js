@@ -1,12 +1,15 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import {Row, Col, Typography, Divider, Slider, Spin } from 'antd';
+import {Row, Col, Typography, Divider, Slider, Spin, Button, Space } from 'antd';
 
 const { Title } = Typography;
+import {
+    PlusOutlined, MinusOutlined
+  } from '@ant-design/icons';
 import SwatchCircle from '../Swatch';
 
 
-import 'antd/dist/antd.css';
+//import 'antd/dist/antd.css';
 import './style.css';
 
 // props:
@@ -21,43 +24,74 @@ function PalettePicker(props) {
 
     useEffect(() => {    
         if(loading){
-            // Check to see if palette is saved
-            setLoading(false);
+            // Check to see if palette is loaded
+            if (typeof(props.colors) !== 'undefined' && props.colors != null) {
+                setLoading(false);
+            }
         }
-        console.log(props.color2+" picker update");
-        
-    }, [props.color1, props.color2, props.color3]);
+    }, [props.colors]);
   
     const handleColor = (index, color) => {
         props.onChange(index, color);
     }
 
-    function renderPalettePicker()  {
-        if(loading){
-            return (<Spin />)
+    const renderSwatches = () => {
+        let span = 0;
+        let swatches = [];
+        switch(props.colors.length) {
+            case 2:
+              span = 10;
+              break;
+            case 3:
+              span = 7;
+              break;
+            case 4:
+              span = 5;
+              break;
+            case 5:
+                span = 4;
+                break;
+            default:
+              span = 4
         }
-        else{
-            return (
-                <Row style={{margin:'auto'}}>
-                    <Col span={8}>
-                        <SwatchCircle onChange={handleColor} color={props.color1} index={1} />
-                    </Col>
-                    <Col span={8}>
-                        <SwatchCircle onChange={handleColor} color={props.color2} index={2} />
-                    </Col>
-                    <Col span={8}>
-                        <SwatchCircle onChange={handleColor} color={props.color3} index={3} />
-                    </Col>
-                </Row>
-            );
-        }
+        
+        for (const [index, value] of props.colors.entries()) {
+            swatches.push(<Col span={span} key={index}>
+                <SwatchCircle onChange={handleColor} color={value} index={index}  />
+            </Col>);
+
+          }
+
+        return swatches
     }
 
-    return (
-    <div>
-        {renderPalettePicker()}
-    </div>
-    );
+    if(loading){
+        return (<Spin />)
+    }
+    else{
+        return (
+            <Row style={{margin:'auto'}}>
+                {renderSwatches()}
+                <Col span={2}>
+                    <Space direction="vertical">
+                        <Button 
+                            shape="circle" 
+                            icon={<PlusOutlined />} 
+                            onClick={props.addColor}
+                        /> 
+                        <Button 
+                            shape="circle" 
+                            icon={<MinusOutlined />} 
+                            onClick={props.removeColor}
+                        />
+                    </Space>
+                    
+
+                </Col>
+            </Row>
+        );
+    }
+
 }
 
 export default PalettePicker;

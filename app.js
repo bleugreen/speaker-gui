@@ -69,33 +69,86 @@ app.get('/mode/curr', (req,res) => {
 // create/save palette
 //  set (palette+name) name color1
 //  sadd palettes (name)
-app.post('/palette', (req,res) => {
-  console.log("SET: palette: "+req.body.name+"="
+app.post('/palette/new', (req,res) => {
+  console.log("CREATE: palette-"+req.body.name+"="
   +" name:"+req.body.name
-  +" color1:"+req.body.color1
-  +" color2:"+req.body.color2
-  +" color3:"+req.body.color3);
-  client.hmset("palette-"+req.body.name, 
-    "name", req.body.name, 
-    "color1", req.body.color1,
-    "color2", req.body.color2,
-    "color3", req.body.color3,
+  +" colors:"+req.body.colors);
+  client.rpush("palette-"+req.body.name, 
+    req.body.name, 
     function(err, reply){
-      console.log(reply);
-      client.sadd('palettes', req.body.name, function(err, reply){
+      console.log('push name reply: '+reply);
+  });
+  client.rpush("palette-"+req.body.name, 
+    req.body.colors,
+    function(err, reply){
+      console.log('push color reply: '+reply);
+      client.sadd('palettelist', req.body.name, function(err, reply){
         console.log(reply);
       });
-      res.send(reply);
+      res.send('success');
   });
-  
 });
+
+// create/save palette
+//  set (palette+name) name color1
+//  sadd palettes (name)
+app.post('/palette/update', (req,res) => {
+  console.log("UPDATE: palette-"+req.body.name+"="
+  +" name:"+req.body.name
+  +" colors:"+req.body.colors);
+  client.ltrim("palette-"+req.body.name, 0, 0, function(err, reply){
+    console.log(reply);
+    client.rpush("palette-"+req.body.name, 
+      req.body.colors,
+      function(err, reply){
+        console.log(reply);
+        client.sadd('palettelist', req.body.name, function(err, reply){
+          console.log(reply);
+        });
+        res.send('success');
+      });
+  });
+});
+
 
 // get palette
 //  get (palette+name)
 app.get('/palette', (req,res) => {
   console.log("GET: palette:"+req.query.name);
-  client.hgetall("palette-"+req.query.name, function(err, reply){
-    //console.log(reply);
+  client.lrange("palette-"+req.query.name, 0, -1, function(err, reply){
+    console.log(reply);
+    res.send(reply);
+  });
+});
+
+// get palette length
+//  get (palette+name)
+app.get('/palette/length', (req,res) => {
+  console.log("GET: length of palette:"+req.query.name);
+  client.llen("palette-"+req.query.name, function(err, reply){
+    console.log({length: reply});
+    res.send({length: reply});
+  });
+});
+
+// push a color onto palette
+app.post('/palette/push', (req,res) => {
+  console.log("PUSH: palette-"+req.body.name+"="
+  +" color:"+req.body.color);
+  client.rpush("palette-"+req.body.name, 
+      req.body.color,
+      function(err, reply){
+        console.log(reply);
+        res.send('success');
+      });
+});
+
+// delete last color
+//  get (palette+name)
+app.get('/palette/pop', (req,res) => {
+  console.log("DEL: last color of palette:"+req.query.name);
+  client.ltrim("palette-"+req.query.name, 0, -2, function(err, reply){
+    console.log({length: reply});
     res.send(reply);
   });
 });
@@ -104,10 +157,10 @@ app.get('/palette', (req,res) => {
 //  hdel (palette+id) name color1 color2 color3
 //  srem palettes id
 app.get('/palette/del', (req,res) => {
-  console.log("DELETE: palette:"+req.query);
-  client.hdel("palette-"+req.query.name, 'name', 'color1', 'color2', 'color3', function(err, reply){
+  console.log("DELETE: palette:"+req.queryname);
+  client.ltrim("palette-"+req.query.name, -1, 0, function(err, reply){
     console.log(reply);
-    client.srem('palettes', req.query.name, function(err, reply){
+    client.srem('palettelist', req.query.name, function(err, reply){
       console.log(reply);
       res.send('deleted');
     });
@@ -119,14 +172,14 @@ app.get('/palette/del', (req,res) => {
 //    for each palette:
 app.get('/palette/list', (req,res) => {
   console.log("GETALL: palettes");
-  client.smembers("palettes", function(err, reply){
+  client.smembers("palettelist", function(err, reply){
     res.send(reply);
   });
 });
 
 app.get('/palette-exists', (req,res) => {
   console.log("EXISTS: palette:"+req.query);
-  client.hlen("palette-"+req.query.name, function(err, reply){
+  client.llen("palette-"+req.query.name, function(err, reply){
     if(reply == 0){
       res.send(false);
     }

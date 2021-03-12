@@ -5,11 +5,8 @@ import {
     SaveOutlined, FileAddOutlined, DeleteOutlined
   } from '@ant-design/icons';
 
-  
-
 import PalettePicker from '../PalettePicker';
 import PaletteListItem from './paletteListItem';
-import Modal from 'antd/lib/modal/Modal';
 import SaveModal from './savemodal';
 
 const { Panel } = Collapse;
@@ -17,8 +14,7 @@ const { Text } = Typography;
 
 function ColorBlock(props){
 // props: id, type, 
-// type=0: color1, color2, color3, name
-// type=1: hueL, hueH, sat, lum, name
+
     const [id, setId] = useState(props.id);
     const [type, setType] = useState(props.type);
     const [loading, setLoading] = useState(true);
@@ -30,33 +26,35 @@ function ColorBlock(props){
     const [savedPalettes, setSaved] = useState([])
 
     useEffect(() =>{
-        if(loading){
-            getPalettes();
-        }
+        if(loading){getPalettes();}
     });
 
     const getPalettes = () => {
         setSaved([]);
-        console.log(savedPalettes.length);
+        //console.log(savedPalettes.length);
         axios.get('/palette/list', {})
         .then(function (response) {
+            console.log(response.data);
+            response.data.sort(function(a, b) {
+                var textA = a.toUpperCase();
+                var textB = b.toUpperCase();
+                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+            });
             response.data.map(p => {
                 getPalette(p, function(res){
                     let temp_palette = {
-                        name: res.data.name,
-                        color1: res.data.color1,
-                        color2: res.data.color2,
-                        color3: res.data.color3,
+                        name: res.data[0],
+                        colors: res.data.slice(1),
+                        numcolors: res.data.length-1
                     }
                     if(loading && p == palette.name){
                         setPalette(temp_palette);
                         console.log('found prop palette');
+                        setLoading(false);
                     }
                     setSaved(savedPalettes => [...savedPalettes, temp_palette])
                 })
             })
-
-            
             //console.log(response.data);
         }).catch(function (response) {
           //handle error
@@ -73,25 +71,68 @@ function ColorBlock(props){
         })
         .then(function (response) {
             singleCallback(response);
-            //console.log("got: "+response.data);
+            console.log("got: "+response.data);
         }).catch(function (response) {
           //handle error
           console.log(response);
         });
     }
 
+    const savePalette = (name, url) => {
+        // send palette to db
+        // refresh palette list
+        if(name == 'default'){
+            message.error({
+                content: 'Cannot overwrite default palette',
+                style: {
+                    marginTop: '8vh',
+                  },
+            });
+        }
+        else{          
+            console.log(palette.colors);  
+            axios.request ({
+                url: url,
+                method: 'post',
+                data: {
+                    name: name,  
+                    colors: palette.colors,
+                    numcolors: palette.colors.length
+                }, 
+            })
+                .then(function (response) {
+                    //handle success
+                    console.log(response);
+                    setPalette({
+                        name:name,
+                        colors: palette.colors,
+                        numcolors: palette.colors.length
+                    });
+                    getPalettes();
+                })
+                .catch(function (response) {
+                //handle error
+                console.log(response);
+                });
+        }
+    }
+
     const populateDropdown = () => {
         const paletteItems = [];
         savedPalettes.map(item => {
             paletteItems.push(
-                <Select.Option 
-                    value={item.name} 
-                    key={item.name}
-                >
-                    <PaletteListItem name={item.name} color1={item.color1} color2={item.color2} color3={item.color3} />
-                </Select.Option>
+                
             );
         });
+        for (const [index, value] of savedPalettes.entries()) {
+            paletteItems.push(<Select.Option 
+                value={value.name} 
+                key={index}
+            >
+                <PaletteListItem name={value.name} colors={value.colors} />
+            </Select.Option>);
+
+          }
         return(
             <Select
                 defaultValue="default"
@@ -106,46 +147,10 @@ function ColorBlock(props){
         );
     }
 
-    const savePalette = (name) => {
-        // send palette to db
-        // refresh palette list
-        if(name == 'default'){
-            message.error({
-                content: 'Cannot overwrite default palette',
-                style: {
-                    marginTop: '8vh',
-                  },
-            });
-        }
-        else{            
-            axios.request ({
-                url: '/palette',
-                method: 'post',
-                data: {
-                    name: name,  
-                    color1: palette.color1,
-                    color2: palette.color2,
-                    color3: palette.color3,
-                }, 
-            })
-                .then(function (response) {
-                    //handle success
-                    console.log(response);
-                    setPalette({
-                        ...palette,
-                        name:name
-                    });
-                    getPalettes();
-                })
-                .catch(function (response) {
-                //handle error
-                console.log(response);
-                });
-        }
-    }
+    
 
     const onSave = () => {
-        savePalette(palette.name);
+        savePalette(palette.name, '/palette/update');
     }
     const onSaveAs = () => {
         // open modal that grabs name input
@@ -159,7 +164,7 @@ function ColorBlock(props){
 
     const saveAs = (name) => {
         setSaveVisible(false);
-        savePalette(name);
+        savePalette(name, '/palette/new');
     }
 
     const onDelete = () => {
@@ -179,11 +184,8 @@ function ColorBlock(props){
                 }
             })
             .then(function (response) {
-                setPalette({
-                    ...palette,
-                    name:'default'
-                });
                 getPalettes();
+                setPalette(savedPalettes[0]);
                 //console.log(response.data);
             }).catch(function (response) {
             //handle error
@@ -196,9 +198,12 @@ function ColorBlock(props){
     const handleColorChange = (index, color) => {
         // data.index, data.color
         // set mode.color+(index) to data.color
+        let tempcolors = [...palette.colors];
+        tempcolors[index] = color;
+        
         setPalette({
             ...palette,
-            ["color"+index]: color
+            colors: tempcolors
         });
         
 
@@ -217,6 +222,59 @@ function ColorBlock(props){
         
     };
 
+    const addColor = () => {
+        if(palette.colors.length >= 5){
+            message.error("Cannot add more colors")
+        }
+        else{
+            axios.request ({
+                url: '/palette/push',
+                method: 'post',
+                data: {
+                    name: palette.name,  
+                    color: palette.colors[0],
+                }, 
+            })
+                .then(function (response) {
+                    //handle success
+                    console.log(response);
+                    setPalette({
+                        name:palette.name,
+                        colors: [...palette.colors, palette.colors[0]],
+                        numcolors: palette.colors.length
+                    });
+                    getPalettes();
+                })
+                .catch(function (response) {
+                //handle error
+                console.log(response);
+                });
+        }
+    };
+
+    const removeColor = () => {
+        if(palette.colors.length < 3){
+            message.error("Cannot delete more colors")
+        }
+        else{
+            axios.get('/palette/pop', {
+                params: {
+                    name: palette.name,
+                }
+            })
+            .then(function (response) {
+                setPalette({...palette, colors:palette.colors.slice(0,-1)
+                });
+
+                getPalettes();
+                //console.log(response.data);
+            }).catch(function (response) {
+            //handle error
+            console.log(response);
+            });
+        }
+    };
+
     const radioStyle = {
         display: 'block',
     };
@@ -224,7 +282,7 @@ function ColorBlock(props){
     const radioButtonStyle = {
         height: '30px',
         lineHeight: '30px',
-        width:"50%",
+        width:"30%",
     };
 
     const rowStyle = {
@@ -236,8 +294,11 @@ function ColorBlock(props){
         if(!loading){
             if(type == "palette"){
                 return(
-                        <Space direction='vertical' style={rowStyle}>
-                        <SaveModal visible={saveVisible} name={palette.name} onSubmit={saveAs} onCancel={onSaveCancel}/>
+                    //To separate:
+                    //  take with: rowStyle 
+                    //  props: 
+                    
+                    <Space direction='vertical' style={rowStyle}>
                         <Row style={rowStyle}>
                             <Col span={24}>
                                 <Radio.Group 
@@ -251,59 +312,48 @@ function ColorBlock(props){
                                     Palette
                                     </Radio.Button>
                                     <Radio.Button style={radioButtonStyle} value="range" disabled={true}>
-                                    Range
+                                    HCL
                                     </Radio.Button>
                                 </Radio.Group>
                             </Col>
                         </Row>
-                        
-                        <PalettePicker 
-                            color1={palette.color1}
-                            color2={palette.color2}
-                            color3={palette.color3}
-                            onChange={handleColorChange}
-                            style={rowStyle}
-                        />
-                            
                         <Row style={rowStyle}>
-                            
-                            <Col span={24} style={{display:'block',alignSelf: 'flex-end', alignItems:"flex-end"}} >
-
+                            <Col span={24} >
                                 <Space wrap={true}>
-                                {populateDropdown()}
-                                <Divider direction="vertical"/>
-                                <Space wrap={false}>
-                                <Button
-                                    type="default"
-                                    onClick={onSave}
-                                    
-
-                                >
-                                <SaveOutlined style={{verticalAlign:'baseline'}}/>
-  
-                                </Button>
-                                <Button
-                                    type="default"
-                                    onClick={onSaveAs}
-                                    
-
-                                >
-                                <FileAddOutlined style={{verticalAlign:'baseline'}}/>
-  
-                                </Button>
-                                <Button
-                                    type="default"
-                                    onClick={onDelete}
-                                    
-
-                                >
-                                <DeleteOutlined style={{verticalAlign:'baseline'}}/> 
-                                </Button>
-                                </Space>
+                                    {populateDropdown()}
+                                    <Divider direction="vertical"/>
+                                    <Space wrap={false}>
+                                        <Button
+                                            type="default"
+                                            onClick={onSave}
+                                        >
+                                            <SaveOutlined style={{verticalAlign:'baseline'}}/>
+                                        </Button>
+                                        <Button
+                                            type="default"
+                                            onClick={onSaveAs}
+                                        >
+                                            <FileAddOutlined style={{verticalAlign:'baseline'}}/>
+                                        </Button>
+                                        <Button
+                                            type="default"
+                                            onClick={onDelete}
+                                        >
+                                            <DeleteOutlined style={{verticalAlign:'baseline'}}/> 
+                                        </Button>
+                                    </Space>
                                 </Space>
                             </Col>
                         </Row>
-                        </Space>
+                        <PalettePicker 
+                            colors={palette.colors}
+                            onChange={handleColorChange}
+                            addColor={addColor}
+                            removeColor = {removeColor}
+                            style={rowStyle}
+                        />
+                        <SaveModal visible={saveVisible} name={palette.name} onSubmit={saveAs} onCancel={onSaveCancel}/>
+                    </Space>
                 )
             }
         }

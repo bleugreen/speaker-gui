@@ -3,47 +3,34 @@ import React, { useState, useEffect } from 'react';
 import {Row, Col, Typography, Divider, Slider, Spin, Space } from 'antd';
 
 const { Title, Text } = Typography;
-import SwatchCircle from '../Swatch';
+import ColorDot from './colordot';
 
 
 import 'antd/dist/antd.css';
+import './style.css';
 
 // props:
 //  name
-//  color1
-//  color2
-//  color3
+//  colors
 
 
 function PaletteListItem(props) {
-    const color1 = {
-        width: '15px',
-        height: '15px',
-        borderRadius: '10px',
-        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-        background: props.color1,
+    const renderDots = () => {
+        console.log("list item: "+props.colors);
+        return (props.colors.map( colorIt => {
+           <ColorDot color={colorIt} />
+        }));
     }
 
-    const color2 = {
-        width: '15px',
-        height: '15px',
-        borderRadius: '10px',
-        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-        background: props.color2,
-    }
-
-    const color3 = {
-        width: '15px',
-        height: '15px',
-        borderRadius: '10px',
-        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-        background: props.color3,
-    }
+    const dots = [];
+    for (const [index, value] of props.colors.entries()) {
+        dots.push(<ColorDot color={value} key={index} />)
+      }
 
     return (
     <div>
         <Row gutter={[16, 24]}>
-            <Col span={10}>
+            <Col span={8}>
                 <Text style={{textAlign:'left', display:'block'}}>{props.name}</Text>
             </Col>
             <Col className="gutter-row" span={1}>
@@ -51,9 +38,7 @@ function PaletteListItem(props) {
             </Col>
             <Col className="gutter-row" span={10}>
                 <Space size='small' style={{margin:'auto',width:'100%'}}>
-                    <div style={color1} />
-                    <div style={color2} />
-                    <div style={color3} />
+                    {dots}
                 </Space>
             </Col>
         </Row>
