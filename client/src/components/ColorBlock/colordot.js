@@ -10,7 +10,7 @@ function ColorDot(props) {
         background: props.color,
     }
 
-    console.log("dot: "+props.color)
+    //console.log("dot: "+props.color)
     return (
         
         <div style={style} />

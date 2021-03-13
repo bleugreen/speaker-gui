@@ -34,7 +34,7 @@ function SaveModal(props) {
     };
 
     const handleChange = (e) => {
-        console.log(e.target.value);
+        //console.log(e.target.value);
         setName(e.target.value);
         
     }

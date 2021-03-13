@@ -8,6 +8,7 @@ import {
 import PalettePicker from '../PalettePicker';
 import PaletteListItem from './paletteListItem';
 import SaveModal from './savemodal';
+axios.defaults.port = 5000;
 
 const { Panel } = Collapse;
 const { Text } = Typography; 
@@ -23,7 +24,8 @@ function ColorBlock(props){
     const [palette, setPalette] = useState({
         name: props.palette,
     });
-    const [savedPalettes, setSaved] = useState([])
+    const [savedPalettes, setSaved] = useState([]);
+    
 
     useEffect(() =>{
         if(loading){getPalettes();}
@@ -32,9 +34,9 @@ function ColorBlock(props){
     const getPalettes = () => {
         setSaved([]);
         //console.log(savedPalettes.length);
-        axios.get('/palette/list', {})
+        axios.get('/api/palette/list', {})
         .then(function (response) {
-            console.log(response.data);
+            //console.log(response.data);
             response.data.sort(function(a, b) {
                 var textA = a.toUpperCase();
                 var textB = b.toUpperCase();
@@ -49,7 +51,7 @@ function ColorBlock(props){
                     }
                     if(loading && p == palette.name){
                         setPalette(temp_palette);
-                        console.log('found prop palette');
+                        //console.log('found prop palette');
                         setLoading(false);
                     }
                     setSaved(savedPalettes => [...savedPalettes, temp_palette])
@@ -64,14 +66,14 @@ function ColorBlock(props){
     }
 
     const getPalette = (search, singleCallback) => {
-        axios.get('/palette', {
+        axios.get('/api/palette', {
             params: {
                 name: search,
             }
         })
         .then(function (response) {
             singleCallback(response);
-            console.log("got: "+response.data);
+            //console.log("got: "+response.data);
         }).catch(function (response) {
           //handle error
           console.log(response);
@@ -90,7 +92,7 @@ function ColorBlock(props){
             });
         }
         else{          
-            console.log(palette.colors);  
+            //console.log(palette.colors);  
             axios.request ({
                 url: url,
                 method: 'post',
@@ -102,7 +104,7 @@ function ColorBlock(props){
             })
                 .then(function (response) {
                     //handle success
-                    console.log(response);
+                    //console.log(response);
                     setPalette({
                         name:name,
                         colors: palette.colors,
@@ -150,12 +152,12 @@ function ColorBlock(props){
     
 
     const onSave = () => {
-        savePalette(palette.name, '/palette/update');
+        savePalette(palette.name, '/api/palette/update');
     }
     const onSaveAs = () => {
         // open modal that grabs name input
         setSaveVisible(true);
-        console.log(saveVisible);
+        //console.log(saveVisible);
     }
 
     const onSaveCancel = () => {
@@ -164,7 +166,7 @@ function ColorBlock(props){
 
     const saveAs = (name) => {
         setSaveVisible(false);
-        savePalette(name, '/palette/new');
+        savePalette(name, '/api/palette/new');
     }
 
     const onDelete = () => {
@@ -178,7 +180,7 @@ function ColorBlock(props){
             });
         }
         else{
-            axios.get('/palette/del', {
+            axios.get('/api/palette/del', {
                 params: {
                     name: palette.name,
                 }
@@ -188,8 +190,8 @@ function ColorBlock(props){
                 setPalette(savedPalettes[0]);
                 //console.log(response.data);
             }).catch(function (response) {
-            //handle error
-            console.log(response);
+                //handle error
+                console.log(response);
             });
         }
         
@@ -228,7 +230,7 @@ function ColorBlock(props){
         }
         else{
             axios.request ({
-                url: '/palette/push',
+                url: '/api/palette/push',
                 method: 'post',
                 data: {
                     name: palette.name,  
@@ -257,7 +259,7 @@ function ColorBlock(props){
             message.error("Cannot delete more colors")
         }
         else{
-            axios.get('/palette/pop', {
+            axios.get('/api/palette/pop', {
                 params: {
                     name: palette.name,
                 }

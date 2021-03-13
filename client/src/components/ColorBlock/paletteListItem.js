@@ -16,7 +16,7 @@ import './style.css';
 
 function PaletteListItem(props) {
     const renderDots = () => {
-        console.log("list item: "+props.colors);
+        //console.log("list item: "+props.colors);
         return (props.colors.map( colorIt => {
            <ColorDot color={colorIt} />
         }));
