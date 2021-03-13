@@ -3,52 +3,47 @@ var express = require('express');
 
 
 var modeRoute = express.Router();
-var redis = require('redis');
-var client = redis.createClient({
-host: process.env.REDIS_HOST,
-port: process.env.REDIS_PORT, 
-password: process.env.REDIS_PW
-}); //creates a new client
+var client = require('../client.js');
 
 
-client.on('connect', function() {
-    console.log('Connection Success: mode');
+
+
+modeRoute.get('/list', (req,res) => {
+    console.log("GET: mode list");
+    client.smembers('mode:list', function(err, reply){
+        res.send(reply);
+    });
 });
 
-//log error to the console if any occurs
-client.on("error", (err) => {
-    console.log(err);
+modeRoute.get('/idgen', (req,res) => {
+    console.log("GET: mode id");
+    client.incr('mode:idgen', function(err, reply){
+        res.send(reply.toString());
+    });
 });
 
-modeRoute.get('/all', (req,res) => {
-console.log("GET: mode list");
-client.smembers('modelist', function(err, reply){
-    res.send(reply);
-});
-});
-
-modeRoute.get('/curr', (req,res) => {
+modeRoute.get('/active', (req,res) => {
 console.log("GET: current mode");
-client.get('currmode', function(err, reply){
-    //console.log(reply)
-    res.send(reply);
-});
+    client.get('mode:active', function(err, reply){
+        //console.log(reply)
+        res.send(reply);
+    });
 });
 
 modeRoute.get('/', (req,res) => {
-console.log("GET: "+req.query.hash+"."+req.query.key);
-client.hget(req.query.hash, req.query.key, function(err, reply){
-    //console.log(reply)
-    res.send(reply);
-});
+    console.log("GET: "+req.query.id);
+    client.hgetall("mode:"+req.query.id, function(err, reply){
+        //console.log(reply)
+        res.send(reply);
+    });
 });
 
-modeRoute.post('/', (req,res)=> {
-//console.log(req.body);
-client.hmset(req.body.hash, req.body.key, req.body.value, function(err,reply) {
-    //console.log(reply)
-    res.sendStatus(reply);
-});
+modeRoute.post('/update', (req,res)=> {
+    //console.log(req.body);
+    client.hmset("mode:"+req.body.id, req.body.field, req.body.value, function(err,reply) {
+        //console.log(reply)
+        res.sendStatus(reply);
+    });
 });
 
 module.exports = modeRoute;
