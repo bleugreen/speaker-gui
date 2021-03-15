@@ -8,28 +8,39 @@ import {
 import PalettePicker from '../PalettePicker';
 import PaletteListItem from './paletteListItem';
 import SaveModal from './savemodal';
-axios.defaults.port = 5000;
+
 
 const { Panel } = Collapse;
 const { Text } = Typography; 
 
-function ColorBlock(props){
-// props: id, type, 
-
-    const [id, setId] = useState(props.id);
-    const [type, setType] = useState(props.type);
+function ColorBlock({pid, active, setPid}){
     const [loading, setLoading] = useState(true);
     const [saveVisible, setSaveVisible] = useState(false);
-    const [paletteName, setPaletteName] = useState(props.palette);
-    const [palette, setPalette] = useState({
-        name: props.palette,
-    });
+    const [palette, setPalette] = useState({});
     const [savedPalettes, setSaved] = useState([]);
     
 
     useEffect(() =>{
-        if(loading){getPalettes();}
+        console.log("PID: "+pid);
+        if(loading){
+            initColor();
+            getPalettes();
+        }
     });
+
+    // Get palette associated with given pid
+    const initColor = () => {
+        getPalette(pid, function(res){
+            let temp_palette = {
+                pid: pid,
+                name: res.data[0],
+                colors: res.data.slice(1),
+                numcolors: res.data.length-1
+            }
+            console.log("Init palette: "+temp_palette.name);
+            setPalette(temp_palette);
+        })
+    }
 
     const getPalettes = () => {
         setSaved([]);
@@ -38,13 +49,12 @@ function ColorBlock(props){
         .then(function (response) {
             //console.log(response.data);
             response.data.sort(function(a, b) {
-                var textA = a.toUpperCase();
-                var textB = b.toUpperCase();
-                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                return (a < b) ? -1 : (a > b) ? 1 : 0;
             });
             response.data.map(p => {
                 getPalette(p, function(res){
                     let temp_palette = {
+                        pid: p,
                         name: res.data[0],
                         colors: res.data.slice(1),
                         numcolors: res.data.length-1
@@ -68,7 +78,7 @@ function ColorBlock(props){
     const getPalette = (search, singleCallback) => {
         axios.get('/api/palette', {
             params: {
-                name: search,
+                pid: search,
             }
         })
         .then(function (response) {
@@ -86,9 +96,7 @@ function ColorBlock(props){
         if(name == 'default'){
             message.error({
                 content: 'Cannot overwrite default palette',
-                style: {
-                    marginTop: '8vh',
-                  },
+                style: { marginTop: '8vh' },
             });
         }
         else{          
@@ -97,25 +105,23 @@ function ColorBlock(props){
                 url: url,
                 method: 'post',
                 data: {
+                    pid: pid,
                     name: name,  
                     colors: palette.colors,
                     numcolors: palette.colors.length
                 }, 
             })
-                .then(function (response) {
-                    //handle success
-                    //console.log(response);
-                    setPalette({
-                        name:name,
-                        colors: palette.colors,
-                        numcolors: palette.colors.length
-                    });
-                    getPalettes();
-                })
-                .catch(function (response) {
-                //handle error
-                console.log(response);
+            .then(function (response) {
+                console.log("save: "+response.data);
+                setPalette({
+                    name:name,
+                    colors: palette.colors,
+                    numcolors: palette.colors.length
                 });
+                setPid(response.data);
+                if(name != palette.name) getPalettes();
+            })
+            .catch(function (response) { console.log(response) });
         }
     }
 
@@ -128,7 +134,7 @@ function ColorBlock(props){
         });
         for (const [index, value] of savedPalettes.entries()) {
             paletteItems.push(<Select.Option 
-                value={value.name} 
+                value={value.pid} 
                 key={index}
             >
                 <PaletteListItem name={value.name} colors={value.colors} />
@@ -137,7 +143,7 @@ function ColorBlock(props){
           }
         return(
             <Select
-                defaultValue="default"
+                defaultValue={palette.name}
                 value={palette.name}
                 onChange={handlePaletteChange}
                 size='large'
@@ -182,12 +188,15 @@ function ColorBlock(props){
         else{
             axios.get('/api/palette/del', {
                 params: {
+                    pid: pid,
                     name: palette.name,
                 }
             })
             .then(function (response) {
                 getPalettes();
-                setPalette(savedPalettes[0]);
+                let it = 0;
+                while(savedPalettes[it].pid == pid) it++;
+                setPalette(savedPalettes[it]);
                 //console.log(response.data);
             }).catch(function (response) {
                 //handle error
@@ -207,22 +216,35 @@ function ColorBlock(props){
             ...palette,
             colors: tempcolors
         });
-        
+    };
 
+    const handleColorComplete = (index, color) => {
+        // data.index, data.color
+        // set mode.color+(index) to data.color
+        let tempcolors = [...palette.colors];
+        tempcolors[index] = color;
+        
+        setPalette({
+            ...palette,
+            colors: tempcolors
+        });
+
+        onSave();
     };
 
     const handlePaletteChange = (data) => {
+        console.log(data);
         savedPalettes.map(item => {
-            if(data == item.name){
+            if(data == item.pid){
+                setPid(item.pid);
                 setPalette(item);
             }
         })
     };
 
-    const handleRadioChange = (data) => {
-        setType(data.target.value);
-        
-    };
+    // const handleRadioChange = (data) => {
+    //     setType(data.target.value);
+    // };
 
     const addColor = () => {
         if(palette.colors.length >= 5){
@@ -233,6 +255,7 @@ function ColorBlock(props){
                 url: '/api/palette/push',
                 method: 'post',
                 data: {
+                    pid: pid,
                     name: palette.name,  
                     color: palette.colors[0],
                 }, 
@@ -241,6 +264,7 @@ function ColorBlock(props){
                     //handle success
                     console.log(response);
                     setPalette({
+                        pid: pid,
                         name:palette.name,
                         colors: [...palette.colors, palette.colors[0]],
                         numcolors: palette.colors.length
@@ -261,6 +285,7 @@ function ColorBlock(props){
         else{
             axios.get('/api/palette/pop', {
                 params: {
+                    pid: pid,
                     name: palette.name,
                 }
             })
@@ -294,70 +319,69 @@ function ColorBlock(props){
     function renderColorBlock(){
         
         if(!loading){
-            if(type == "palette"){
-                return(
-                    //To separate:
-                    //  take with: rowStyle 
-                    //  props: 
-                    
-                    <Space direction='vertical' style={rowStyle}>
-                        <Row style={rowStyle}>
-                            <Col span={24}>
-                                <Radio.Group 
-                                    onChange={handleRadioChange} 
-                                    defaultValue={type}
-                                    optionType='button'
-                                    buttonStyle="solid"
-                                    style={radioStyle}
-                                >
-                                    <Radio.Button style={radioButtonStyle} value="palette">
-                                    Palette
-                                    </Radio.Button>
-                                    <Radio.Button style={radioButtonStyle} value="range" disabled={true}>
-                                    HCL
-                                    </Radio.Button>
-                                </Radio.Group>
-                            </Col>
-                        </Row>
-                        <Row style={rowStyle}>
-                            <Col span={24} >
-                                <Space wrap={true}>
-                                    {populateDropdown()}
-                                    <Divider direction="vertical"/>
-                                    <Space wrap={false}>
-                                        <Button
-                                            type="default"
-                                            onClick={onSave}
-                                        >
-                                            <SaveOutlined style={{verticalAlign:'baseline'}}/>
-                                        </Button>
-                                        <Button
-                                            type="default"
-                                            onClick={onSaveAs}
-                                        >
-                                            <FileAddOutlined style={{verticalAlign:'baseline'}}/>
-                                        </Button>
-                                        <Button
-                                            type="default"
-                                            onClick={onDelete}
-                                        >
-                                            <DeleteOutlined style={{verticalAlign:'baseline'}}/> 
-                                        </Button>
-                                    </Space>
+            return(
+                //To separate:
+                //  take with: rowStyle 
+                //  props: 
+                
+                <Space direction='vertical' style={rowStyle}>
+                    {/* <Row style={rowStyle}>
+                        <Col span={24}>
+                            <Radio.Group 
+                                onChange={handleRadioChange} 
+                                defaultValue={type}
+                                optionType='button'
+                                buttonStyle="solid"
+                                style={radioStyle}
+                            >
+                                <Radio.Button style={radioButtonStyle} value="palette">
+                                Palette
+                                </Radio.Button>
+                                <Radio.Button style={radioButtonStyle} value="range" disabled={true}>
+                                HCL
+                                </Radio.Button>
+                            </Radio.Group>
+                        </Col>
+                    </Row> */}
+                    <Row style={rowStyle}>
+                        <Col span={24} >
+                            <Space wrap={true}>
+                                {populateDropdown()}
+                                <Divider direction="vertical"/>
+                                <Space wrap={false}>
+                                    <Button
+                                        type="default"
+                                        onClick={onSave}
+                                    >
+                                        <SaveOutlined style={{verticalAlign:'baseline'}}/>
+                                    </Button>
+                                    <Button
+                                        type="default"
+                                        onClick={onSaveAs}
+                                    >
+                                        <FileAddOutlined style={{verticalAlign:'baseline'}}/>
+                                    </Button>
+                                    <Button
+                                        type="default"
+                                        onClick={onDelete}
+                                    >
+                                        <DeleteOutlined style={{verticalAlign:'baseline'}}/> 
+                                    </Button>
                                 </Space>
-                            </Col>
-                        </Row>
-                        <PalettePicker 
-                            colors={palette.colors}
-                            onChange={handleColorChange}
-                            addColor={addColor}
-                            removeColor = {removeColor}
-                            style={rowStyle}
-                        />
-                        <SaveModal visible={saveVisible} name={palette.name} onSubmit={saveAs} onCancel={onSaveCancel}/>
-                    </Space>
-                )
-            }
+                            </Space>
+                        </Col>
+                    </Row>
+                    <PalettePicker 
+                        colors={palette.colors}
+                        onChange={handleColorChange}
+                        onComplete={handleColorComplete}
+                        addColor={addColor}
+                        removeColor = {removeColor}
+                        style={rowStyle}
+                    />
+                    <SaveModal visible={saveVisible} name={palette.name} onSubmit={saveAs} onCancel={onSaveCancel}/>
+                </Space>
+            )
         }
         else{
             return(

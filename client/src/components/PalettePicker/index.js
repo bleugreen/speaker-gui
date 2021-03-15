@@ -34,6 +34,9 @@ function PalettePicker(props) {
     const handleColor = (index, color) => {
         props.onChange(index, color);
     }
+    const handleComplete = (index, color) => {
+        props.onComplete(index, color);
+    }
 
     const renderSwatches = () => {
         let span = 0;
@@ -57,7 +60,7 @@ function PalettePicker(props) {
         
         for (const [index, value] of props.colors.entries()) {
             swatches.push(<Col span={span} key={index}>
-                <SwatchCircle onChange={handleColor} color={value} index={index}  />
+                <SwatchCircle onChange={handleColor} onComplete={handleComplete} color={value} index={index}  />
             </Col>);
 
           }

@@ -16,6 +16,7 @@ class SwatchCircle extends React.Component {
 
   handleClose = () => {
     this.setState({ visible: false });
+    this.props.onComplete(this.props.index, this.props.color);
   };
 
   handleChange = (color) => {

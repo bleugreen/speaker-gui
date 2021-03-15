@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import {Row, Col, Typography, Divider, Slider, Spin, Space } from 'antd';
 

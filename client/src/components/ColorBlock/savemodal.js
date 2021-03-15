@@ -62,6 +62,7 @@ function SaveModal(props) {
             onPressEnter={handleOk}
             maxLength={15}
             minLength={2}
+            autoFocus={true}
 
 
           />
