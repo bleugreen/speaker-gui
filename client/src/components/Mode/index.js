@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import ColorBlock from '../ColorBlock';
+import LayerBlock from '../LayerBlock';
+import LayerList from '../Home/layerlist';
 
 //import './style.css';
 
@@ -94,7 +96,8 @@ function Mode ({mid, active, setActive}) {
   if(!loading){
     return (
         <div>        
-            <Row>
+            
+            {/* <Row>
                 <Col span={18}>
                     <Title style={{textAlign:"left"}}>{name}</Title>
                 </Col>
@@ -103,7 +106,7 @@ function Mode ({mid, active, setActive}) {
                         Active
                     </Button>
                 </Col>
-            </Row>
+            </Row> */}
             <Row>
                 <Col span={24}>
                     <Collapse

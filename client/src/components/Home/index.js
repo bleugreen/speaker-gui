@@ -5,7 +5,7 @@ import { Layout } from 'antd';
 import axios from 'axios';
 
 import './style.css';
-
+import LayerList from './layerlist'
 const { Header, Content } = Layout;
 const { Panel } = Collapse;
 
@@ -79,7 +79,7 @@ function Home() {
         </Header>
         <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
           <div className="site-layout-background" style={{ padding: 24, minHeight: 380 }}>
-          {modelist()}
+          <LayerList />
           </div>
         </Content>
       </Layout>

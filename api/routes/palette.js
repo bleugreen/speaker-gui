@@ -37,25 +37,16 @@ colorRoute.post('/new', (req,res) => {
     
 });
 
-// create/save palette
-//  set (palette+name) name color1
-//  sadd palettes (name)
+// update palette
 colorRoute.post('/update', (req,res) => {
-//console.log("UPDATE: palette-"+req.body.name+"="
-//+" name:"+req.body.name
-//+" colors:"+req.body.colors);
-client.ltrim("palette:"+req.body.pid, 0, 0, function(err, reply){
-    console.log(reply);
-    client.rpush("palette:"+req.body.pid, 
-    req.body.colors,
-    function(err, reply){
-        //console.log(reply);
-        client.sadd('palette:list', req.body.pid, function(err, reply){
-        //console.log(reply);
-        });
-        res.send(req.body.pid.toString());
+    //trim all colors but leave name
+    client.ltrim("palette:"+req.body.pid, 0, 0, function(err, reply){
+        console.log(reply);
+        //push new colors
+        client.rpush("palette:"+req.body.pid, 
+        req.body.colors,
+        function(err, reply){});
     });
-});
 });
 
 

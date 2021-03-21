@@ -41,27 +41,12 @@ function PalettePicker(props) {
     const renderSwatches = () => {
         let span = 0;
         let swatches = [];
-        switch(props.colors.length) {
-            case 2:
-              span = 10;
-              break;
-            case 3:
-              span = 7;
-              break;
-            case 4:
-              span = 5;
-              break;
-            case 5:
-                span = 4;
-                break;
-            default:
-              span = 4
-        }
+        span = (90/props.colors.length)+"%";
         
         for (const [index, value] of props.colors.entries()) {
-            swatches.push(<Col span={span} key={index}>
+            swatches.push(<div style={{width:span}}key={index}>
                 <SwatchCircle onChange={handleColor} onComplete={handleComplete} color={value} index={index}  />
-            </Col>);
+            </div>);
 
           }
 
@@ -75,7 +60,7 @@ function PalettePicker(props) {
         return (
             <Row style={{margin:'auto'}}>
                 {renderSwatches()}
-                <Col span={2}>
+                <div style={{width:"10%"}}>
                     <Space direction="vertical">
                         <Button 
                             shape="circle" 
@@ -90,7 +75,7 @@ function PalettePicker(props) {
                     </Space>
                     
 
-                </Col>
+                </div>
             </Row>
         );
     }

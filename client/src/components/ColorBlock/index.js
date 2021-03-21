@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { message, Row, Col, Spin, Collapse, Radio, Typography, Space, Select, Button, Divider } from 'antd';
 import React, { useState, useEffect } from 'react';
+import { message, Row, Col, Spin, Collapse, Typography, Space, Select, Button, Divider } from 'antd';
 import {
     SaveOutlined, FileAddOutlined, DeleteOutlined
   } from '@ant-design/icons';
@@ -21,7 +21,7 @@ function ColorBlock({pid, active, setPid}){
     
 
     useEffect(() =>{
-        console.log("PID: "+pid);
+        console.log("PID: "+pid+" loading: "+loading);
         if(loading){
             initColor();
             getPalettes();
@@ -75,6 +75,25 @@ function ColorBlock({pid, active, setPid}){
         setLoading(false);
     }
 
+    const updateSavedPalettes = (id) => {
+        getPalette(id, function(res){
+            let temp_palette = {
+                pid: id,
+                name: res.data[0],
+                colors: res.data.slice(1),
+                numcolors: res.data.length-1
+            }
+            const newSaved = savedPalettes.filter(p => p.pid != id);
+            newSaved.push(temp_palette);
+            newSaved.sort(function(a, b) {
+                return (a.pid < b.pid) ? -1 : (a.pid > b.pid) ? 1 : 0;
+            });
+            setSaved(newSaved);
+        });
+
+
+    }
+
     const getPalette = (search, singleCallback) => {
         axios.get('/api/palette', {
             params: {
@@ -108,7 +127,6 @@ function ColorBlock({pid, active, setPid}){
                     pid: pid,
                     name: name,  
                     colors: palette.colors,
-                    numcolors: palette.colors.length
                 }, 
             })
             .then(function (response) {
@@ -119,7 +137,7 @@ function ColorBlock({pid, active, setPid}){
                     numcolors: palette.colors.length
                 });
                 setPid(response.data);
-                if(name != palette.name) getPalettes();
+                updateSavedPalettes(response.data);
             })
             .catch(function (response) { console.log(response) });
         }
@@ -127,19 +145,12 @@ function ColorBlock({pid, active, setPid}){
 
     const populateDropdown = () => {
         const paletteItems = [];
-        savedPalettes.map(item => {
-            paletteItems.push(
-                
-            );
-        });
         for (const [index, value] of savedPalettes.entries()) {
-            paletteItems.push(<Select.Option 
-                value={value.pid} 
-                key={index}
-            >
-                <PaletteListItem name={value.name} colors={value.colors} />
-            </Select.Option>);
-
+            paletteItems.push(
+                <Select.Option value={value.pid} key={index} >
+                    <PaletteListItem name={value.name} colors={value.colors} />
+                </Select.Option>
+            );
           }
         return(
             <Select
@@ -193,10 +204,11 @@ function ColorBlock({pid, active, setPid}){
                 }
             })
             .then(function (response) {
-                getPalettes();
+                updateSavedPalettes(pid);
                 let it = 0;
                 while(savedPalettes[it].pid == pid) it++;
                 setPalette(savedPalettes[it]);
+                setPid(savedPalettes[it].pid);
                 //console.log(response.data);
             }).catch(function (response) {
                 //handle error
@@ -242,10 +254,6 @@ function ColorBlock({pid, active, setPid}){
         })
     };
 
-    // const handleRadioChange = (data) => {
-    //     setType(data.target.value);
-    // };
-
     const addColor = () => {
         if(palette.colors.length >= 5){
             message.error("Cannot add more colors")
@@ -269,11 +277,12 @@ function ColorBlock({pid, active, setPid}){
                         colors: [...palette.colors, palette.colors[0]],
                         numcolors: palette.colors.length
                     });
-                    getPalettes();
+                    setPid(pid);
+                    updateSavedPalettes(pid);
                 })
                 .catch(function (response) {
-                //handle error
-                console.log(response);
+                    //handle error
+                    console.log(response);
                 });
         }
     };
@@ -290,21 +299,19 @@ function ColorBlock({pid, active, setPid}){
                 }
             })
             .then(function (response) {
-                setPalette({...palette, colors:palette.colors.slice(0,-1)
-                });
-
-                getPalettes();
+                setPalette({...palette, colors:palette.colors.slice(0,-1)});
+                setPid(pid);
+                updateSavedPalettes(pid);
                 //console.log(response.data);
-            }).catch(function (response) {
-            //handle error
-            console.log(response);
+            })
+            .catch(function (response) {
+                //handle error
+                console.log(response);
             });
         }
     };
 
-    const radioStyle = {
-        display: 'block',
-    };
+    const radioStyle = { display: 'block' };
 
     const radioButtonStyle = {
         height: '30px',
@@ -312,59 +319,25 @@ function ColorBlock({pid, active, setPid}){
         width:"30%",
     };
 
-    const rowStyle = {
-        width:"100%",
-    };
+    const rowStyle = { width:"100%" };
 
     function renderColorBlock(){
-        
         if(!loading){
             return(
-                //To separate:
-                //  take with: rowStyle 
-                //  props: 
-                
                 <Space direction='vertical' style={rowStyle}>
-                    {/* <Row style={rowStyle}>
-                        <Col span={24}>
-                            <Radio.Group 
-                                onChange={handleRadioChange} 
-                                defaultValue={type}
-                                optionType='button'
-                                buttonStyle="solid"
-                                style={radioStyle}
-                            >
-                                <Radio.Button style={radioButtonStyle} value="palette">
-                                Palette
-                                </Radio.Button>
-                                <Radio.Button style={radioButtonStyle} value="range" disabled={true}>
-                                HCL
-                                </Radio.Button>
-                            </Radio.Group>
-                        </Col>
-                    </Row> */}
                     <Row style={rowStyle}>
                         <Col span={24} >
                             <Space wrap={true}>
                                 {populateDropdown()}
                                 <Divider direction="vertical"/>
                                 <Space wrap={false}>
-                                    <Button
-                                        type="default"
-                                        onClick={onSave}
-                                    >
+                                    <Button type="default" onClick={onSave} >
                                         <SaveOutlined style={{verticalAlign:'baseline'}}/>
                                     </Button>
-                                    <Button
-                                        type="default"
-                                        onClick={onSaveAs}
-                                    >
+                                    <Button type="default" onClick={onSaveAs} >
                                         <FileAddOutlined style={{verticalAlign:'baseline'}}/>
                                     </Button>
-                                    <Button
-                                        type="default"
-                                        onClick={onDelete}
-                                    >
+                                    <Button type="default" onClick={onDelete} >
                                         <DeleteOutlined style={{verticalAlign:'baseline'}}/> 
                                     </Button>
                                 </Space>
@@ -383,20 +356,11 @@ function ColorBlock({pid, active, setPid}){
                 </Space>
             )
         }
-        else{
-            return(
-                <div>
-                    <Spin />
-                </div>
-            )
-        }
-
+        else{ return( <div><Spin /></div> ) }
     }
 
     return(
         renderColorBlock()
     );
-
-
 }
 export default ColorBlock;

@@ -1,0 +1,42 @@
+.collapse {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5715;
+    list-style: none;
+    font-feature-settings: 'tnum', "tnum";
+    background-color: #fafafa;
+    border: 1px solid #d9d9d9;
+    border-bottom-color: rgb(217, 217, 217);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+
+    border-radius: 2px;
+}
+
+.collapse-head {
+    position: relative;
+    padding: 12px 16px;
+    padding-left: 16px;
+    padding-left: 40px;
+    color: rgba(0, 0, 0, 0.85);
+    line-height: 1.5715;
+    cursor: pointer;
+    -webkit-transition: all 0.3s, visibility 0s;
+    transition: all 0.3s, visibility 0s;
+}
+
+.collapse-body {
+    box-sizing: border-box;
+    color: rgba(0, 0, 0, 0.85);
+    background-color: #fff;
+    border-top: 1px solid #d9d9d9;
+}
+
+
+li {
+    list-style: none;
+}
