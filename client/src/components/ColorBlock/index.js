@@ -2,12 +2,13 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { message, Row, Col, Spin, Collapse, Typography, Space, Select, Button, Divider } from 'antd';
 import {
-    SaveOutlined, FileAddOutlined, DeleteOutlined
+    SaveOutlined, FileAddOutlined, DeleteOutlined, LockOutlined, LockTwoTone
   } from '@ant-design/icons';
 
 import PalettePicker from '../PalettePicker';
 import PaletteListItem from './paletteListItem';
 import SaveModal from './savemodal';
+import LayerBlock from '../LayerBlock';
 
 
 const { Panel } = Collapse;
@@ -18,10 +19,11 @@ function ColorBlock({pid, active, setPid}){
     const [saveVisible, setSaveVisible] = useState(false);
     const [palette, setPalette] = useState({});
     const [savedPalettes, setSaved] = useState([]);
+
     
 
     useEffect(() =>{
-        console.log("PID: "+pid+" loading: "+loading);
+        console.log(palette);
         if(loading){
             initColor();
             getPalettes();
@@ -34,7 +36,8 @@ function ColorBlock({pid, active, setPid}){
             let temp_palette = {
                 pid: pid,
                 name: res.data[0],
-                colors: res.data.slice(1),
+                locked: (res.data[1]=="true"),
+                colors: res.data.slice(2),
                 numcolors: res.data.length-1
             }
             console.log("Init palette: "+temp_palette.name);
@@ -56,7 +59,8 @@ function ColorBlock({pid, active, setPid}){
                     let temp_palette = {
                         pid: p,
                         name: res.data[0],
-                        colors: res.data.slice(1),
+                        locked: (res.data[1]=="true"),
+                        colors: res.data.slice(2),
                         numcolors: res.data.length-1
                     }
                     if(loading && p == palette.name){
@@ -75,16 +79,94 @@ function ColorBlock({pid, active, setPid}){
         setLoading(false);
     }
 
+    const saveNewPalette = (name) => {
+        // send palette to db
+        // refresh palette list
+       
+            //console.log(palette.colors);  
+            axios.request ({
+                url: '/api/palette/new',
+                method: 'post',
+                data: {
+                    pid: pid,
+                    name: name,
+                    locked:false,  
+                    colors: palette.colors,
+                }, 
+            })
+            .then(function (response) {
+                console.log("save: "+response.data);
+                setPalette({
+                    name:name,
+                    locked:false,
+                    colors: palette.colors,
+                });
+                setPid(response.data);
+                updateSavedPalettes(response.data);
+            })
+            .catch(function (response) { console.log(response) });
+
+    }
+
+    const updatePalette = (index, color) => {
+        if(!palette.locked){
+        // send palette to db
+        // refresh palette list
+            console.log("update "+index);
+            //console.log(palette.colors);  
+            axios.request ({
+                url: '/api/palette/update',
+                method: 'post',
+                data: {
+                    pid: pid,
+                    index: index+2,
+                    color: color,
+                }, 
+            })
+            .then(function (response) {
+                console.log("save: "+response.data);
+                updateSavedPalettes(pid);
+            })
+            .catch(function (response) { console.log(response) });
+        }
+    }
+
+    const updateLocked = (locked) => {
+        // send palette to db
+        // refresh palette list
+            console.log("update lock");
+            //console.log(palette.colors);  
+            axios.request ({
+                url: '/api/palette/update',
+                method: 'post',
+                data: {
+                    pid: pid,
+                    index: 1,
+                    color: locked,
+                }, 
+            })
+            .then(function (response) {
+                console.log("save: "+response.data);
+                updateSavedPalettes(pid);
+            })
+            .catch(function (response) { console.log(response) });
+
+    }
+
     const updateSavedPalettes = (id) => {
+        console.log("update saved: "+id);
         getPalette(id, function(res){
             let temp_palette = {
                 pid: id,
                 name: res.data[0],
-                colors: res.data.slice(1),
-                numcolors: res.data.length-1
+                locked: (res.data[1]=="true"),
+                colors: res.data.slice(2),
+                numcolors: res.data.length-2
             }
             const newSaved = savedPalettes.filter(p => p.pid != id);
-            newSaved.push(temp_palette);
+            if(temp_palette.numcolors >0){
+                newSaved.push(temp_palette);
+            }
             newSaved.sort(function(a, b) {
                 return (a.pid < b.pid) ? -1 : (a.pid > b.pid) ? 1 : 0;
             });
@@ -107,40 +189,6 @@ function ColorBlock({pid, active, setPid}){
           //handle error
           console.log(response);
         });
-    }
-
-    const savePalette = (name, url) => {
-        // send palette to db
-        // refresh palette list
-        if(name == 'default'){
-            message.error({
-                content: 'Cannot overwrite default palette',
-                style: { marginTop: '8vh' },
-            });
-        }
-        else{          
-            //console.log(palette.colors);  
-            axios.request ({
-                url: url,
-                method: 'post',
-                data: {
-                    pid: pid,
-                    name: name,  
-                    colors: palette.colors,
-                }, 
-            })
-            .then(function (response) {
-                console.log("save: "+response.data);
-                setPalette({
-                    name:name,
-                    colors: palette.colors,
-                    numcolors: palette.colors.length
-                });
-                setPid(response.data);
-                updateSavedPalettes(response.data);
-            })
-            .catch(function (response) { console.log(response) });
-        }
     }
 
     const populateDropdown = () => {
@@ -168,9 +216,7 @@ function ColorBlock({pid, active, setPid}){
 
     
 
-    const onSave = () => {
-        savePalette(palette.name, '/api/palette/update');
-    }
+
     const onSaveAs = () => {
         // open modal that grabs name input
         setSaveVisible(true);
@@ -183,14 +229,15 @@ function ColorBlock({pid, active, setPid}){
 
     const saveAs = (name) => {
         setSaveVisible(false);
-        savePalette(name, '/api/palette/new');
+        saveNewPalette(name);
     }
 
     const onDelete = () => {
+        
         // open modal that grabs name input
-        if(palette.name == 'default'){
+        if(palette.locked){
             message.error({
-                content: 'Cannot delete default palette',
+                content: 'Palette Locked',
                 style: {
                     marginTop: '8vh',
                   },
@@ -204,6 +251,7 @@ function ColorBlock({pid, active, setPid}){
                 }
             })
             .then(function (response) {
+                console.log("del: "+pid);
                 updateSavedPalettes(pid);
                 let it = 0;
                 while(savedPalettes[it].pid == pid) it++;
@@ -219,18 +267,31 @@ function ColorBlock({pid, active, setPid}){
     }
 
     const handleColorChange = (index, color) => {
+        if(palette.locked){
+            console.log('no no no');
+        }
+        else{
         // data.index, data.color
         // set mode.color+(index) to data.color
         let tempcolors = [...palette.colors];
         tempcolors[index] = color;
-        
         setPalette({
             ...palette,
             colors: tempcolors
         });
+    }
     };
 
     const handleColorComplete = (index, color) => {
+        if(palette.locked){
+            message.error({
+                content: 'Palette Locked',
+                style: {
+                    marginTop: '8vh',
+                  },
+            });
+        }
+        else{
         // data.index, data.color
         // set mode.color+(index) to data.color
         let tempcolors = [...palette.colors];
@@ -241,7 +302,8 @@ function ColorBlock({pid, active, setPid}){
             colors: tempcolors
         });
 
-        onSave();
+        updatePalette(index,color);
+    }
     };
 
     const handlePaletteChange = (data) => {
@@ -255,7 +317,16 @@ function ColorBlock({pid, active, setPid}){
     };
 
     const addColor = () => {
-        if(palette.colors.length >= 5){
+        if(palette.locked){
+            message.error({
+                content: 'Palette Locked',
+                style: {
+                    marginTop: '8vh',
+                  },
+            });
+        }
+        else{
+        if(palette.colors.length >= 7){
             message.error("Cannot add more colors")
         }
         else{
@@ -285,10 +356,20 @@ function ColorBlock({pid, active, setPid}){
                     console.log(response);
                 });
         }
+    }
     };
 
     const removeColor = () => {
-        if(palette.colors.length < 3){
+        if(palette.locked){
+            message.error({
+                content: 'Palette Locked',
+                style: {
+                    marginTop: '8vh',
+                  },
+            });
+        }
+        else{
+        if(palette.colors.length < 2){
             message.error("Cannot delete more colors")
         }
         else{
@@ -309,7 +390,26 @@ function ColorBlock({pid, active, setPid}){
                 console.log(response);
             });
         }
+    }
     };
+
+    const onLock = () => {
+        updateLocked(!palette.locked);
+        setPalette({
+            ...palette,
+            locked: !palette.locked,
+        });
+        console.log(palette.locked);
+    }
+
+    const renderLock = () => {
+        if(palette.locked){
+            return  <LockTwoTone style={{verticalAlign:'baseline'}}/>
+        }
+        else{
+            return  <LockOutlined style={{verticalAlign:'baseline'}}/>
+        }
+    }
 
     const radioStyle = { display: 'block' };
 
@@ -321,6 +421,8 @@ function ColorBlock({pid, active, setPid}){
 
     const rowStyle = { width:"100%" };
 
+
+
     function renderColorBlock(){
         if(!loading){
             return(
@@ -331,8 +433,9 @@ function ColorBlock({pid, active, setPid}){
                                 {populateDropdown()}
                                 <Divider direction="vertical"/>
                                 <Space wrap={false}>
-                                    <Button type="default" onClick={onSave} >
-                                        <SaveOutlined style={{verticalAlign:'baseline'}}/>
+                                    <Button type="default" onClick={onLock} >
+                                        {/* <LockOutlined style={{verticalAlign:'baseline'}}/> */}
+                                        {renderLock()}
                                     </Button>
                                     <Button type="default" onClick={onSaveAs} >
                                         <FileAddOutlined style={{verticalAlign:'baseline'}}/>
@@ -346,6 +449,7 @@ function ColorBlock({pid, active, setPid}){
                     </Row>
                     <PalettePicker 
                         colors={palette.colors}
+                        locked={palette.locked}
                         onChange={handleColorChange}
                         onComplete={handleColorComplete}
                         addColor={addColor}

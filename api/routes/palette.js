@@ -12,15 +12,14 @@ colorRoute.get('/idgen', (req,res) => {
     });
 });
 
-// create/save palette
-//  set (palette+name) name color1
-//  sadd palettes (name)
+// create palette
 colorRoute.post('/new', (req,res) => {
+    // get unique id
     client.incr('palette:idgen', function(err, reply){
         let pid = reply;
         console.log("IDGEN: "+reply);
         client.rpush("palette:"+pid, 
-        req.body.name, 
+        req.body.name, req.body.locked,
         function(err, reply){
         //console.log('push name reply: '+reply);
         });
@@ -40,13 +39,10 @@ colorRoute.post('/new', (req,res) => {
 // update palette
 colorRoute.post('/update', (req,res) => {
     //trim all colors but leave name
-    client.ltrim("palette:"+req.body.pid, 0, 0, function(err, reply){
-        console.log(reply);
-        //push new colors
-        client.rpush("palette:"+req.body.pid, 
-        req.body.colors,
-        function(err, reply){});
-    });
+    console.log("update: "+req.body.pid+":"+req.body.index+":"+req.body.color);
+    client.lset("palette:"+req.body.pid, 
+        req.body.index, req.body.color,
+        function(err, reply){res.send(reply);});
 });
 
 
@@ -113,18 +109,6 @@ colorRoute.get('/list', (req,res) => {
     //console.log("GETALL: palettes");
     client.smembers("palette:list", function(err, reply){
         res.send(reply);
-    });
-});
-
-colorRoute.get('/exists', (req,res) => {
-    //console.log("EXISTS: palette:"+req.query);
-    client.llen("palette:"+req.query.pid, function(err, reply){
-        if(reply == 0){
-            res.send(false);
-        }
-        else{
-            res.send(true);
-        }
     });
 });
 

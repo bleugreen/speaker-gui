@@ -11,7 +11,9 @@ class SwatchCircle extends React.Component {
   };
 
   handleClick = () => {
+    if(!this.props.locked){
     this.setState({ visible: true });
+    }
   };
 
   handleClose = () => {
