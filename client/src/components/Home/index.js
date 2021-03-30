@@ -1,4 +1,4 @@
-import { Col, Collapse, Row, Menu } from 'antd';
+import { Col, Collapse, Row, Menu, Space } from 'antd';
 import React, { useState, useEffect } from 'react';
 import Mode from '../Mode';
 import { Layout } from 'antd';
@@ -6,6 +6,7 @@ import axios from 'axios';
 
 import './style.css';
 import LayerList from './layerlist'
+import Title from 'antd/lib/typography/Title';
 const { Header, Content } = Layout;
 const { Panel } = Collapse;
 
@@ -77,9 +78,16 @@ function Home() {
 
           </Menu>
         </Header>
-        <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
+        <Content theme="dark" className="site-layout" style={{ marginTop: 64 }}>
           <div className="site-layout-background" style={{ padding: 24, minHeight: 380 }}>
-          <LayerList />
+          <div>
+          <Title>Layers</Title>
+          <LayerList id={0}/>
+          </div>
+          <div>
+          <Title>General</Title>
+          {/* GeneralBlock */}
+          </div>
           </div>
         </Content>
       </Layout>

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {Row, Col, Typography, Divider, Modal, Input, Button, message } from 'antd';
 
 const { Title, Text } = Typography;
-import SwatchCircle from '../Swatch';
+import SwatchCircle from './swatch';
 
 
 import 'antd/dist/antd.css';

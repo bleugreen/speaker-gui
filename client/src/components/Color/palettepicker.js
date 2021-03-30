@@ -6,7 +6,7 @@ const { Title } = Typography;
 import {
     PlusOutlined, MinusOutlined
   } from '@ant-design/icons';
-import SwatchCircle from '../Swatch';
+import SwatchCircle from './swatch';
 
 
 //import 'antd/dist/antd.css';
@@ -42,7 +42,12 @@ function PalettePicker(props) {
     const renderSwatches = () => {
         let span = 0;
         let swatches = [];
-        span = (90/props.colors.length)+"%";
+        if(props.locked){
+            span = (100/props.colors.length)+"%";
+        }
+        else{
+            span = (90/props.colors.length)+"%";
+        }
         
         for (const [index, value] of props.colors.entries()) {
             swatches.push(<div style={{width:span}}key={index}>
@@ -54,13 +59,12 @@ function PalettePicker(props) {
         return swatches
     }
 
-    if(loading){
-        return (<Spin />)
-    }
-    else{
-        return (
-            <Row style={{margin:'auto'}}>
-                {renderSwatches()}
+    const renderButtons = () => {
+        if(props.locked){
+            return <div></div>
+        }
+        else{
+            return(
                 <div style={{width:"10%"}}>
                     <Space direction="vertical">
                         <Button 
@@ -77,6 +81,18 @@ function PalettePicker(props) {
                     
 
                 </div>
+            )
+        }
+    }
+
+    if(loading){
+        return (<Spin />)
+    }
+    else{
+        return (
+            <Row style={{margin:'auto'}}>
+                {renderSwatches()}
+                {renderButtons()}
             </Row>
         );
     }

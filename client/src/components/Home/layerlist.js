@@ -12,13 +12,23 @@ import LayerBlock from '../LayerBlock';
 
 import './style.css';
 
-  function LayerList(){
-    const [plist, setPlist] = useState(["a", "b", "c", "d"]); 
+  function LayerList({id}){
+    const [plist, setPlist] = useState(["spectrum", "single-val", "ambient"]); 
+    const [expanded, setExpanded] = useState(-1);
     
     const onReorder = (event, previousIndex, nextIndex, fromId, toId) =>{
         setPlist( reorder(plist, previousIndex, nextIndex) );
-        //console.log('reorder');
     };
+
+    const handleExpand = (id) => {
+      if(expanded == id){
+        setExpanded(-1);
+      }
+      else{
+        setExpanded(id);
+      }
+      // console.log(e.currentTarget.id);
+    }
 
     const placeholder = <Collapse><Panel></Panel></Collapse>
 
@@ -35,13 +45,13 @@ import './style.css';
         mouseHoldTime={200} // Hold time before dragging begins with mouse (optional), defaults to holdTime
         onReorder={onReorder} // Callback when an item is dropped (you will need this to update your state)
         autoScroll={true} // Enable auto-scrolling when the pointer is close to the edge of the Reorder component (optional), defaults to true
-        disabled={false} // Disable reordering (optional), defaults to false
+        disabled={(expanded != -1)} // Disable reordering (optional), defaults to false
         disableContextMenus={true} // Disable context menus when holding on touch devices (optional), defaults to true
       >
         {
           plist.map((item) => (
-            <li key={item}>
-            <LayerBlock id={item} />
+            <li key={item} id={item}>
+            <LayerBlock id={item} active={item} expanded={expanded} onExpand={handleExpand}/>
             </li>
           ))
         }

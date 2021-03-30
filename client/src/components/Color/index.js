@@ -2,10 +2,10 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { message, Row, Col, Spin, Collapse, Typography, Space, Select, Button, Divider } from 'antd';
 import {
-    SaveOutlined, FileAddOutlined, DeleteOutlined, LockOutlined, LockTwoTone
+    SaveOutlined, FileAddOutlined, DeleteOutlined, LockOutlined, LockTwoTone, LockFilled
   } from '@ant-design/icons';
 
-import PalettePicker from '../PalettePicker';
+import PalettePicker from './palettepicker';
 import PaletteListItem from './paletteListItem';
 import SaveModal from './savemodal';
 import LayerBlock from '../LayerBlock';
@@ -126,6 +126,7 @@ function ColorBlock({pid, active, setPid}){
             .then(function (response) {
                 console.log("save: "+response.data);
                 updateSavedPalettes(pid);
+                setPid(pid);
             })
             .catch(function (response) { console.log(response) });
         }
@@ -404,7 +405,7 @@ function ColorBlock({pid, active, setPid}){
 
     const renderLock = () => {
         if(palette.locked){
-            return  <LockTwoTone style={{verticalAlign:'baseline'}}/>
+            return  <LockFilled style={{verticalAlign:'baseline'}}/>
         }
         else{
             return  <LockOutlined style={{verticalAlign:'baseline'}}/>

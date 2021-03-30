@@ -2,7 +2,7 @@ import { Col, Collapse, Row, Typography, Button, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-import ColorBlock from '../ColorBlock';
+import ColorBlock from '../Color';
 import LayerBlock from '../LayerBlock';
 import LayerList from '../Home/layerlist';
 
