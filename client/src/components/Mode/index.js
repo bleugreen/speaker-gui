@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import ColorBlock from '../Color';
-import LayerBlock from '../LayerBlock';
+import LayerBlock from '../Layer';
 import LayerList from '../Home/layerlist';
 
 //import './style.css';

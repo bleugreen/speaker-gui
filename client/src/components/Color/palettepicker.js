@@ -11,47 +11,40 @@ import SwatchCircle from './swatch';
 
 //import 'antd/dist/antd.css';
 import './style.css';
-
-// props:
-//  id
-//  color1
-//  color2
-//  color3
-
-
-function PalettePicker(props) {
+// 
+function PalettePicker({colors, locked, onChange, onComplete, addColor, removeColor}) {
     const [loading, setLoading] = useState([true]);
 
     useEffect(() => {    
         if(loading){
             // Check to see if palette is loaded
-            if (typeof(props.colors) !== 'undefined' && props.colors != null) {
+            if (typeof(colors) !== 'undefined' && colors != null) {
                 setLoading(false);
             }
         }
-    }, [props.colors, props.locked]);
+    }, [colors, locked]);
   
     const handleColor = (index, color) => {
         console.log("getting change");
-        props.onChange(index, color);
+        onChange(index, color);
     }
     const handleComplete = (index, color) => {
-        props.onComplete(index, color);
+        onComplete(index, color);
     }
 
     const renderSwatches = () => {
         let span = 0;
         let swatches = [];
-        if(props.locked){
-            span = (100/props.colors.length)+"%";
+        if(locked){
+            span = (100/colors.length)+"%";
         }
         else{
-            span = (90/props.colors.length)+"%";
+            span = (90/colors.length)+"%";
         }
         
-        for (const [index, value] of props.colors.entries()) {
+        for (const [index, value] of colors.entries()) {
             swatches.push(<div style={{width:span}}key={index}>
-                <SwatchCircle onChange={handleColor} onComplete={handleComplete} color={value} index={index} locked={props.locked}  />
+                <SwatchCircle onChange={handleColor} onComplete={handleComplete} color={value} index={index} locked={locked}  />
             </div>);
 
           }
@@ -60,7 +53,7 @@ function PalettePicker(props) {
     }
 
     const renderButtons = () => {
-        if(props.locked){
+        if(locked){
             return <div></div>
         }
         else{
@@ -70,12 +63,12 @@ function PalettePicker(props) {
                         <Button 
                             shape="circle" 
                             icon={<PlusOutlined />} 
-                            onClick={props.addColor}
+                            onClick={addColor}
                         /> 
                         <Button 
                             shape="circle" 
                             icon={<MinusOutlined />} 
-                            onClick={props.removeColor}
+                            onClick={removeColor}
                         />
                     </Space>
                     

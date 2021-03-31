@@ -1,25 +1,16 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import {Row, Col, Typography, Divider, Modal, Input, Button, message } from 'antd';
-
 const { Title, Text } = Typography;
 import SwatchCircle from './swatch';
 
-
 import 'antd/dist/antd.css';
 
-
-// props:
-//  name
-//  onSubmit
-
-
-function SaveModal(props) {
-    const [visible, setVisible] = useState(props.visible);
+function SaveModal({name, visible, onSubmit, onCancel}) {
     const [nameInput, setName] = useState('');
 
     const handleCancel = () => {
-        props.onCancel();
+        onCancel();
     };
 
     const handleOk = () => {
@@ -27,7 +18,7 @@ function SaveModal(props) {
             message.error("Please enter a name");
         }
         else{
-            props.onSubmit(nameInput);
+            onSubmit(nameInput);
             setName('');
         }
         
@@ -40,35 +31,29 @@ function SaveModal(props) {
     }
 
     return (
-    <div>
-        <Modal
-          visible={props.visible}
-          title="Save New Palette"
-          onOk={handleOk}
-          onCancel={handleCancel}
-          footer={[
-            <Button key="back" onClick={handleCancel}>
-              Cancel
-            </Button>,
-            <Button key="submit" type="primary" onClick={handleOk}>
-              Save
-            </Button>
-          ]}
-        >
-          <Input 
-            placeholder={props.name}
-            value={nameInput}
-            onChange={handleChange}
-            onPressEnter={handleOk}
-            maxLength={15}
-            minLength={2}
-            autoFocus={true}
-
-
-          />
-        </Modal>
-    </div>
-    );
+      <div>
+          <Modal
+            visible={visible}
+            title="Save New Palette"
+            onOk={handleOk}
+            onCancel={onCancel}
+            footer={[
+              <Button key="back" onClick={handleCancel}>Cancel</Button>,
+              <Button key="submit" type="primary" onClick={handleOk}>Save</Button>
+            ]}
+          >
+            <Input 
+              placeholder={name}
+              value={nameInput}
+              onChange={handleChange}
+              onPressEnter={handleOk}
+              maxLength={15}
+              minLength={2}
+              autoFocus={true}
+            />
+          </Modal>
+      </div>
+    )
 }
 
 export default SaveModal;

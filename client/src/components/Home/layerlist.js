@@ -8,7 +8,7 @@ import Reorder, {
     reorderFromToImmutable
   } from 'react-reorder';
 
-import LayerBlock from '../LayerBlock';
+import LayerBlock from '../Layer';
 
 import './style.css';
 

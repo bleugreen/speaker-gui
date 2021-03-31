@@ -56,7 +56,7 @@ colorRoute.post('/new', (req,res) => {
             .sadd('palette:list', pid)
         .exec(
             function(err,replies){
-                res.send(pid);
+                res.send(pid.toString());
             }
         );
     });
@@ -75,6 +75,7 @@ colorRoute.get('/', (req,res) => {
             // create palette from replies (if not null)
             if(replies[0]){
                 const palette = {
+                    pid: req.query.pid,
                     name: replies[0].name,
                     locked: replies[0].locked,
                     lerp: replies[0].lerp,
@@ -223,7 +224,7 @@ colorRoute.post('/push', (req,res) => {
 colorRoute.delete('/pop', (req,res) => {
     console.log("POP: palette:"+req.query.pid);
     client.rpop("palette:"+req.query.pid+":colors", function(err, reply){
-        res.send(reply.toString);
+        res.send(reply.toString());
     });
 });
 
@@ -255,7 +256,37 @@ colorRoute.get('/list', (req,res) => {
     console.log("GET: palette list");
     client.smembers("palette:list", 
         function(err, reply){
-            res.send(reply);
+            const list = []
+            for (let i = 0; i < reply.length; i++) {
+                const pid = reply[i]
+                console.log("searching "+pid);
+                client.multi()
+                // get hash data
+                .hgetall("palette:"+pid)
+                // get color list
+                .lrange("palette:"+pid+":colors", 0, -1)
+                .exec(
+                    function(err, replies){
+                        if(replies[0]){
+                            const palette = {
+                                pid: pid,
+                                name: replies[0].name,
+                                locked: replies[0].locked,
+                                lerp: replies[0].lerp,
+                                colors: replies[1]
+                            };
+                            list.push(palette);
+                            if(i == reply.length-1){
+                                res.send(list);
+                            }
+                        }
+                        else{
+                            console.log("Palette "+pid+" does not exist");
+                        }
+                    }
+                );
+                
+            }
         }
     );
 });
