@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import {Row, Col, Typography, Divider, Modal, Input, Button, message } from 'antd';
 const { Title, Text } = Typography;
-import SwatchCircle from './swatch';
 
 import 'antd/dist/antd.css';
 
@@ -34,7 +33,7 @@ function SaveModal({name, visible, onSubmit, onCancel}) {
       <div>
           <Modal
             visible={visible}
-            title="Save New Palette"
+            title="Create Palette"
             onOk={handleOk}
             onCancel={onCancel}
             footer={[

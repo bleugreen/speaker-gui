@@ -8,13 +8,14 @@ import {
 import PalettePicker from './palettepicker';
 import PaletteListItem from './paletteListItem';
 import SaveModal from './savemodal';
-import LayerBlock from '../Layer';
+import Layer from '../Layer';
 
 const { Panel } = Collapse;
 const { Text } = Typography; 
 
 // setPid - called on palette change or palette create
-function ColorBlock({pid, active, setPid}){
+// notify - called when 
+function ColorBlock({pid, setPid, notify}){
     const [loading, setLoading] = useState(true);
     const [saveVisible, setSaveVisible] = useState(false);
     const [palette, setPalette] = useState({});
@@ -273,6 +274,7 @@ function ColorBlock({pid, active, setPid}){
             colors: tempcolors
         });
         updateColor(index,color);
+        notify(pid);
     };
 
 
@@ -297,6 +299,7 @@ function ColorBlock({pid, active, setPid}){
                     colors: [...palette.colors, palette.colors[0]],
                 });
                 updateSavedPalettes(pid);
+                notify(pid);
             })
             .catch(function (response) { console.log(response) });
         }
@@ -317,6 +320,7 @@ function ColorBlock({pid, active, setPid}){
             .then(function (response) {
                 setPalette({...palette, colors:palette.colors.slice(0,-1)});
                 updateSavedPalettes(pid);
+                notify(pid);
             })
             .catch(function (response) { console.log(response) });
         }
@@ -329,7 +333,6 @@ function ColorBlock({pid, active, setPid}){
     const populateDropdown = () => {
         const paletteItems = [];
         for (const [index, value] of savedPalettes.entries()) {
-            console.log(value.colors);
             paletteItems.push(
                 <Select.Option value={value.pid} key={index} >
                     <PaletteListItem name={value.name} colors={value.colors} />

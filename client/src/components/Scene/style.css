@@ -5,3 +5,7 @@ body {
 li {
     list-style: none;
 }
+
+.dragged {
+    opacity: 50%;
+}

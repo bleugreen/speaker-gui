@@ -5,8 +5,7 @@ import { Layout } from 'antd';
 import axios from 'axios';
 
 import './style.css';
-import LayerList from './layerlist'
-import Title from 'antd/lib/typography/Title';
+import Scene from '../Scene';
 const { Header, Content } = Layout;
 const { Panel } = Collapse;
 
@@ -80,14 +79,7 @@ function Home() {
         </Header>
         <Content theme="dark" className="site-layout" style={{ marginTop: 64 }}>
           <div className="site-layout-background" style={{ padding: 24, minHeight: 380 }}>
-          <div>
-          <Title>Layers</Title>
-          <LayerList id={0}/>
-          </div>
-          <div>
-          <Title>General</Title>
-          {/* GeneralBlock */}
-          </div>
+            <Scene sid="0" />
           </div>
         </Content>
       </Layout>

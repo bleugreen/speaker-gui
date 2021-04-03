@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import ColorBlock from '../Color';
-import LayerBlock from '../Layer';
-import LayerList from '../Home/layerlist';
 
 //import './style.css';
 
@@ -66,10 +64,7 @@ function Mode ({mid, active, setActive}) {
     //console.log(key);
   }
 
-  const activeClick = () => {
-    setActive(mid);
-    setActiveType("primary");
-  }
+ 
 
   const setPid = (pid) => {
       setPidState(pid);
@@ -118,11 +113,7 @@ function Mode ({mid, active, setActive}) {
                             header="Color"
                             key="1"
                         >
-                            <ColorBlock 
-                                pid={pid}
-                                active={active}
-                                setPid={setPid}
-                            />
+                            
                         </Panel>
                         <Panel
                             header="Pattern"
