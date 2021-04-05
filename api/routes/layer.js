@@ -98,8 +98,46 @@ layerRoute.post('/name', (req,res) => {
 // get type
 
 // get opacity
+layerRoute.get('/opacity', (req,res) => {
+    console.log("GET: opacity of "+req.query.lid);
+    client.hget("layer:"+req.query.lid, "opacity", 
+        function(err, reply){
+            res.send(reply);
+        }
+    );
+});
 
 // set opacity
+layerRoute.post('/opacity', (req,res) => {
+    console.log("SET: opacity of "+req.body.lid+" to "+req.body.opacity); 
+    client.hset("layer:"+req.body.lid, 
+        "opacity", req.body.opacity,
+        function(err, reply){
+            res.send(reply.toString());
+        }
+    );
+});
+
+// get position
+layerRoute.get('/pos', (req,res) => {
+    console.log("GET: pos of "+req.query.lid);
+    client.hget("layer:"+req.query.lid, "pos", 
+        function(err, reply){
+            res.send(reply);
+        }
+    );
+});
+
+// set position
+layerRoute.post('/pos', (req,res) => {
+    console.log("SET: pos of "+req.body.lid+" to "+req.body.pos); 
+    client.hset("layer:"+req.body.lid, 
+        "pos", req.body.pos,
+        function(err, reply){
+            res.send(reply.toString());
+        }
+    );
+});
 
 // get location
 
