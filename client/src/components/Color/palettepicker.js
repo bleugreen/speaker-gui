@@ -71,8 +71,6 @@ function PalettePicker({colors, locked, onChange, onComplete, addColor, removeCo
                             onClick={removeColor}
                         />
                     </Space>
-                    
-
                 </div>
             )
         }

@@ -1,8 +1,9 @@
-import { DashboardOutlined, DashboardTwoTone, InteractionFilled, PictureOutlined, PictureTwoTone, SettingOutlined, SettingTwoTone, SlidersOutlined, SlidersTwoTone } from '@ant-design/icons';
-import { Button, Col, Divider, Input, Row, Space, Spin, Typography } from 'antd';
+import { DashboardOutlined, DashboardTwoTone, DeleteOutlined, InteractionFilled, PictureOutlined, PictureTwoTone, SettingOutlined, SettingTwoTone, SlidersOutlined, SlidersTwoTone } from '@ant-design/icons';
+import { Button, Col, Divider, Input, Row, Space, Spin, Tooltip, Typography } from 'antd';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Switch } from 'antd';
+import ReactTooltip from 'react-tooltip';
 
 import Mode from '../Mode';
 
@@ -12,33 +13,29 @@ import './style.css';
 import ColorBlock from '../Color';
 import ColorPreview from './colorPreview';
 import LayerBody from './layerbody';
+import LayerListItem from './layerListItem';
+import Modal from 'antd/lib/modal/Modal';
 
 
-function Layer({sid, lid, expanded, onExpand, onDeleteLayer}){
-    const [name, setName] = useState(lid);
-    const [nameInput, setNameInput] = useState("");
-    const [type, setType] = useState("spectrum");
-    const [pid, setPid] = useState("0");
-    const [colors, setColors] = useState([]);
-    const [loading, setLoading] = useState(true);
+function Layer({sid, lid, onExpand, onDeleteLayer}){
     const [isExpanded, setIsExpanded] = useState(false);
     const [renaming, setRenaming] = useState(false);
     const [body, setBody] = useState("collapse-body-hide");
+    const [layer, setLayer] = useState({
+        sid:sid,
+        lid:lid,
+        name:"",
+        type:"",
+        pid:"0",
+        colors:[],
+        loading:true
+    })
 
     useEffect(() =>{
-        if(loading){
+        if(layer.loading){
             init();
         }
-        
-        if(lid == expanded){
-            setIsExpanded(true);
-            setBody("collapse-body");
-        }
-        else{
-            setIsExpanded(false);
-            setBody("collapse-body-hide");
-        }
-    }, [expanded]);
+    });
 
     const init = () =>{
         
@@ -46,11 +43,22 @@ function Layer({sid, lid, expanded, onExpand, onDeleteLayer}){
             params: { lid: lid }
         })
         .then( (response) => {
-            setName(response.data.name);
-            setPid(response.data.pid);
-            refreshColors(response.data.pid);
-            setType(response.data.type);
-            
+            const initLayer = {
+                sid:layer.sid,
+                lid:layer.lid,
+                name:response.data.name,
+                type:response.data.type,
+                pid:response.data.pid,
+                opacity:response.data.opacity,
+                pos:response.data.pos,
+                source:response.data.source,
+                colors:[],
+                loading:false
+            };
+            console.log(initLayer);
+            setLayer(initLayer);
+            getColors(response.data.pid);
+        
             setLoading(false);
         })
         .catch( (response) => {console.log(response)});
@@ -60,47 +68,35 @@ function Layer({sid, lid, expanded, onExpand, onDeleteLayer}){
     Expand
 - - - - - - - - - - - - - - - - */
     const handleExpand = () => {
-        if(isExpanded && !renaming){
-            onExpand(lid);
-            setBody("collapse-body-hide");
-            setIsExpanded(!isExpanded);
-        }
+        onExpand(layer.lid);
+        setIsExpanded(!isExpanded);
     };
 
-    const renderExpandButton = () => {
-        if(isExpanded){ return  <SettingTwoTone /> }
-        else{ return  <SettingOutlined/> }
-    };
 
-    const renderIcon = () => {
-        switch(type){
-            case "single":
-                return <DashboardTwoTone twoToneColor="green" />
-            case "spectrum":
-                return <SlidersTwoTone twoToneColor="red" />
-            case "ambient":
-                return <PictureTwoTone twoToneColor="blue"/>
-        }
-    };
-
-    const refreshColors = (pid) => {
+    const getColors = (pid) => {
         axios.get('/api/palette/colors', {
             params: {pid: pid}
         })
         .then((response) =>{
-            setColors(response.data);
+            setLayer((layer)=>({
+                ...layer,
+                colors:response.data
+            }));
         })
     }
 
-    const onPidChange = (pid) => {
+    const setPid = (pid) => {
         console.log("New Pid: "+pid);
-        setPid(pid);
-        refreshColors(pid);
+        setLayer({
+            ...layer,
+            pid:pid
+        });
+        getColors(pid);
         axios.request ({
             url: '/api/layer/pid',
             method: 'post',
             data: {
-                lid: lid,
+                lid: layer.lid,
                 pid: pid,
             }, 
         })
@@ -111,15 +107,17 @@ function Layer({sid, lid, expanded, onExpand, onDeleteLayer}){
     const onRename = () => {
         setRenaming(true);
     }
-    const onRenameComplete = (e) => {
-        console.log(e);
-        setName(nameInput);
+    const onRenameComplete = (name) => {
+        setLayer({
+            ...layer,
+            name:name
+        });
         axios.request ({
             url: '/api/layer/name',
             method: 'post',
             data: {
-                lid: lid,
-                name: nameInput,
+                lid: layer.lid,
+                name: name,
             }, 
         })
         .then((response) => {console.log(response)})
@@ -130,85 +128,97 @@ function Layer({sid, lid, expanded, onExpand, onDeleteLayer}){
     const onDelete = () => {
         axios.delete('/api/layer/', {
             data: {
-                lid:lid
+                lid:layer.lid
             }
         })
         .then((response) => {
             axios.delete('/api/scene/layer', {
                 data:{
-                    lid:lid,
-                    sid:sid
+                    lid:layer.lid,
+                    sid:layer.sid
                 }
             })
             .then((response) => {
-                onDeleteLayer(lid);
+                onDeleteLayer(layer.lid);
             })
         })
         .catch((response) =>{ console.log(response) });
     }
 
+    const setOpacity = (opacity) => {
+        setLayer({
+            ...layer,
+            opacity:opacity
+        });
 
-
-    const renderTitle = () =>{
-        if(renaming){
-            return<Input
-                placeholder={name}
-                maxLength={20}
-                value={nameInput}
-                defaultValue={name}
-                onChange={(e)=>{console.log(e);setNameInput(e.target.value)}}
-                onPressEnter={onRenameComplete}
-                autoFocus={true}
-            />
-        }
-        else{
-            return <Text style={{userSelect:"none"}}> {name}</Text>
-        }
+        axios.request ({
+            url: '/api/layer/opacity',
+            method: 'post',
+            data: {
+                lid: layer.lid,
+                opacity: opacity,
+            }, 
+        })
+        .then((response) => {console.log(response)})
+        .catch((response) =>{ console.log(response) });
     }
+
+    const setPos = (pos) => {
+        setLayer({
+            ...layer,
+            pos:pos
+        });
+
+        axios.request ({
+            url: '/api/layer/pos',
+            method: 'post',
+            data: {
+                lid: layer.lid,
+                pos: pos,
+            }, 
+        })
+        .then((response) => {console.log(response)})
+        .catch((response) =>{ console.log(response) });
+    }
+
 
     const titleStyle = { textAlign:"left" };
-    if(!loading){
-        return(
-            <div className="collapse">
-                <div className="collapse-head" onClick={handleExpand}>
-                    <Row>
-                        <Col span={6} style={titleStyle}>
-                        <Title level={3}>{renderTitle()}</Title>
-                        
-                        </Col>
-                        <Col span={6}>
-                            <ColorPreview colors={colors}/>
-                        </Col>
-                        <Col span={12}>
-                            {/* <Switch defaultChecked onChange={onSwitch}/> */}
-                            {renderIcon()}
-                            <Button type="text" size="large" style={{float:"right"}} onClick={() => {onExpand(lid)}}>
-                                {renderExpandButton()}
-                            </Button>
-                        </Col>
-                    </Row>
-                </div>
-                <div className={body}>
-                    <LayerBody setPosition={(pos)=>{console.log(pos)}} setOpacity={(opacity)=>{console.log(opacity)}}/>
-                    <Divider/>
-                    <ColorBlock 
-                        pid={pid}
-                        setPid={onPidChange}
-                        notify={refreshColors}
-                    />
-                    <Divider/>
-                    <Space size="large">
-                        <Button size="large" onClick={onRename}>Rename</Button>
-                        <Button size="large" onClick={onDelete}>Delete Layer</Button>
-                    </Space>
-                    
-                </div>
+    const setters = {
+        pos: setPos,
+        opacity: setOpacity,
+        pid: setPid
+    };
 
-            </div>
-        )
-    }
-    else{
+    if(layer.loading){
         return <Spin/>
     }
+    return(
+        <div className="collapse">
+            <ReactTooltip/>
+            <div className="collapse-head">   
+                {/* listitem title type colors onExpand onRename */}
+                <LayerListItem 
+                    layer={layer} 
+                    onExpand={handleExpand} 
+                    onRename={onRenameComplete} 
+                    renaming={renaming}
+                />
+            </div>
+                <Modal
+                    centered
+                    visible={isExpanded}  
+                    onOk={handleExpand}
+                    onCancel={handleExpand}
+                    width={1000}  
+                    footer={[
+                        <Tooltip title="Delete Layer" placement="left"><Button onClick={onDelete}><DeleteOutlined/></Button></Tooltip>
+                    ]}
+                >
+                    <LayerBody layer={layer} setters={setters} />
+                </Modal>
+        </div>
+    )
+    
+
 }
 export default Layer;

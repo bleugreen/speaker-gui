@@ -42,42 +42,7 @@ function Scene({sid, name, active}) {
     .catch( (response) => {console.log(response)});
   }
 
-  // const callback = key => {
-  //   console.log(key);
-  // }
-
-  // const handleActive = (id) => {
-  //   if(id !== active){
-  //     console.log("active = "+id);
-  //     setActive(id);
-  //     axios.request({
-  //       url: '/api/active',
-  //       method: 'post',
-  //       data: {
-  //           id: id  
-  //       }, 
-  //     })
-  //     .then(function (response) {
-  //       //handle success
-  //       console.log(response);
-  //     })
-  //     .catch(function (response) {
-  //       //handle error
-  //       console.log(response);
-  //     });
-  //   }
-  // }
-
-  // const getActive = () => {
-  //   axios.get('/api/active', {})
-  //   .then(function (response) {
-  //       setActive(response.data);
-  //       console.log("ActiveMode: "+response.data);
-  //   }).catch(function (response) {
-  //     //handle error
-  //     console.log(response);
-  //   });
-  // }
+  
 
   const onNotify = (msg) => {
     if(sid == active){
@@ -91,8 +56,6 @@ function Scene({sid, name, active}) {
 
   const onCreateLayer = (name, type) => {
     const index = layers.length;
-
-    
     //create layer
     axios.request ({
       url: '/api/layer/new',
@@ -114,9 +77,7 @@ function Scene({sid, name, active}) {
           lid: response.data
         }
       })
-      .then(function (response) {
-      
-      })
+      .then(function (response) {})
       .catch(function (response) { console.log(response) });
     })
     .catch(function (response) { console.log(response) });

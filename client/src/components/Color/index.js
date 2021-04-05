@@ -1,14 +1,15 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { message, Row, Col, Spin, Collapse, Typography, Space, Select, Button, Divider } from 'antd';
+import { message, Row, Col, Spin, Collapse, Typography, Space, Select, Button, Divider, Tooltip } from 'antd';
 import {
-    SaveOutlined, FileAddOutlined, DeleteOutlined, LockOutlined, LockTwoTone, LockFilled, BarChartOutlined, LineChartOutlined
+    SaveOutlined, FileAddOutlined, DeleteOutlined, LockOutlined, LockTwoTone, LockFilled, BarChartOutlined, LineChartOutlined, UnlockOutlined
   } from '@ant-design/icons';
 
 import PalettePicker from './palettepicker';
 import PaletteListItem from './paletteListItem';
 import SaveModal from './savemodal';
 import Layer from '../Layer';
+import ReactTooltip from 'react-tooltip';
 
 const { Panel } = Collapse;
 const { Text } = Typography; 
@@ -274,7 +275,7 @@ function ColorBlock({pid, setPid, notify}){
             colors: tempcolors
         });
         updateColor(index,color);
-        notify(pid);
+        // notify(pid);
     };
 
 
@@ -299,7 +300,7 @@ function ColorBlock({pid, setPid, notify}){
                     colors: [...palette.colors, palette.colors[0]],
                 });
                 updateSavedPalettes(pid);
-                notify(pid);
+                // notify(pid);
             })
             .catch(function (response) { console.log(response) });
         }
@@ -320,7 +321,7 @@ function ColorBlock({pid, setPid, notify}){
             .then(function (response) {
                 setPalette({...palette, colors:palette.colors.slice(0,-1)});
                 updateSavedPalettes(pid);
-                notify(pid);
+                // notify(pid);
             })
             .catch(function (response) { console.log(response) });
         }
@@ -355,19 +356,43 @@ function ColorBlock({pid, setPid, notify}){
 
     const renderLock = () => {
         if(palette.locked){
-            return  <Space><LockTwoTone twoToneColor="red" /><Text>Locked</Text></Space>
+            return  (
+                <Tooltip title="Locked">
+                    <Button type="default" onClick={onLock} >
+                        <LockTwoTone twoToneColor="red" />
+                    </Button>
+                </Tooltip>
+            )
         }
         else{
-            return  <Space><LockOutlined /><Text>Unlocked</Text></Space>
+            return  (
+                <Tooltip title="Unlocked">
+                    <Button type="default" onClick={onLock} >
+                        <UnlockOutlined/>
+                    </Button>
+                </Tooltip>
+            )
         }
     }
 
     const renderLerp = () => {
         if(palette.lerp){
-            return  <Space><LineChartOutlined/><Text>Interpolate</Text></Space>
+            return  (
+                <Tooltip title="Interpolate">
+                    <Button type="default" onClick={onLerp} >
+                        <LineChartOutlined/>
+                    </Button>
+                </Tooltip>
+            )
         }
         else{
-            return <Space><BarChartOutlined /><Text>Discrete</Text></Space>
+            return (
+                <Tooltip title="Discrete">
+                    <Button type="default" onClick={onLerp} >
+                        <BarChartOutlined/>
+                    </Button>
+                </Tooltip>
+            )
         }
     }
 
@@ -375,26 +400,27 @@ function ColorBlock({pid, setPid, notify}){
         if(!loading){
             return(
                 <Space direction='vertical' style={rowStyle}>
+                    <ReactTooltip/>
                     <Row style={rowStyle}>
                         <Col span={24} >
                             <Space wrap={true} align="center">
                                 {populateDropdown()}
                                 <Space wrap={false} align="center">
-                                    <Button type="default" onClick={onSaveAs} >
-                                        <FileAddOutlined style={{verticalAlign:'baseline'}}/>
-                                    </Button>
-                                    <Button type="default" onClick={onDelete} >
-                                        <DeleteOutlined style={{verticalAlign:'baseline'}}/> 
-                                    </Button>
+                                    <Tooltip title="Create Palette" >
+                                        <Button type="default" onClick={onSaveAs} >
+                                            <FileAddOutlined  style={{verticalAlign:'baseline'}}/>
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip title="Delete Palette" >
+                                        <Button type="default" onClick={onDelete} >
+                                            <DeleteOutlined style={{verticalAlign:'baseline'}}/> 
+                                        </Button>
+                                    </Tooltip>
                                 </Space>
                                 <Divider type="vertical"/>
                                 <Space wrap={false}>
-                                    <Button type="default" onClick={onLock} >
-                                        {renderLock()}
-                                    </Button>
-                                    <Button type="default" onClick={onLerp} >
-                                        {renderLerp()}
-                                    </Button>
+                                    {renderLock()}
+                                    {renderLerp()}
                                 </Space>
                             </Space>
                         </Col>
