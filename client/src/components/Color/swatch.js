@@ -61,7 +61,8 @@ class SwatchCircle extends React.Component {
           onOk={this.handleClose}
           onCancel={this.handleClose}
           closable={false}
-          width={'60%'}
+          width={'80%'}
+          
         >
           <div className="picker">
           <SketchPicker   
@@ -72,6 +73,7 @@ class SwatchCircle extends React.Component {
             disableAlpha={true}
             presetColors={[]}
             width={'100%'}
+            style={{boxShadow:0, padding:0}}
           />
           </div>
         </Modal>

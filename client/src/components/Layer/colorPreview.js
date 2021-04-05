@@ -8,8 +8,8 @@ const ColorPreview = ({colors}) => {
     });
 
     return(
-        <Space>
-            {colorRow}
+        <Space style={{verticalAlign:"middle"}}>
+            {colorRow.slice(0,3)}
         </Space>
     )
 }

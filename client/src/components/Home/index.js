@@ -67,12 +67,18 @@ function Home() {
     }
   }
 
+  const meta = {
+    viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  };
   return (
       <Layout>
         <Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
           <Menu theme="dark" mode="horizontal">
             <Menu.Item>
               Cymatism
+            </Menu.Item>
+            <Menu.Item>
+              Shutdown
             </Menu.Item>
 
           </Menu>
