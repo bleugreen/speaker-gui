@@ -16,15 +16,24 @@ function PaletteListItem({name, colors}) {
 
     return (
         <div>
-            <Row gutter={[16, 24]}>
+            <Row gutter={[16, 24] } justify="space-between">
                 <Col span={8}>
-                    <Text style={{textAlign:'left', display:'block'}}>{name}</Text>
+                    <Text 
+                        style={{textAlign:'left', display:'block'}}
+                        data-testid="name"
+                    >
+                        {name}
+                    </Text>
                 </Col>
                 <Col className="gutter-row" span={1}>
                     <Divider type="vertical"/>
                 </Col>
                 <Col className="gutter-row" span={10}>
-                    <Space size='small' style={{margin:'auto',width:'100%'}}>
+                    <Space 
+                        size='small' 
+                        style={{margin:'auto',width:'100%'}}
+                        data-testid="colors"
+                    >
                         {dots}
                     </Space>
                 </Col>

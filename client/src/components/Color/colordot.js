@@ -12,8 +12,7 @@ function ColorDot({color}) {
     }
 
     return (
-        
-        <div style={style} />
+        <div style={style} data-testid="dot" />
     );
 }
 
