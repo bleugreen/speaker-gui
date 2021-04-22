@@ -7,7 +7,7 @@ var client = require('../client.js');
 /* - - - - - - - - - - - - - - - - 
     Object ops
 - - - - - - - - - - - - - - - - */
-// create new
+// create
 layerRoute.post('/new', (req,res) => {
     // get new pid
     client.incr('layer:idgen', function(err, reply){
@@ -17,14 +17,15 @@ layerRoute.post('/new', (req,res) => {
             "name", req.body.name, 
             "type", req.body.type,
             "opacity", 100,
-            "location", "full",
+            "pos", "left",
+            "layout", "both",
             "pid", 0
         ];
         switch(req.body.type){
             case "single":
                 newLayer.push(
-                    "source", "rms"
-
+                    "source", "rms",
+                    "pattern", "hit"
                 );
                 break;
             case "spectrum":
@@ -84,7 +85,7 @@ layerRoute.get('/name', (req,res) => {
     );
 });
 
-// set pid
+// set name
 layerRoute.post('/name', (req,res) => {
     console.log("SET: name of "+req.body.lid+" to "+req.body.name); 
     client.hset("layer:"+req.body.lid, 
@@ -96,6 +97,14 @@ layerRoute.post('/name', (req,res) => {
 });
 
 // get type
+layerRoute.get('/type', (req,res) => {
+    console.log("GET: type of "+req.query.lid);
+    client.hget("layer:"+req.query.lid, "type", 
+        function(err, reply){
+            res.send(reply);
+        }
+    );
+});
 
 // get opacity
 layerRoute.get('/opacity', (req,res) => {
@@ -116,6 +125,8 @@ layerRoute.post('/opacity', (req,res) => {
             res.send(reply.toString());
         }
     );
+    message = "update:"+req.body.lid+":opacity:"+req.body.opacity;
+    client.publish("active", message);
 });
 
 // get position
@@ -139,10 +150,6 @@ layerRoute.post('/pos', (req,res) => {
     );
 });
 
-// get location
-
-// set location
-
 // get pid
 layerRoute.get('/pid', (req,res) => {
     console.log("GET: pid of "+req.query.lid);
@@ -162,11 +169,42 @@ layerRoute.post('/pid', (req,res) => {
             res.send(reply.toString());
         }
     );
+    message = "update:"+req.body.lid+":pid:"+req.body.pid;
+    client.publish("active", message);
+});
+
+// get layout
+layerRoute.get('/layout', (req,res) => {
+    console.log("GET: layout of "+req.query.lid);
+    client.hget("layer:"+req.query.lid, "layout", 
+        function(err, reply){
+            res.send(reply);
+        }
+    );
+});
+
+// set pid
+layerRoute.post('/layout', (req,res) => {
+    console.log("SET: layout of "+req.body.lid+" to "+req.body.layout); 
+    client.hset("layer:"+req.body.lid, 
+        "layout", req.body.layout,
+        function(err, reply){
+            res.send(reply.toString());
+        }
+    );
 });
 
 /* - - - - - - - - - - - - - - - - 
     Global ops
 - - - - - - - - - - - - - - - - */
 
+//notify
+layerRoute.post('/notify', (req,res) => {
+    console.log("MSG: lid:"+req.body.lid+" and "+req.body.field+": "+req.body.value); 
+    message = "update:"+req.body.lid+":"+req.body.field+":"+req.body.value;
+    client.publish("active", message);
+    res.send('sent');
+    
+});
 
 module.exports = layerRoute;

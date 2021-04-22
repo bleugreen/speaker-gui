@@ -4,7 +4,7 @@ import ColorDot from "../Color/colordot"
 const ColorPreview = ({colors}) => {
     let colorRow = []
     colors.map(c => {
-        colorRow.push(<ColorDot color={c}/> )
+        colorRow.push(<ColorDot color={c} key={c}/> )
     });
 
     return(

@@ -46,22 +46,28 @@ function NewLayerModal({visible, onSubmit, onCancel}) {
               <Button key="submit" type="primary" onClick={handleOk}>Save</Button>
             ]}
           >
-            <Space direction="vertical">
-            <Input 
-              placeholder={nameInput}
-              allowClear={true}
-              onChange={handleChange}
-              onPressEnter={handleOk}
-              maxLength={15}
-              minLength={2}
-              autoFocus={true}
-            />
-            <Radio.Group value={typeInput} onChange={handleTypeChange}>
-                <Radio.Button value="single"><DashboardTwoTone twoToneColor="green" />  Single</Radio.Button>
-                <Radio.Button value="spectrum"><SlidersTwoTone twoToneColor="red" />  Spectrum</Radio.Button>
-                <Radio.Button value="ambient"><PictureTwoTone twoToneColor="blue"/>  Ambient</Radio.Button>
-            </Radio.Group>
-            </Space>
+              <Row align="middle" justify="space-around">
+                <Space direction="vertical">
+                <Col span={24}>
+                  <Input 
+                    placeholder={nameInput}
+                    allowClear={true}
+                    onChange={handleChange}
+                    onPressEnter={handleOk}
+                    maxLength={15}
+                    minLength={2}
+                    autoFocus={true}
+                  />
+                </Col>
+                <Col span={24}>
+                  <Radio.Group value={typeInput} onChange={handleTypeChange} style={{width:"100%"}}>
+                      <Radio.Button value="single"><DashboardTwoTone twoToneColor="green" />  Single</Radio.Button>
+                      <Radio.Button value="spectrum"><SlidersTwoTone twoToneColor="red" />  Spectrum</Radio.Button>
+                      <Radio.Button value="ambient"><PictureTwoTone twoToneColor="blue"/>  Ambient</Radio.Button>
+                  </Radio.Group>
+                </Col>
+                </Space>
+              </Row>
           </Modal>
       </div>
     )

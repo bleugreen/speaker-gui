@@ -8,6 +8,8 @@ import './index.css';
 
 import registerServiceWorker from './registerServiceWorker';
 
+import './fonts/recoleta-bold.otf'
+
 ReactDOM.render(
   <BrowserRouter>
     <App />

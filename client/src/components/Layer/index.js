@@ -27,6 +27,7 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
         name:"",
         type:"",
         pid:"0",
+        layout:"both",
         colors:[],
         loading:true
     })
@@ -50,7 +51,8 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
                 type:response.data.type,
                 pid:response.data.pid,
                 opacity:response.data.opacity,
-                pos:response.data.pos,
+                pos:response.data.pos.toString().split(","),
+                layout:response.data.layout,
                 source:response.data.source,
                 colors:[],
                 loading:false
@@ -58,8 +60,6 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
             console.log(initLayer);
             setLayer(initLayer);
             getColors(response.data.pid);
-        
-            setLoading(false);
         })
         .catch( (response) => {console.log(response)});
     }
@@ -83,6 +83,20 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
                 colors:response.data
             }));
         })
+    }
+
+    const notify = (field, value) => {
+        axios.request ({
+            url: '/api/layer/notify',
+            method: 'post',
+            data: {
+                lid: layer.lid,
+                field: field,
+                value: value
+            }, 
+        })
+        .then((response) => {console.log(response)})
+        .catch((response) =>{ console.log(response) });
     }
 
     const setPid = (pid) => {
@@ -126,31 +140,19 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
     }
 
     const onDelete = () => {
-        axios.delete('/api/layer/', {
-            data: {
-                lid:layer.lid
-            }
-        })
+        axios.delete('/api/layer/', { data: { lid:layer.lid }})
         .then((response) => {
             axios.delete('/api/scene/layer', {
-                data:{
-                    lid:layer.lid,
-                    sid:layer.sid
-                }
+                data:{ lid:layer.lid, sid:layer.sid }
             })
-            .then((response) => {
-                onDeleteLayer(layer.lid);
-            })
+            .then((response) => { onDeleteLayer(layer.lid)})
+            .catch((response) =>{ console.log(response) });
         })
         .catch((response) =>{ console.log(response) });
     }
 
     const setOpacity = (opacity) => {
-        setLayer({
-            ...layer,
-            opacity:opacity
-        });
-
+        setLayer({...layer, opacity:opacity});
         axios.request ({
             url: '/api/layer/opacity',
             method: 'post',
@@ -164,17 +166,28 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
     }
 
     const setPos = (pos) => {
-        setLayer({
-            ...layer,
-            pos:pos
-        });
-
+        setLayer({...layer, pos:pos});
         axios.request ({
             url: '/api/layer/pos',
             method: 'post',
             data: {
                 lid: layer.lid,
-                pos: pos,
+                pos: pos.toString(),
+            }, 
+        })
+        .then((response) => {console.log(response)})
+        .catch((response) =>{ console.log(response) });
+    }
+
+    const setLayout = (layout) => {
+    
+        setLayer({...layer, layout:layout});
+        axios.request ({
+            url: '/api/layer/layout',
+            method: 'post',
+            data: {
+                lid: layer.lid,
+                layout: layout,
             }, 
         })
         .then((response) => {console.log(response)})
@@ -186,7 +199,10 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
     const setters = {
         pos: setPos,
         opacity: setOpacity,
-        pid: setPid
+        pid: setPid,
+        pos: setPos,
+        layout: setLayout
+        
     };
 
     if(layer.loading){
@@ -214,7 +230,7 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
                         <Tooltip title="Delete Layer" placement="left"><Button onClick={onDelete}><DeleteOutlined/></Button></Tooltip>
                     ]}
                 >
-                    <LayerBody layer={layer} setters={setters} />
+                    <LayerBody layer={layer} setters={setters} notify={notify}/>
                 </Modal>
         </div>
     )

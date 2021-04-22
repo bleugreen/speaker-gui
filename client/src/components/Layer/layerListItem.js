@@ -53,7 +53,7 @@ function LayerListItem({layer, onExpand, onRename}) {
     return(
         <Row justify="space-between">
             <Col span={12} style={{ textAlign:"left", verticalAlign:"middle" }}>
-                <Title level={3}>{renderTitle()}</Title>
+                <Title level={4}>{renderTitle()}</Title>
             </Col>
             <Col span={6} style={{ verticalAlign:"bottom" }}>
                 <ColorPreview colors={layer.colors}/>

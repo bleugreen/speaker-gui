@@ -11,15 +11,19 @@ import NewLayerModal from './newlayermodal';
 const { Header, Content } = Layout;
 const { Panel } = Collapse;
 import Reorder, {
-  reorder,
-  reorderImmutable,
-  reorderFromTo,
-  reorderFromToImmutable
+  reorder
 } from 'react-reorder';
+import { PlusCircleOutlined, PlusSquareFilled, PlusSquareOutlined } from '@ant-design/icons';
+import Text from 'antd/lib/typography/Text';
 
-function Scene({sid, name, active}) {
+function Scene({sid, active}) {
   const [loading, setLoading] = useState(true);
   const [layers, setLayers] = useState([]);
+  const [sceneParams, setScene] = useState({
+    name: 'Default',
+    desc: "Initial scene for testing",
+    tags: 'Test,Util,Ambient'
+  });
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
@@ -31,6 +35,15 @@ function Scene({sid, name, active}) {
   const init = () => {
    // get layers
    setLoading(false); 
+    axios.get('/api/scene', {
+    params: { sid: sid }
+    })
+    .then( (response) => {
+    console.log(response.data);
+    //setScene(response.data);
+
+    })
+    .catch( (response) => {console.log(response)});
    axios.get('/api/scene/layers', {
       params: { sid: sid }
     })
@@ -89,27 +102,60 @@ function Scene({sid, name, active}) {
 
   const onReorder = (event, previousIndex, nextIndex) =>{
     setLayers( reorder(layers, previousIndex, nextIndex) );
-};
+    axios.request ({
+      url: '/api/scene/reorder',
+      method: 'post',
+      data: {
+        sid: sid,
+        layers: reorder(layers, previousIndex, nextIndex)
+      }
+    })
+    .then(function (response) {console.log(response)})
+    .catch(function (response) { console.log(response) });
+  };
 
   return (
-    <div>
+    <div style={{width:"80%", margin:'auto'}}>
+      <Row>
+        <Col sm={6} xs={24}> 
+          <Title>{sceneParams.name}</Title>
+        </Col>
+        <Col sm={12} xs={24}>
+          <Text>{sceneParams.desc}</Text>
+        </Col>
+      </Row>
       <div>
-        {/* <Title>General</Title> */}
-        {/* GeneralBlock */}
-      </div>
-      <div>
-        <Title>Layers</Title>
-        <LayerList 
-          sid={sid} 
-          layers={layers} 
-          notify={onNotify}
-          onDeleteLayer={onDeleteLayer}
-          setLayers={onReorder}
-        />
         <Divider/>
-        <Button type="default" size="large" onClick={onNewLayerClick}>New Layer</Button>
+        <Row justify="start" align="top">
+          <Col sm={9} xs={8}>
+            <Title level={2}>Layers</Title>
+            
+          </Col>
+          <Col sm={{span:1, offset:9}} xs={{span:1, offset:12}}>
+          <Button type="ghost" onClick={onNewLayerClick}>New</Button>
+          </Col>
+        </Row>
+        
+        
+        <Row justify="start">
+          <Col sm={24} xs={24}>
+            <LayerList 
+              sid={sid} 
+              layers={layers} 
+              notify={onNotify}
+              onDeleteLayer={onDeleteLayer}
+              setLayers={onReorder}
+            />
+            <Divider/>
+            
+          </Col>
+        </Row>
+        
+        
+        
       </div>
       <div>
+      
         {/* <Title>Star</Title> */}
         {/* Star Block */}
       </div>

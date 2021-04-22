@@ -44,4 +44,5 @@ it("renders name and colors", () => {
     });
     const colorRow2 = document.querySelector("[data-testid=colors]");
     expect(colorRow2).toBe(null);
+    
 });

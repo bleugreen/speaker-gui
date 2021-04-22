@@ -113,7 +113,7 @@ sceneRoute.delete('/layer', (req,res) => {
 });
 
 // reorder layers
-sceneRoute.post('/layers', (req,res) => {
+sceneRoute.post('/reorder', (req,res) => {
     const sid = req.body.sid;
     const list = req.body.layers;
     const multi = client.multi();
@@ -158,66 +158,5 @@ sceneRoute.post('/active', (req,res)=> {
         res.sendStatus(reply);
     });
 });
-
-// get scene
-// returns:
-//  name (string)
-//  layers (name of list)
-sceneRoute.get('/', (req,res) => {
-    console.log("GET: "+req.query.id);
-    client.hgetall("scene:"+req.query.id, function(err, reply){
-        //console.log(reply)
-        res.send(reply);
-    });
-});
-
-// create scene
-sceneRoute.post('/new', (req,res) => {
-    // get unique id
-    client.incr('scene:idgen', function(err, reply){
-        let sid = reply;
-        console.log("SCENE IDGEN: "+reply);
-        client.rpush("scene:"+sid, 
-        req.body.name,
-        function(err, reply){
-            client.sadd('scene:list', sid, function(err, reply){
-                //console.log(reply);
-            });
-        });
-        res.send(sid.toString());
-    });
-});
-
-// delete scene
-sceneRoute.get('/del', (req,res) => {
-    // get layer list
-    // delete each layer
-    // clear layer list
-    // hdel name, ...
-
-
-
-    console.log("DELETE: scene:"+req.query.sid);
-    client.ltrim("palette:"+req.query.pid, -1, 0, function(err, reply){
-        //console.log(reply);
-        client.srem('palette:list', req.query.pid, function(err, reply){
-        //console.log(reply);
-        res.send('deleted');
-        });
-    });
-});
-
-// get layers
-//  returns:
-//      [ all layer ids ] 
-sceneRoute.get('/layers', (req,res) => {
-    console.log("GET: "+req.query.id);
-    client.lrange("scene:"+req.query.id+":layers", 0, -1, function(err, reply){
-        //console.log(reply)
-        res.send(reply);
-    });
-});
-
-
 
 module.exports = sceneRoute;

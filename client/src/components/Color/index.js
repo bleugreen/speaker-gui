@@ -150,7 +150,7 @@ function ColorBlock({pid, setPid, notify}){
                 lerp: lerp,
             }, 
         })
-        .then((response) => {console.log(response)})
+        .then((response) => {console.log(response); notify('pid', pid)})
         .catch((response) =>{ console.log(response) });
     }
 
@@ -176,6 +176,7 @@ function ColorBlock({pid, setPid, notify}){
             .then(function (response) {
                 console.log("save: "+response.data);
                 updateSavedPalettes(pid);
+                notify('pid', pid)
             })
             .catch(response => {console.log(response)});
         }
