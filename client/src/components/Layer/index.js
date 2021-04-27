@@ -29,7 +29,8 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
         pid:"0",
         layout:"both",
         colors:[],
-        loading:true
+        loading:true,
+        visible:true
     })
 
     useEffect(() =>{
@@ -45,15 +46,11 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
         })
         .then( (response) => {
             const initLayer = {
+                ...response.data,
                 sid:layer.sid,
                 lid:layer.lid,
-                name:response.data.name,
-                type:response.data.type,
-                pid:response.data.pid,
-                opacity:response.data.opacity,
                 pos:response.data.pos.toString().split(","),
-                layout:response.data.layout,
-                source:response.data.source,
+                visible: (response.data.visible=='true'),
                 colors:[],
                 loading:false
             };
@@ -179,15 +176,16 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
         .catch((response) =>{ console.log(response) });
     }
 
-    const setLayout = (layout) => {
-    
-        setLayer({...layer, layout:layout});
+    const setVisible = () => {
+        const newVis = !layer.visible;
+        setLayer((layer)=>({...layer, visible:newVis}));
         axios.request ({
-            url: '/api/layer/layout',
+            url: '/api/layer/field',
             method: 'post',
             data: {
                 lid: layer.lid,
-                layout: layout,
+                field: 'visible',
+                value: newVis
             }, 
         })
         .then((response) => {console.log(response)})
@@ -195,19 +193,35 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
     }
 
 
-    const titleStyle = { textAlign:"left" };
+
+    const setField = (field, value) => {
+        setLayer((layer)=>({...layer,[field]:value}));
+        axios.request ({
+            url: '/api/layer/field',
+            method: 'post',
+            data: {
+                lid: layer.lid,
+                field: field,
+                value: value
+            }, 
+        })
+        .then((response) => {console.log(response)})
+        .catch((response) =>{ console.log(response) });
+    }
     const setters = {
         pos: setPos,
         opacity: setOpacity,
         pid: setPid,
         pos: setPos,
-        layout: setLayout
-        
+        layout: (e)=>{setField('layout', e.target.value)},
+        pattern: (pat)=>{setField('pattern', pat)},
+        direction: (e)=>{setField('direction', e.target.value)},
+        tile: (t)=>{setField('tile', t)}  
     };
 
-    if(layer.loading){
-        return <Spin/>
-    }
+
+    const titleStyle = { textAlign:"left" };
+    if(layer.loading) return <Spin/>
     return(
         <div className="collapse">
             <ReactTooltip/>
@@ -218,6 +232,7 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
                     onExpand={handleExpand} 
                     onRename={onRenameComplete} 
                     renaming={renaming}
+                    setVisible={setVisible}
                 />
             </div>
                 <Modal

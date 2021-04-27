@@ -118,7 +118,9 @@ sceneRoute.post('/reorder', (req,res) => {
     const list = req.body.layers;
     const multi = client.multi();
     for (const [index, value] of list.entries()) {
-       multi.zadd("scene:"+sid+":layers", index, value)
+       multi.zadd("scene:"+sid+":layers", index, value);
+       multi.hset("layer:"+value, "index", index);
+       multi.publish("active", "update:"+value+":index:"+index);
     }
     multi.exec(function(err, replies) {
         res.send(replies);

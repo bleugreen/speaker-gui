@@ -223,7 +223,13 @@ colorRoute.post('/push', (req,res) => {
 colorRoute.delete('/pop', (req,res) => {
     console.log("POP: palette:"+req.query.pid);
     client.rpop("palette:"+req.query.pid+":colors", function(err, reply){
-        res.send(reply.toString());
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.send(reply.toString());
+        }
+        
     });
 });
 

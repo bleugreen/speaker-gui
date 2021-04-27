@@ -13,10 +13,10 @@ const { Panel } = Collapse;
 import Reorder, {
   reorder
 } from 'react-reorder';
-import { PlusCircleOutlined, PlusSquareFilled, PlusSquareOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, PlusSquareFilled, PlusSquareOutlined, RollbackOutlined } from '@ant-design/icons';
 import Text from 'antd/lib/typography/Text';
 
-function Scene({sid, active}) {
+function Scene({sid, active, back}) {
   const [loading, setLoading] = useState(true);
   const [layers, setLayers] = useState([]);
   const [sceneParams, setScene] = useState({
@@ -115,13 +115,23 @@ function Scene({sid, active}) {
   };
 
   return (
+    <div>
+      <Button
+        style={{position:'fixed', top:80, left:10}}
+        type='ghost'
+        onClick={back}
+      >
+        <RollbackOutlined/>
+      </Button>
     <div style={{width:"80%", margin:'auto'}}>
+      
       <Row>
-        <Col sm={6} xs={24}> 
+        <Col sm={12} xs={24}> 
           <Title>{sceneParams.name}</Title>
+          <Text>{sceneParams.desc}</Text>
         </Col>
         <Col sm={12} xs={24}>
-          <Text>{sceneParams.desc}</Text>
+          
         </Col>
       </Row>
       <div>
@@ -160,6 +170,7 @@ function Scene({sid, active}) {
         {/* Star Block */}
       </div>
       <NewLayerModal visible={modalVisible} onSubmit={onCreateLayer} onCancel={onNewLayerCancel} />
+    </div>
     </div>
   ) 
 }

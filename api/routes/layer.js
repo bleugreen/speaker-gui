@@ -75,6 +75,31 @@ layerRoute.delete('/', (req,res) => {
 /* - - - - - - - - - - - - - - - - 
     Field ops
 - - - - - - - - - - - - - - - - */
+// get (field)
+layerRoute.get('/field', (req,res) => {
+    console.log("GET: "+req.query.field+" of "+req.query.lid);
+    client.hget("layer:"+req.query.lid, req.query.field, 
+        function(err, reply){
+            res.send(reply);
+        }
+    );
+});
+
+// set field
+layerRoute.post('/field', (req,res) => {
+    console.log("SET: "+req.body.field+" of "+req.body.lid+" to "+req.body.value); 
+    client.hset("layer:"+req.body.lid, 
+        req.body.field, req.body.value,
+        function(err, reply){
+            message = "update:"+req.body.lid+":"+req.body.field+":"+req.body.value;
+            client.publish("active", message);
+            res.send(reply.toString());
+        }
+    );
+});
+
+
+
 // get name
 layerRoute.get('/name', (req,res) => {
     console.log("GET: name of "+req.query.lid);
@@ -145,6 +170,8 @@ layerRoute.post('/pos', (req,res) => {
     client.hset("layer:"+req.body.lid, 
         "pos", req.body.pos,
         function(err, reply){
+            message = "update:"+req.body.lid+":pos:"+req.body.pos;
+            client.publish("active", message);
             res.send(reply.toString());
         }
     );
@@ -183,12 +210,14 @@ layerRoute.get('/layout', (req,res) => {
     );
 });
 
-// set pid
+// set layout
 layerRoute.post('/layout', (req,res) => {
     console.log("SET: layout of "+req.body.lid+" to "+req.body.layout); 
     client.hset("layer:"+req.body.lid, 
         "layout", req.body.layout,
         function(err, reply){
+            message = "update:"+req.body.lid+":layout:"+req.body.layout;
+            client.publish("active", message);
             res.send(reply.toString());
         }
     );

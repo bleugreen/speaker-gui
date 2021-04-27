@@ -1,5 +1,6 @@
 
-import { Col, Divider, Row, Select, Slider, Space, Spin } from 'antd';
+import { ArrowUpOutlined, SyncOutlined } from '@ant-design/icons';
+import { Col, Divider, Radio, Row, Select, Slider, Space, Spin } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import Title from 'antd/lib/typography/Title';
 import { useEffect, useState } from 'react';
@@ -16,53 +17,111 @@ function LayerBody({layer, notify, setters}) {
       }
 
     const opacity = (
-        <Space align="center" style={{width:"100%"}}>
-            <Text >Opacity</Text>
-            <Slider 
-                tipFormatter={formatter} 
-                min={0} 
-                max={100}
-                defaultValue={layer.opacity} 
-                onAfterChange={setters.opacity}
-                style={{width:180}} />
-        </Space>
+        <Row align='middle'>
+            <Col sm={4} xs={9}>
+                <Text >Opacity</Text>
+            </Col>
+            <Col sm={9}>
+                <Slider 
+                    tipFormatter={formatter} 
+                    min={0} 
+                    max={100}
+                    defaultValue={layer.opacity} 
+                    onAfterChange={setters.opacity}
+                    style={{width:180}} />
+            </Col>
+        </Row>
     );
 
     const layout = () => {
-        if(layer.layout == "both"){
+        if(layer.layout == 'left,right'){
             return(
-                <Space align="center" style={{width:"100%"}}>
-                    <Text >Speakers</Text>                        
-                    <Select
-                        placeholder="Please select"
+                <Row align="middle" gutter={[16,24]}>
+                    <Col md={4} sm={5} xs={9}>
+                        <Text >Speakers</Text>
+                    </Col>
+                    <Col sm={12} md={9}>
+                        <Radio.Group
+                            defaultValue={layer.layout}
+                            onChange={setters.layout}
+                            style={{minWidth:100}}
+                        >
+                            <Radio.Button value='left'>Left</Radio.Button>
+                            <Radio.Button value='left,right'>Both</Radio.Button>
+                            <Radio.Button value='right'>Right</Radio.Button>
+                            
+                        </Radio.Group>
+                    </Col>
+                    <Col sm={{span:3, offset:0}} xs={{span:9, offset:9}}>
+                        <Select
+                            defaultValue='repeat'
+                            style={{minWidth:100}}
+                            defaultValue={layer.tile}
+                            onChange={setters.tile}
+                        >
+                            <Option key='repeat'>Repeat</Option>
+                            <Option key='mirror'>Mirror</Option>
+                        </Select>
+                    </Col>
+                </Row> 
+            )}
+        return (
+            <Row align="middle">
+                <Col sm={4} xs={9}>
+                    <Text >Speakers</Text> 
+                </Col>
+                <Col sm={9} xs={15}>
+                    <Radio.Group
                         defaultValue={layer.layout}
                         onChange={setters.layout}
                         style={{minWidth:180}}
                     >
-                        <Option key='left'>Left</Option>
-                        <Option key='right'>Right</Option>
-                        <Option key='both'>Both</Option>
-                    </Select>
-                </Space>
-            )
-        }
-        return (
-            <Space align="center" style={{width:"100%"}}>
-            <Text >Speakers</Text>                        
-            <Select
-                placeholder="Please select"
-                defaultValue={layer.layout}
-                onChange={setters.layout}
-                style={{minWidth:180}}
-            >
-                <Option key='left'>Left</Option>
-                <Option key='right'>Right</Option>
-                <Option key='both'>Both</Option>
-            </Select>
-        </Space>)
+                        <Radio.Button value='left'>Left</Radio.Button>
+                        <Radio.Button value='left,right'>Both</Radio.Button>
+                        <Radio.Button value='right'>Right</Radio.Button> 
+                    </Radio.Group>
+                </Col>
+            </Row>
+        )
     }
 
+    const pattern = () => {
+        if(layer.pattern == 'lingradient'){
+            return(
+                <Row align='middle'>
+                    <Col sm={{span:4, offset:0}} xs={9}>
+                        <Text>Direction</Text>
+                    </Col>
+                    <Col sm={9}>
+                        <Radio.Group
+                            defaultValue={layer.direction}
+                            onChange={setters.direction}
+                            style={{minWidth:180}}
+                        >
+                            <Radio.Button value='upleft'><ArrowUpOutlined rotate={-45}/></Radio.Button>
+                            <Radio.Button value='up'><ArrowUpOutlined/></Radio.Button>
+                            <Radio.Button value='upright'><ArrowUpOutlined rotate={45}/></Radio.Button><br/>
+                            <Radio.Button value='left'><ArrowUpOutlined rotate={-90}/></Radio.Button>
+                            <Radio.Button value='center' disabled={true}><SyncOutlined/></Radio.Button>
+                            <Radio.Button value='right'><ArrowUpOutlined rotate={90}/></Radio.Button><br/>
+                            <Radio.Button value='downleft'><ArrowUpOutlined rotate={-135}/></Radio.Button>
+                            <Radio.Button value='down'><ArrowUpOutlined rotate={180}/></Radio.Button>
+                            <Radio.Button value='downright'><ArrowUpOutlined rotate={135}/></Radio.Button>
+                            
+                        </Radio.Group>
+                    </Col>
+                </Row>
 
+            )
+        }
+    }
+
+            /* <Row>
+                <Col sm={3}>
+                </Col>
+                <Col sm={12}>
+                </Col>
+            </Row> */
     
     if(!loading) {
         return(
@@ -86,22 +145,44 @@ function LayerBody({layer, notify, setters}) {
                         <Divider/>
                         {layout()}
                         <Divider/>
-                        <Space align="center" style={{width:"100%"}}>
-                        <Text >Panels</Text>                        
-                        <Select
-                            mode="multiple"
-                            allowClear
-                            placeholder="Please select"
-                            defaultValue={layer.pos}
-                            onChange={setters.pos}
-                            style={{minWidth:180}}
-                        >
-                            <Option key='left'>Left</Option>
-                            <Option key='right'>Right</Option>
-                            <Option key='center'>Center</Option>
-                        </Select>
-                        </Space>
+                        <Row align="middle" justify="start">
+                            <Col sm={4} xs={9}>
+                                <Text >Panels</Text>
+                            </Col>
+                            <Col sm={12}>
+                                <Select
+                                    mode="multiple"
+                                    allowClear
+                                    placeholder="Please select"
+                                    defaultValue={layer.pos}
+                                    onChange={setters.pos}
+                                    style={{minWidth:180}}
+                                >
+                                    <Option key='left'>Left</Option>
+                                    <Option key='right'>Right</Option>
+                                    <Option key='center'>Center</Option>
+                                </Select>
+                            </Col>                  
+                        </Row>
                         <Divider/>
+                        <Row align="middle">
+                            <Col sm={4} xs={9}>
+                                <Text>Pattern</Text>
+                            </Col>
+                            <Col sm={9}>
+                                <Select
+                                    defaultValue={'lingradient'}
+                                    onChange={setters.pattern}
+                                >
+                                    <Option key='lingradient'>Linear Gradient</Option>
+                                    <Option key='radgradient'>Radial Gradient</Option>
+                                    <Option key='rain'>Rain</Option>
+                                </Select>
+                            </Col>
+                        </Row>
+                        <Divider/>
+                        {pattern()}
+                        
                         <Space align="center">
                         {/* <Text >Position</Text>
                         <Select 
@@ -133,22 +214,8 @@ function LayerBody({layer, notify, setters}) {
                             notify={notify}
                         />
                     </Col>
-                    <Divider/>
                 </Row>
-                <Row justify="space-between">
-                    <Col sm={4} xs={0}>
-                        <Title level={4}>
-                            Pattern
-                        </Title>
-                    </Col>
-                    <Col sm={18} xs={24}>
-                        <Space align="center" style={{width:"100%"}}>
-                            <Text>
-                                Spacing
-                            </Text>
-                        </Space>
-                    </Col>
-                </Row>
+                
             </div>
         )
     }
