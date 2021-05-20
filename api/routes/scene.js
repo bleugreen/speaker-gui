@@ -82,6 +82,14 @@ sceneRoute.delete('/del', (req,res) => {
     )
 });
 
+// get name
+sceneRoute.get('/name', (req,res) => {
+    console.log("GET: scene name");
+    client.hget('scene:'+req.query.sid, 'name', function(err, reply){
+        res.send(reply);
+    });
+});
+
 /* - - - - - - - - - - - - - - - - 
     Layer List
 - - - - - - - - - - - - - - - - */
@@ -98,18 +106,28 @@ sceneRoute.post('/layer', (req,res) => {
     const sid = req.body.sid;
     const index = req.body.index;
     const lid = req.body.lid;
-    client.zadd('scene:'+sid+":layers", index, lid, function(err, reply){
-        res.send(reply.toString());
-    });
+    client.multi()
+    .zadd('scene:'+sid+":layers", index, lid)
+    .publish('active', 'scene:'+sid+':new:'+lid+':')
+    .exec(
+        function(err, replies){
+            res.send(replies);
+        }
+    )
 });
 
 // remove layer
 sceneRoute.delete('/layer', (req,res) => {
     const sid = req.body.sid;
     const lid = req.body.lid;
-    client.zrem('scene:'+sid+":layers", lid, function(err, reply){
-        res.send(reply.toString());
-    });
+    client.multi()
+    .zrem('scene:'+sid+":layers", lid)
+    .publish('active', 'scene:'+sid+':delete:'+lid+':')
+    .exec(
+        function(err, replies){
+            res.send(replies);
+        }
+    );
 });
 
 // reorder layers
@@ -120,8 +138,9 @@ sceneRoute.post('/reorder', (req,res) => {
     for (const [index, value] of list.entries()) {
        multi.zadd("scene:"+sid+":layers", index, value);
        multi.hset("layer:"+value, "index", index);
-       multi.publish("active", "update:"+value+":index:"+index);
+       multi.publish("active", "layer:"+value+":update:index:"+index);
     }
+    multi.publish("active", "scene:"+sid+":reorder::")
     multi.exec(function(err, replies) {
         res.send(replies);
     });
@@ -155,9 +174,9 @@ sceneRoute.get('/active', (req,res) => {
 // set active scene
 sceneRoute.post('/active', (req,res)=> {
     //console.log(req.body);
-    client.hmset("scene:active", req.body.id, function(err,reply) {
-        //console.log(reply)
-        res.sendStatus(reply);
+    client.set("scene:active", req.body.sid, function(err,reply) {
+        client.publish("active", "scene:"+req.body.sid+":change::");
+        res.sendStatus(reply.toString());
     });
 });
 

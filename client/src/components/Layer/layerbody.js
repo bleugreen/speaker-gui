@@ -5,11 +5,14 @@ import Text from 'antd/lib/typography/Text';
 import Title from 'antd/lib/typography/Title';
 import { useEffect, useState } from 'react';
 import ColorBlock from '../Color';
+import EyeButton from './eyeButton';
+import GraphPicker from './graphpicker';
+import PanelPicker from './panelpicker';
 import './style.css';
 
 const { Option } = Select;
 
-function LayerBody({layer, notify, setters}) {
+function LayerBody({layer, theme, notify, setters}) {
     const [loading, setLoading] = useState(false);
 
     function formatter(value) {
@@ -21,6 +24,9 @@ function LayerBody({layer, notify, setters}) {
             <Col sm={4} xs={9}>
                 <Text >Opacity</Text>
             </Col>
+            <Col sm={1}>
+                <EyeButton visible={layer.visible} setVisible={setters.visible} theme={theme}/>
+            </Col>
             <Col sm={9}>
                 <Slider 
                     tipFormatter={formatter} 
@@ -30,13 +36,16 @@ function LayerBody({layer, notify, setters}) {
                     onAfterChange={setters.opacity}
                     style={{width:180}} />
             </Col>
+            
         </Row>
     );
 
     const layout = () => {
         if(layer.layout == 'left,right'){
             return(
-                <Row align="middle" gutter={[16,24]}>
+                <Row align="middle" gutter={[16,24]}
+                    
+                >
                     <Col md={4} sm={5} xs={9}>
                         <Text >Speakers</Text>
                     </Col>
@@ -116,6 +125,9 @@ function LayerBody({layer, notify, setters}) {
         }
     }
 
+
+    
+
             /* <Row>
                 <Col sm={3}>
                 </Col>
@@ -125,15 +137,18 @@ function LayerBody({layer, notify, setters}) {
     
     if(!loading) {
         return(
-            <div>
-                <Row>
-                    <Col sm={6} xs={24}>
-                        <Title level={2}>{layer.name}</Title>    
+            <div style={{
+                backgroundColor:theme.fg
+            }}>
+                <Row >
+                    <Col sm={24} xs={24}>
+                        <Title style={{fontFamily:"recoleta-medium"}}>{layer.name}</Title>    
+                        <Divider/> 
                     </Col> 
-                    <Divider/>  
+                     
                 </Row>
-                <Row justify="space-between">
-                    <Col sm={4} xs={0}>
+                <Row justify="start">
+                    <Col sm={3} xs={0}>
                         <Title level={4}>
                             General
                         </Title>
@@ -156,7 +171,8 @@ function LayerBody({layer, notify, setters}) {
                                     placeholder="Please select"
                                     defaultValue={layer.pos}
                                     onChange={setters.pos}
-                                    style={{minWidth:180}}
+                                    style={{minWidth:180, backgroundColor:theme.fg}}
+                                    dropdownStyle={{color:theme.fg}}
                                 >
                                     <Option key='left'>Left</Option>
                                     <Option key='right'>Right</Option>
@@ -182,7 +198,17 @@ function LayerBody({layer, notify, setters}) {
                         </Row>
                         <Divider/>
                         {pattern()}
-                        
+                        <GraphPicker 
+                            start={layer.start} 
+                            direction={layer.graphdir}
+                            align={layer.align}
+                            mirrorx={layer.mirrorx}
+                            mirrory={layer.mirrory}
+                            setters={setters}
+                            theme={theme}
+                        />
+
+                        <PanelPicker layer={layer} setters={setters} theme={theme}/>
                         <Space align="center">
                         {/* <Text >Position</Text>
                         <Select 

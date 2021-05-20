@@ -4,10 +4,11 @@ import Text from "antd/lib/typography/Text";
 import { useEffect, useState } from "react";
 
 import ColorDot from "../Color/colordot"
+import colorTheme from "../themes";
 
 const { SubMenu } = Menu;
 
-const SystemMenu = ({running, connected, layout, setLayout, reboot, shutdown, start, end}) => {
+const SystemMenu = ({running, connected, layout, setLayout, reboot, shutdown, start, end, theme}) => {
     const [visible, setVisible] = useState(false);
 
     useEffect(()=>{
@@ -49,6 +50,9 @@ const SystemMenu = ({running, connected, layout, setLayout, reboot, shutdown, st
                 key='layout'
                 icon={<ColumnWidthOutlined/>}
                 title='Speaker Layout'
+                style={{
+                    backgroundColor:theme.header,
+                }}
             >
                 <Menu.Item key='lr'>Left First</Menu.Item>
                 <Menu.Item key='rl'>Right First</Menu.Item>
@@ -62,16 +66,16 @@ const SystemMenu = ({running, connected, layout, setLayout, reboot, shutdown, st
     const renderDots = () => {
         const dots = [];
         if(connected){
-            dots.push(<ColorDot key="connected" color="green" text="Connected" size={18}/>)
+            dots.push(<ColorDot key="connected" color={theme.green} text="Connected" size={18}/>)
         }
         else{
-            dots.push(<ColorDot key="connected" color="red" text="Not Connected" size={18}/>)
+            dots.push(<ColorDot key="connected" color={theme.red} text="Not Connected" size={18}/>)
         }
         if(running){
-            dots.push(<ColorDot key="running" color="green" text="Running" size={18}/>)
+            dots.push(<ColorDot key="running" color={theme.green} text="Running" size={18}/>)
         }
         else{
-            dots.push(<ColorDot key="running" color="red" text="Not Running" size={18}/>)
+            dots.push(<ColorDot key="running" color={theme.red} text="Not Running" size={18}/>)
         }
 
         return dots;
@@ -103,8 +107,11 @@ const SystemMenu = ({running, connected, layout, setLayout, reboot, shutdown, st
 
     const menu = (
         <Menu
-           theme="dark" 
+           style={{
+               backgroundColor:theme.header,
+           }}
            mode="vertical"
+           theme="dark"
            defaultSelectedKeys={[layout]}
            selectedKeys={[layout]}
            triggerSubMenuAction="hover"
@@ -121,6 +128,7 @@ const SystemMenu = ({running, connected, layout, setLayout, reboot, shutdown, st
             overlay={menu}
             placement="bottomRight"
             trigger={['hover']}
+            overlayStyle={{ color:theme.red }}
         >
             <Button type="text" style={{color:"white",fontSize:"24px"}} shape="round"><MenuOutlined/></Button>
         </Dropdown>

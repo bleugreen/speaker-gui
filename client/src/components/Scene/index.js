@@ -16,7 +16,7 @@ import Reorder, {
 import { PlusCircleOutlined, PlusSquareFilled, PlusSquareOutlined, RollbackOutlined } from '@ant-design/icons';
 import Text from 'antd/lib/typography/Text';
 
-function Scene({sid, active, back}) {
+function Scene({sid, theme, active, setActive}) {
   const [loading, setLoading] = useState(true);
   const [layers, setLayers] = useState([]);
   const [sceneParams, setScene] = useState({
@@ -119,15 +119,15 @@ function Scene({sid, active, back}) {
       <Button
         style={{position:'fixed', top:80, left:10}}
         type='ghost'
-        onClick={back}
+        onClick={()=>setActive('list')}
       >
         <RollbackOutlined/>
       </Button>
-    <div style={{width:"80%", margin:'auto'}}>
+    <div style={{width:"90%", margin:'auto'}}>
       
       <Row>
         <Col sm={12} xs={24}> 
-          <Title>{sceneParams.name}</Title>
+          <Title style={{fontFamily:"RecoletaMedium"}}>{sceneParams.name}</Title>
           <Text>{sceneParams.desc}</Text>
         </Col>
         <Col sm={12} xs={24}>
@@ -138,7 +138,7 @@ function Scene({sid, active, back}) {
         <Divider/>
         <Row justify="start" align="top">
           <Col sm={9} xs={8}>
-            <Title level={2}>Layers</Title>
+            <Title style={{fontFamily:"RecoletaMedium"}} level={2}>Layers</Title>
             
           </Col>
           <Col sm={{span:1, offset:9}} xs={{span:1, offset:12}}>
@@ -151,6 +151,7 @@ function Scene({sid, active, back}) {
           <Col sm={24} xs={24}>
             <LayerList 
               sid={sid} 
+              theme={theme}
               layers={layers} 
               notify={onNotify}
               onDeleteLayer={onDeleteLayer}

@@ -10,6 +10,8 @@ import SystemMenu from './systemMenu';
 
 
 import Title from 'antd/lib/typography/Title';
+import SceneList from './scenelist';
+import colorTheme from '../themes';
 const { Header, Content } = Layout;
 const { Panel } = Collapse;
 
@@ -18,11 +20,17 @@ function Home() {
   const [running, setRunning] = useState(false);
   const [layout, setLayout] = useState('lr');
   const [loading, setLoading] = useState(true);
+  const [active, setActive] = useState('list');
+  const [open, setOpen] = useState('list');
+  const [theme, setTheme] = useState(colorTheme('light'));
 
   useEffect(() => {
       if(loading){
         init();
+        console.log(theme.red);
       }
+
+      // SSE - keeps track of whether pi is connected / running
       let eventSource = new EventSource("http://localhost:3000/api/util/stream")
       eventSource.onmessage = e => {
         var msg = e.data.split(":");
@@ -51,7 +59,12 @@ function Home() {
         axios.get('/api/util/layout', {})
         .then(function (response) {
           setLayout(response.data);
-          setLoading(false);
+          axios.get('/api/scene/active', {})
+          .then(function (response) {
+            setActive(response.data);
+            setLoading(false);
+          })
+          
         })
         .catch(function (response) {console.log(response)});
       })
@@ -60,12 +73,6 @@ function Home() {
       //handle error
       console.log(response);
     });
-
-    // get running
-
-    // get layout
-
-
   }
 
   const onShutdown = () => {
@@ -116,26 +123,45 @@ function Home() {
     .catch(function (response) { console.log(response) });
   }
 
-  const meta = {
-    viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  };
+  const renderScene = () => {
+    if(open=='list'){
+      return <SceneList theme={theme} setActive={handleActive} setOpen={setOpen} active={active} />
+    }
+    else{
+      return <Scene theme={theme} sid={open} setActive={setOpen}/>
+    }
+  }
+
+  const handleActive = (sid) => {
+    setActive(sid);
+    axios.request ({
+      url: '/api/scene/active',
+      method: 'post',
+      data: { sid: sid }
+    })
+    .then(function (response) {console.log(response)})
+    .catch(function (response) { console.log(response) });
+  }
+
   if(loading) return <Spin/>;
   return (
-      <Layout>
+      <Layout style={{height:"100%"}}>
         <Header 
           style={{ 
             position: 'fixed', 
             zIndex: 1, 
             width: '100%', 
-            textAlign:"left" 
+            textAlign:"left",
+            backgroundColor:theme.header
           }}
         >
           <Row justify="space-between" align="middle">
             <Col sm={8} xs={14}>
-              <Title level={2}style={{color:"white", fontFamily:"RecoletaBold"}}>Cymatism</Title>
+              <Title level={2}style={{color:theme.headerText, fontFamily:"RecoletaBold"}}>Cymatism</Title>
             </Col>
             <Col sm={3} xs={6}>
               <SystemMenu 
+                theme={theme}
                 running={running} 
                 connected={connected} 
                 layout={layout} 
@@ -152,9 +178,9 @@ function Home() {
           </Row>
           
         </Header>
-        <Content theme="dark" className="site-layout" style={{ marginTop: 64 }}>
-          <div className="site-layout-background" style={{ padding: 24, minHeight: 380 }}>
-            <Scene sid="0" />
+        <Content className="site-layout" style={{ marginTop: 64, backgroundColor:theme.bg, height:"100%" }}>
+          <div className="site-layout-background" style={{ padding: 24, minHeight: 380, backgroundColor:theme.bg, }}>
+            {renderScene()}
           </div>
         </Content>
       </Layout>

@@ -5,8 +5,10 @@ import useSelection from "antd/lib/table/hooks/useSelection";
 import Text from "antd/lib/typography/Text";
 import { useEffect, useState } from "react";
 import ColorPreview from "./colorPreview";
+import EyeButton from "./eyeButton";
+import colorTheme from "../themes";
 
-function LayerListItem({layer, setVisible, onExpand, onRename}) {
+function LayerListItem({layer, setVisible, theme, onExpand, onRename}) {
     const [nameField, setNameField] = useState(layer.name);
     const [renaming, setRenaming] = useState(false);
 
@@ -37,48 +39,53 @@ function LayerListItem({layer, setVisible, onExpand, onRename}) {
         }
     }
 
-
-    const renderEye = () => {
-        if(layer.visible){
-            return <Tooltip title="Visible"><EyeOutlined onClick={setVisible} style={{fontSize:"16pt",verticalAlign:"middle"}} /></Tooltip>
-        }
-        else{
-            return <Tooltip title="Hidden"><EyeInvisibleOutlined onClick={setVisible} style={{fontSize:"16pt",verticalAlign:"middle"}}/></Tooltip>
-        }
-    };
-
     const renderIcon = () => {
         switch(layer.type){
             case "single":
-                return <Tooltip title="Single"><DashboardTwoTone style={{fontSize:"16pt",verticalAlign:"middle"}} twoToneColor="green" /></Tooltip>
+                return <Tooltip title="Single"><DashboardTwoTone style={{fontSize:"16pt",verticalAlign:"middle"}} twoToneColor={theme.green} /></Tooltip>
             case "spectrum":
-                return <Tooltip title="Spectrum"><SlidersTwoTone style={{fontSize:"16pt",verticalAlign:"middle"}} twoToneColor="red" /></Tooltip>
+                return <Tooltip title="Spectrum"><SlidersTwoTone style={{fontSize:"16pt",verticalAlign:"middle"}} twoToneColor={theme.red} /></Tooltip>
             case "ambient":
-                return <Tooltip title="Ambient"><PictureTwoTone style={{fontSize:"16pt",verticalAlign:"middle"}} twoToneColor="blue"/></Tooltip>
+                return <Tooltip title="Ambient"><PictureTwoTone style={{fontSize:"16pt",verticalAlign:"middle"}} twoToneColor={theme.blue}/></Tooltip>
         }
     };
 
     const titleStyle = { textAlign:"left" };
+    const itemStyle = {
+        backgroundColor: theme.fg,
+        color: theme.text,
+        transition: "all 0.3s, visibility 0s",
+        padding: "3%",
+        cursor: "pointer", 
+        lineHeight: 2,
+        borderRadius: "20px",
+        marginBottom:"10px"
+    }
 
     return(
-        <Row justify="space-between">
-            <Col span={1} style={{ textAlign:"left", verticalAlign:"middle" }}>
-                {renderEye()}
+        <div style={itemStyle} >
+        <Row align="top" justify="start">
+            <Col sm={2} xs={3} style={{ textAlign:"left", verticalAlign:"middle" }}>
+                <EyeButton visible={layer.visible} setVisible={setVisible} theme={theme}/>
             </Col>
-            <Col sm={10} xs={6} style={{ textAlign:"left", verticalAlign:"middle" }}>
+            <Col sm={{span:5}} xs={12} style={{ textAlign:"left", verticalAlign:"middle" }}>
                 <Title level={4}>{renderTitle()}</Title>
             </Col>
-            <Col sm={6} xs={0} style={{ verticalAlign:"bottom" }}>
+            <Col sm={{span:2, offset:10}} xs={1} >
+            {renderIcon()}
+            </Col>
+            <Col sm={4} xs={0} >
                 <ColorPreview colors={layer.colors}/>
             </Col>
-            <Col sm={6} xs={8} style={{ verticalAlign:"middle" }}>
+            <Col sm={1} xs={8} style={{ verticalAlign:"middle" }}>
                 {/* <Switch defaultChecked onChange={onSwitch}/> */}
-                {renderIcon()}
+                
                 <Button type="text" size="large" style={{float:"right"}} onClick={onExpand}>
                     <SettingOutlined style={{fontSize:"14pt"}}/>
                 </Button>
             </Col>                        
         </Row>
+        </div>
     )
 }
 

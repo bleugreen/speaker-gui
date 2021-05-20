@@ -17,8 +17,9 @@ layerRoute.post('/new', (req,res) => {
             "name", req.body.name, 
             "type", req.body.type,
             "opacity", 100,
-            "pos", "left",
-            "layout", "both",
+            "pos", "left,right,center",
+            "layout", "left,right",
+            "tile", "repeat",
             "pid", 0
         ];
         switch(req.body.type){
@@ -37,7 +38,8 @@ layerRoute.post('/new', (req,res) => {
             case "ambient":
                 newLayer.push(
                     "source", "none",
-                    "pattern", "gradient"
+                    "pattern", "lingradient",
+                    "direction", 'down'
                 );
                 break;
         }
@@ -64,11 +66,13 @@ layerRoute.get('/', (req,res) => {
 
 // delete
 layerRoute.delete('/', (req,res) => {
-    client.del("layer:"+req.body.lid, 
-        function(err, reply){
-            res.send(reply.toString());
+    client.multi()
+    .del("layer:"+req.body.lid)
+    .exec(
+        function(err,replies){
+            res.send(req.body.lid.toString());
         }
-    );
+    )
 });
 
 
@@ -91,7 +95,7 @@ layerRoute.post('/field', (req,res) => {
     client.hset("layer:"+req.body.lid, 
         req.body.field, req.body.value,
         function(err, reply){
-            message = "update:"+req.body.lid+":"+req.body.field+":"+req.body.value;
+            message = "layer:"+req.body.lid+":update:"+req.body.field+":"+req.body.value;
             client.publish("active", message);
             res.send(reply.toString());
         }
@@ -150,7 +154,7 @@ layerRoute.post('/opacity', (req,res) => {
             res.send(reply.toString());
         }
     );
-    message = "update:"+req.body.lid+":opacity:"+req.body.opacity;
+    message = "layer:"+req.body.lid+":update:opacity:"+req.body.opacity;
     client.publish("active", message);
 });
 
@@ -170,7 +174,7 @@ layerRoute.post('/pos', (req,res) => {
     client.hset("layer:"+req.body.lid, 
         "pos", req.body.pos,
         function(err, reply){
-            message = "update:"+req.body.lid+":pos:"+req.body.pos;
+            message = "layer:"+req.body.lid+":update:pos:"+req.body.pos;
             client.publish("active", message);
             res.send(reply.toString());
         }
@@ -196,7 +200,7 @@ layerRoute.post('/pid', (req,res) => {
             res.send(reply.toString());
         }
     );
-    message = "update:"+req.body.lid+":pid:"+req.body.pid;
+    message = "layer:"+req.body.lid+":update:pid:"+req.body.pid;
     client.publish("active", message);
 });
 
@@ -216,7 +220,7 @@ layerRoute.post('/layout', (req,res) => {
     client.hset("layer:"+req.body.lid, 
         "layout", req.body.layout,
         function(err, reply){
-            message = "update:"+req.body.lid+":layout:"+req.body.layout;
+            message = "layer:"+req.body.lid+":update:layout:"+req.body.layout;
             client.publish("active", message);
             res.send(reply.toString());
         }
@@ -230,7 +234,7 @@ layerRoute.post('/layout', (req,res) => {
 //notify
 layerRoute.post('/notify', (req,res) => {
     console.log("MSG: lid:"+req.body.lid+" and "+req.body.field+": "+req.body.value); 
-    message = "update:"+req.body.lid+":"+req.body.field+":"+req.body.value;
+    message = "layer:"+req.body.lid+":update:"+req.body.field+":"+req.body.value;
     client.publish("active", message);
     res.send('sent');
     

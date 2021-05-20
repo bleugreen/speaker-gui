@@ -13,7 +13,7 @@ import Layer from '../Layer';
 import './style.css';
 import Text from 'antd/lib/typography/Text';
 
-  function LayerList({sid, layers, setLayers, notify, onDeleteLayer}){
+  function LayerList({sid, layers, setLayers, theme, onDeleteLayer}){
     const [plist, setPlist] = useState([]); 
     const [expanded, setExpanded] = useState(-1);
     
@@ -60,6 +60,7 @@ import Text from 'antd/lib/typography/Text';
             <Layer 
               sid={sid} 
               lid={item} 
+              theme={theme}
               expanded={expanded} 
               onExpand={handleExpand}
               onDeleteLayer={listDeleteLayer}

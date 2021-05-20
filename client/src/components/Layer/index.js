@@ -15,9 +15,10 @@ import ColorPreview from './colorPreview';
 import LayerBody from './layerbody';
 import LayerListItem from './layerListItem';
 import Modal from 'antd/lib/modal/Modal';
+import GraphIcon from './icon/graph';
 
 
-function Layer({sid, lid, onExpand, onDeleteLayer}){
+function Layer({sid, lid, onExpand, theme, onDeleteLayer}){
     const [isExpanded, setIsExpanded] = useState(false);
     const [renaming, setRenaming] = useState(false);
     const [body, setBody] = useState("collapse-body-hide");
@@ -30,7 +31,13 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
         layout:"both",
         colors:[],
         loading:true,
-        visible:true
+        visible:true,
+        graphdir: 'up',
+        start: 'left',
+        align: 'base',
+        mirrorx: false,
+        mirrory: false
+
     })
 
     useEffect(() =>{
@@ -47,15 +54,13 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
         .then( (response) => {
             const initLayer = {
                 ...response.data,
-                sid:layer.sid,
-                lid:layer.lid,
                 pos:response.data.pos.toString().split(","),
                 visible: (response.data.visible=='true'),
                 colors:[],
                 loading:false
             };
             console.log(initLayer);
-            setLayer(initLayer);
+            setLayer({...layer, ...initLayer});
             getColors(response.data.pid);
         })
         .catch( (response) => {console.log(response)});
@@ -216,16 +221,22 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
         layout: (e)=>{setField('layout', e.target.value)},
         pattern: (pat)=>{setField('pattern', pat)},
         direction: (e)=>{setField('direction', e.target.value)},
-        tile: (t)=>{setField('tile', t)}  
+        tile: (t)=>{setField('tile', t)},
+        start: (s)=>{setField('start', s)},
+        align: (a)=>{setField('align', a)},
+        graphdir: (a)=>{setField('graphdir', a)},
+        mirrorx: (m)=>{setField('mirrorx', m)},
+        mirrory: (m)=>{setField('mirrory', m)},
+        visible: () => {setVisible()}
     };
 
 
     const titleStyle = { textAlign:"left" };
     if(layer.loading) return <Spin/>
     return(
-        <div className="collapse">
+        <div >
             <ReactTooltip/>
-            <div className="collapse-head">   
+  
                 {/* listitem title type colors onExpand onRename */}
                 <LayerListItem 
                     layer={layer} 
@@ -233,19 +244,29 @@ function Layer({sid, lid, onExpand, onDeleteLayer}){
                     onRename={onRenameComplete} 
                     renaming={renaming}
                     setVisible={setVisible}
+                    theme={theme}
                 />
-            </div>
+
                 <Modal
                     centered
                     visible={isExpanded}  
                     onOk={handleExpand}
                     onCancel={handleExpand}
                     width={1000}  
-                    footer={[
-                        <Tooltip title="Delete Layer" placement="left"><Button onClick={onDelete}><DeleteOutlined/></Button></Tooltip>
-                    ]}
+                    footer={null}
+                    bodyStyle={{
+                        backgroundColor:theme.fg,
+                        color:theme.text,
+                        borderRadius:"20px"
+                    }}
+                    style ={{
+                        marginTop:"8%",
+                        
+                    }}
                 >
-                    <LayerBody layer={layer} setters={setters} notify={notify}/>
+                    <LayerBody theme={theme} layer={layer} setters={setters} notify={notify}/>
+                    <Divider/>
+                    <Tooltip title="Delete Layer" placement="left"><Button onClick={onDelete}><DeleteOutlined/></Button></Tooltip>
                 </Modal>
         </div>
     )

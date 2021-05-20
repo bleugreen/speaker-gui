@@ -1,14 +1,23 @@
 @font-face {
-    font-family: "RecoletaBold";
-    src: local("RecoletaBold"),
-      url("./fonts/recoleta-bold.otf") format("opentype");
-    font-weight: normal;
-  }
+  font-family: "RecoletaBold";
+  src: local("RecoletaBold"),
+    url("./fonts/recoleta-bold.otf") format("opentype");
+  font-weight: normal;
+}
 
-  @font-face {
-    font-family: "RecoletaBlack";
-    src: local("RecoletaBlack"),
-      url("./fonts/recoleta-black.otf") format("opentype");
-    font-weight: normal;
-  }
+@font-face {
+  font-family: "RecoletaBlack";
+  src: local("RecoletaBlack"),
+    url("./fonts/recoleta-black.otf") format("opentype");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "RecoletaMedium";
+  src: local("RecoletaMedium"),
+    url("./fonts/recoleta-medium.otf") format("opentype");
+  font-weight: normal;
+}
+
+
   
