@@ -17,7 +17,6 @@ import LayerListItem from './layerListItem';
 import Modal from 'antd/lib/modal/Modal';
 import GraphIcon from './icon/graph';
 
-
 function Layer({sid, lid, onExpand, theme, onDeleteLayer}){
     const [isExpanded, setIsExpanded] = useState(false);
     const [renaming, setRenaming] = useState(false);
@@ -65,10 +64,7 @@ function Layer({sid, lid, onExpand, theme, onDeleteLayer}){
         })
         .catch( (response) => {console.log(response)});
     }
-    
-/* - - - - - - - - - - - - - - - - 
-    Expand
-- - - - - - - - - - - - - - - - */
+
     const handleExpand = () => {
         onExpand(layer.lid);
         setIsExpanded(!isExpanded);
@@ -88,6 +84,9 @@ function Layer({sid, lid, onExpand, theme, onDeleteLayer}){
     }
 
     const notify = (field, value) => {
+        if(field == 'pid'){
+            getColors(value);
+        }
         axios.request ({
             url: '/api/layer/notify',
             method: 'post',
@@ -153,34 +152,6 @@ function Layer({sid, lid, onExpand, theme, onDeleteLayer}){
         .catch((response) =>{ console.log(response) });
     }
 
-    const setOpacity = (opacity) => {
-        setLayer({...layer, opacity:opacity});
-        axios.request ({
-            url: '/api/layer/opacity',
-            method: 'post',
-            data: {
-                lid: layer.lid,
-                opacity: opacity,
-            }, 
-        })
-        .then((response) => {console.log(response)})
-        .catch((response) =>{ console.log(response) });
-    }
-
-    const setPos = (pos) => {
-        setLayer({...layer, pos:pos});
-        axios.request ({
-            url: '/api/layer/pos',
-            method: 'post',
-            data: {
-                lid: layer.lid,
-                pos: pos.toString(),
-            }, 
-        })
-        .then((response) => {console.log(response)})
-        .catch((response) =>{ console.log(response) });
-    }
-
     const setVisible = () => {
         const newVis = !layer.visible;
         setLayer((layer)=>({...layer, visible:newVis}));
@@ -214,14 +185,15 @@ function Layer({sid, lid, onExpand, theme, onDeleteLayer}){
         .catch((response) =>{ console.log(response) });
     }
     const setters = {
-        pos: setPos,
-        opacity: setOpacity,
+        opacity: (t)=>{setField('opacity', t)},
         pid: setPid,
-        pos: setPos,
+        pos: (t)=>{setField('pos', t)},
         layout: (e)=>{setField('layout', e.target.value)},
+        tile: (t)=>{setField('tile', t)},
+        
         pattern: (pat)=>{setField('pattern', pat)},
         direction: (e)=>{setField('direction', e.target.value)},
-        tile: (t)=>{setField('tile', t)},
+        
         start: (s)=>{setField('start', s)},
         align: (a)=>{setField('align', a)},
         graphdir: (a)=>{setField('graphdir', a)},

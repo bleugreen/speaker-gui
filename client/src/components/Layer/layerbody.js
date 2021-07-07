@@ -198,7 +198,7 @@ function LayerBody({layer, theme, notify, setters}) {
                         </Row>
                         <Divider/>
                         {pattern()}
-                        <GraphPicker 
+                        {/* <GraphPicker 
                             start={layer.start} 
                             direction={layer.graphdir}
                             align={layer.align}
@@ -208,7 +208,7 @@ function LayerBody({layer, theme, notify, setters}) {
                             theme={theme}
                         />
 
-                        <PanelPicker layer={layer} setters={setters} theme={theme}/>
+                        <PanelPicker layer={layer} setters={setters} theme={theme}/> */}
                         <Space align="center">
                         {/* <Text >Position</Text>
                         <Select 

@@ -220,6 +220,7 @@ function ColorBlock({pid, setPid, notify}){
                 // set new palette
                 setPalette(savedPalettes[it]);
                 setPid(savedPalettes[it].pid);
+
             })
             .catch((response)=>{ console.log(response)});
         }
@@ -276,7 +277,7 @@ function ColorBlock({pid, setPid, notify}){
             colors: tempcolors
         });
         updateColor(index,color);
-        // notify(pid);
+        notify('pid', pid);
     };
 
 
@@ -301,7 +302,7 @@ function ColorBlock({pid, setPid, notify}){
                     colors: [...palette.colors, palette.colors[0]],
                 });
                 updateSavedPalettes(pid);
-                // notify(pid);
+                notify('pid', pid);
             })
             .catch(function (response) { console.log(response) });
         }
@@ -322,7 +323,7 @@ function ColorBlock({pid, setPid, notify}){
             .then(function (response) {
                 setPalette({...palette, colors:palette.colors.slice(0,-1)});
                 updateSavedPalettes(pid);
-                // notify(pid);
+                notify('pid', pid);
             })
             .catch(function (response) { console.log(response) });
         }
