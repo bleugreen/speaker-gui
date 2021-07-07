@@ -43,7 +43,7 @@ class SwatchCircle extends React.Component {
         swatch: {
           padding: '5px',
           width: '100%',
-          background: '#fff',
+          background: 'transparent',
           display: 'inline-block',
           cursor: 'pointer',
         },

@@ -31,7 +31,7 @@ function ColorBlock({pid, setPid, notify}){
 /* ----------------------------------------
     Styles
 ---------------------------------------- */
-    const rowStyle = { width:"100%" };
+    const rowStyle = { width:"100%", backgroundColor:'transparent', };
     const radioStyle = { display: 'block' };
     const radioButtonStyle = {
         height: '30px',
@@ -403,10 +403,11 @@ function ColorBlock({pid, setPid, notify}){
             return(
                 <Space direction='vertical' style={rowStyle}>
                     <ReactTooltip/>
-                    <Row style={rowStyle}>
-                        <Col span={24} >
-                            <Space wrap={true} align="center">
-                                {populateDropdown()}
+                    <Row style={rowStyle} align='middle' justify='space-between'>
+                        <Col sm={12} xs={24} >
+                            {populateDropdown()}
+                        </Col>
+                        <Col md={12} sm={14} xs={24}> 
                                 <Space wrap={false} align="center">
                                     <Tooltip title="Create Palette" >
                                         <Button type="default" onClick={onSaveAs} >
@@ -424,7 +425,7 @@ function ColorBlock({pid, setPid, notify}){
                                     {renderLock()}
                                     {renderLerp()}
                                 </Space>
-                            </Space>
+                        
                         </Col>
                     </Row>
                     <PalettePicker 
@@ -436,8 +437,10 @@ function ColorBlock({pid, setPid, notify}){
                         removeColor = {removeColor}
                         style={rowStyle}
                     />
-                    
-                    <SaveModal visible={saveVisible} name={palette.name} onSubmit={saveAs} onCancel={onSaveCancel}/>
+                    <div style={{backgroundColor:'#fff'}}>
+                    <SaveModal  style={{backgroundColor:'#fff'}} visible={saveVisible} name={palette.name} onSubmit={saveAs} onCancel={onSaveCancel}/>
+                    </div>
+                   
                 </Space>
             )
         }

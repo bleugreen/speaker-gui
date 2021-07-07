@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import {Row, Col, Typography, Divider, Modal, Input, Button, message } from 'antd';
+import {Row, Col, Typography, Divider, Modal, Input, Button, message, Space } from 'antd';
 const { Title, Text } = Typography;
 
 import 'antd/dist/antd.css';
@@ -36,10 +36,15 @@ function SaveModal({name, visible, onSubmit, onCancel}) {
             title="Create Palette"
             onOk={handleOk}
             onCancel={onCancel}
-            footer={[
-              <Button key="back" onClick={handleCancel}>Cancel</Button>,
-              <Button key="submit" type="primary" onClick={handleOk}>Save</Button>
-            ]}
+            footer={null}
+            bodyStyle={
+              {
+                
+                padding:'10%',
+                paddingTop:'5%',
+                backgroundColor:'#fff'
+              }
+            }
           >
             <Input 
               placeholder={name}
@@ -50,6 +55,11 @@ function SaveModal({name, visible, onSubmit, onCancel}) {
               minLength={2}
               autoFocus={true}
             />
+          <Divider/>
+          <Space style={{float:'right'}}>
+              <Button key="submit" type="primary" onClick={handleOk}>Save</Button>
+              <Button key="back" onClick={handleCancel}>Cancel</Button>
+            </Space>
           </Modal>
       </div>
     )
