@@ -31,7 +31,7 @@ function ColorBlock({pid, setPid, notify}){
 /* ----------------------------------------
     Styles
 ---------------------------------------- */
-    const rowStyle = { width:"100%", backgroundColor:'transparent', };
+    const rowStyle = { width:"100%", backgroundColor:'transparent', display:'block'};
     const radioStyle = { display: 'block' };
     const radioButtonStyle = {
         height: '30px',
@@ -403,31 +403,24 @@ function ColorBlock({pid, setPid, notify}){
             return(
                 <Space direction='vertical' style={rowStyle}>
                     <ReactTooltip/>
-                    <Row style={rowStyle} align='middle' justify='space-between'>
-                        <Col sm={12} xs={24} >
+                        <Space wrap={true} align="center" style={{marginBottom:'15px'}}>
                             {populateDropdown()}
-                        </Col>
-                        <Col md={12} sm={14} xs={24}> 
-                                <Space wrap={false} align="center">
-                                    <Tooltip title="Create Palette" >
-                                        <Button type="default" onClick={onSaveAs} >
-                                            <FileAddOutlined  style={{verticalAlign:'baseline'}}/>
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip title="Delete Palette" >
-                                        <Button type="default" onClick={onDelete} >
-                                            <DeleteOutlined style={{verticalAlign:'baseline'}}/> 
-                                        </Button>
-                                    </Tooltip>
-                                </Space>
+                            <Space wrap={false}>
+                                <Tooltip title="Create Palette" >
+                                    <Button type="default" onClick={onSaveAs} >
+                                        <FileAddOutlined  style={{verticalAlign:'baseline'}}/>
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip title="Delete Palette" >
+                                    <Button type="default" onClick={onDelete} >
+                                        <DeleteOutlined style={{verticalAlign:'baseline'}}/> 
+                                    </Button>
+                                </Tooltip>
                                 <Divider type="vertical"/>
-                                <Space wrap={false}>
-                                    {renderLock()}
-                                    {renderLerp()}
-                                </Space>
-                        
-                        </Col>
-                    </Row>
+                                {renderLock()}
+                                {renderLerp()}
+                            </Space>
+                        </Space>
                     <PalettePicker 
                         colors={palette.colors}
                         locked={palette.locked}

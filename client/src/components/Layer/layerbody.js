@@ -8,7 +8,10 @@ import ColorBlock from '../Color';
 import EyeButton from './eyeButton';
 import GraphPicker from './graphpicker';
 import PanelPicker from './panelpicker';
+import Panel from '../Panel';
 import './style.css';
+import colorTheme from '../themes';
+
 
 const { Option } = Select;
 
@@ -147,16 +150,22 @@ function LayerBody({layer, theme, notify, setters}) {
                     </Col> 
                      
                 </Row>
-                <Row justify="start">
-                    <Col sm={3} xs={0}>
-                        <Title level={4}>
-                            General
-                        </Title>
-                    </Col>
-                    
-                    <Col sm={18} xs={24}>
-                        
-                        {opacity}
+                <Panel
+
+                    header='Palette'
+                >
+                    <ColorBlock 
+                            pid={layer.pid}
+                            setPid={setters.pid}
+                            notify={notify}
+                        />
+                </Panel>
+                <Divider width="40%"/>
+                <Panel
+
+                    header='General'
+                >
+                    {opacity}
                         <Divider/>
                         {layout()}
                         <Divider/>
@@ -198,50 +207,7 @@ function LayerBody({layer, theme, notify, setters}) {
                         </Row>
                         <Divider/>
                         {pattern()}
-                        {/* <GraphPicker 
-                            start={layer.start} 
-                            direction={layer.graphdir}
-                            align={layer.align}
-                            mirrorx={layer.mirrorx}
-                            mirrory={layer.mirrory}
-                            setters={setters}
-                            theme={theme}
-                        />
-
-                        <PanelPicker layer={layer} setters={setters} theme={theme}/> */}
-                        <Space align="center">
-                        {/* <Text >Position</Text>
-                        <Select 
-                            defaultValue={layer.pos}
-                            style={{ width: 120 }} 
-                            onChange={setters.pos}
-                        >
-                            <Option value="center">Center</Option>
-                            <Option value="sides">Sides</Option>
-                            <Option value="left">Left</Option>
-                            <Option value="right">Right</Option>
-                            <Option value="full">Full</Option>
-                        </Select> */}
-                        </Space>
-                        
-                    </Col>
-                    <Divider/>
-                </Row>
-                <Row justify="space-between">
-                    <Col sm={4} xs={0}>
-                        <Title level={4}>
-                            Palette
-                        </Title>
-                    </Col>
-                    <Col sm={18} xs={24}>
-                        <ColorBlock 
-                            pid={layer.pid}
-                            setPid={setters.pid}
-                            notify={notify}
-                        />
-                    </Col>
-                </Row>
-                
+                </Panel>
             </div>
         )
     }

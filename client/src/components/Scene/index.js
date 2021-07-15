@@ -6,10 +6,11 @@ import axios from 'axios';
 
 import './style.css';
 import LayerList from './layerlist'
+import Panel from '../Panel'
 import Title from 'antd/lib/typography/Title';
 import NewLayerModal from './newlayermodal';
 const { Header, Content } = Layout;
-const { Panel } = Collapse;
+
 import Reorder, {
   reorder
 } from 'react-reorder';
@@ -144,12 +145,14 @@ function Scene({sid, theme, active, setActive}) {
           <Col sm={{span:1, offset:9}} xs={{span:1, offset:12}}>
           <Button type="ghost" onClick={onNewLayerClick}>New</Button>
           </Col>
+          
         </Row>
         
         
         <Row justify="start">
           <Col sm={24} xs={24}>
-            <LayerList 
+          <Panel theme={theme} header="Test Panel">
+          <LayerList 
               sid={sid} 
               theme={theme}
               layers={layers} 
@@ -157,6 +160,16 @@ function Scene({sid, theme, active, setActive}) {
               onDeleteLayer={onDeleteLayer}
               setLayers={onReorder}
             />
+
+          </Panel>
+          <Panel theme={theme} header="Test Panel2">
+          <h1>CONTENT</h1>
+          <h1>CONTENT</h1>
+          <h1>CONTENT</h1>
+          <h1>CONTENT</h1>
+
+          </Panel>
+            
             <Divider/>
             
           </Col>
