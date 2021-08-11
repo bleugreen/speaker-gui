@@ -1,9 +1,9 @@
-
-import { ArrowUpOutlined, SyncOutlined } from '@ant-design/icons';
-import { Col, Divider, Radio, Row, Select, Slider, Space, Spin } from 'antd';
+import { ArrowUpOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
+import { Button, Col, Divider, Radio, Row, Tooltip, Select, Slider, Space, Spin } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import Title from 'antd/lib/typography/Title';
 import { useEffect, useState } from 'react';
+import Modal from 'antd/lib/modal/Modal';
 import ColorBlock from '../Color';
 import EyeButton from './eyeButton';
 import GraphPicker from './graphpicker';
@@ -15,7 +15,7 @@ import colorTheme from '../themes';
 
 const { Option } = Select;
 
-function LayerBody({layer, theme, notify, setters}) {
+function LayerBody({layer, theme, notify, setters, expanded, handleExpand, onDelete}) {
     const [loading, setLoading] = useState(false);
 
     function formatter(value) {
@@ -24,7 +24,7 @@ function LayerBody({layer, theme, notify, setters}) {
 
     const opacity = (
         <Row align='middle'>
-            <Col sm={4} xs={9}>
+            <Col sm={4} xs={7}>
                 <Text >Opacity</Text>
             </Col>
             <Col sm={1}>
@@ -140,6 +140,22 @@ function LayerBody({layer, theme, notify, setters}) {
     
     if(!loading) {
         return(
+            <Modal
+                    centered
+                    visible={expanded}  
+                    onCancel={handleExpand}
+                    width={1000}  
+                    footer={null}
+                    bodyStyle={{
+                        backgroundColor:theme.fg,
+                        color:theme.text,
+                        borderRadius:"20px"
+                    }}
+                    style ={{
+                        marginTop:"8%",
+                        
+                    }}
+                >
             <div style={{
                 backgroundColor:theme.fg
             }}>
@@ -148,6 +164,9 @@ function LayerBody({layer, theme, notify, setters}) {
                         <Title style={{fontFamily:"recoleta-medium"}}>{layer.name}</Title>    
                         <Divider/> 
                     </Col> 
+                    <Col>
+                        <PanelPicker layer={layer} setters={setters} theme={theme}/>
+                    </Col>
                      
                 </Row>
                 <Panel
@@ -209,6 +228,9 @@ function LayerBody({layer, theme, notify, setters}) {
                         {pattern()}
                 </Panel>
             </div>
+            <Divider/>
+                    <Tooltip title="Delete Layer" placement="left"><Button onClick={onDelete}><DeleteOutlined/></Button></Tooltip>
+            </Modal>
         )
     }
     else{

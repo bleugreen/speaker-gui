@@ -62,7 +62,7 @@ import Text from 'antd/lib/typography/Text';
               lid={item} 
               theme={theme}
               expanded={expanded} 
-              onExpand={handleExpand}
+
               onDeleteLayer={listDeleteLayer}
             />
             </li>

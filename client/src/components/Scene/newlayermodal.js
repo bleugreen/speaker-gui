@@ -41,10 +41,8 @@ function NewLayerModal({visible, onSubmit, onCancel}) {
             title="Create Layer"
             onOk={handleOk}
             onCancel={onCancel}
-            footer={[
-              <Button key="back" onClick={handleCancel}>Cancel</Button>,
-              <Button key="submit" type="primary" onClick={handleOk}>Save</Button>
-            ]}
+            bodyStyle={{backgroundColor:"white", borderRadius:'0 0 10px 10px'}}
+            footer={null}
           >
               <Row align="middle" justify="space-around">
                 <Space direction="vertical">
@@ -68,6 +66,12 @@ function NewLayerModal({visible, onSubmit, onCancel}) {
                 </Col>
                 </Space>
               </Row>
+              <Divider/>
+              <Space>
+                <Button key="back" onClick={handleCancel}>Cancel</Button>
+                <Button key="submit" type="primary" onClick={handleOk}>Save</Button>
+              </Space>
+              
           </Modal>
       </div>
     )

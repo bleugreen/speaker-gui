@@ -35,7 +35,7 @@ function LayerListItem({layer, setVisible, theme, onExpand, onRename}) {
             />
         }
         else{
-            return <Text onDoubleClick={()=>{setRenaming(true)}} style={{userSelect:"none"}}> {layer.name}</Text>
+            return <Text style={{userSelect:"none"}}> {layer.name}</Text>
         }
     }
 
@@ -69,7 +69,7 @@ function LayerListItem({layer, setVisible, theme, onExpand, onRename}) {
                 <EyeButton visible={layer.visible} setVisible={setVisible} theme={theme}/>
             </Col>
             <Col sm={{span:5}} xs={12} style={{ textAlign:"left", verticalAlign:"middle" }}>
-                <Title level={4}>{renderTitle()}</Title>
+                <Title level={4}>{layer.name}</Title>
             </Col>
             <Col sm={{span:2, offset:10}} xs={1} >
             {renderIcon()}

@@ -5,11 +5,10 @@ var colorRoute = express.Router();
 var client = require('../client.js');
 
 /* - - - - - - - - - - - - - - - - 
-    Palette ( hash @ palette:{pid} )
-        - name (string)
-        - locked (bool)
-        - lerp (bool)
-        - colors ( hex list @ palette:{pid}:colors )
+    Saved Palette ( string list @ palette:{name} )
+
+    Layer Palette ( string list @ layer:{lid}:palette )
+
 - - - - - - - - - - - - - - - - */
 
 /*

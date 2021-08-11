@@ -151,7 +151,6 @@ function Scene({sid, theme, active, setActive}) {
         
         <Row justify="start">
           <Col sm={24} xs={24}>
-          <Panel theme={theme} header="Test Panel">
           <LayerList 
               sid={sid} 
               theme={theme}
@@ -161,14 +160,6 @@ function Scene({sid, theme, active, setActive}) {
               setLayers={onReorder}
             />
 
-          </Panel>
-          <Panel theme={theme} header="Test Panel2">
-          <h1>CONTENT</h1>
-          <h1>CONTENT</h1>
-          <h1>CONTENT</h1>
-          <h1>CONTENT</h1>
-
-          </Panel>
             
             <Divider/>
             

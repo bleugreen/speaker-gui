@@ -17,8 +17,8 @@ import LayerListItem from './layerListItem';
 import Modal from 'antd/lib/modal/Modal';
 import GraphIcon from './icon/graph';
 
-function Layer({sid, lid, onExpand, theme, onDeleteLayer}){
-    const [isExpanded, setIsExpanded] = useState(false);
+function Layer({sid, lid, theme, onDeleteLayer}){
+    const [isExpanded, setExpanded] = useState(false);
     const [renaming, setRenaming] = useState(false);
     const [body, setBody] = useState("collapse-body-hide");
     const [layer, setLayer] = useState({
@@ -66,8 +66,7 @@ function Layer({sid, lid, onExpand, theme, onDeleteLayer}){
     }
 
     const handleExpand = () => {
-        onExpand(layer.lid);
-        setIsExpanded(!isExpanded);
+        setExpanded(!isExpanded);
     };
 
 
@@ -119,26 +118,6 @@ function Layer({sid, lid, onExpand, theme, onDeleteLayer}){
         .catch((response) =>{ console.log(response) });
     }
 
-    const onRename = () => {
-        setRenaming(true);
-    }
-    const onRenameComplete = (name) => {
-        setLayer({
-            ...layer,
-            name:name
-        });
-        axios.request ({
-            url: '/api/layer/name',
-            method: 'post',
-            data: {
-                lid: layer.lid,
-                name: name,
-            }, 
-        })
-        .then((response) => {console.log(response)})
-        .catch((response) =>{ console.log(response) });
-        setRenaming(false);
-    }
 
     const onDelete = () => {
         axios.delete('/api/layer/', { data: { lid:layer.lid }})
@@ -213,35 +192,20 @@ function Layer({sid, lid, onExpand, theme, onDeleteLayer}){
                 <LayerListItem 
                     layer={layer} 
                     onExpand={handleExpand} 
-                    onRename={onRenameComplete} 
-                    renaming={renaming}
                     setVisible={setVisible}
                     theme={theme}
                 />
-
-                <Modal
-                    centered
-                    visible={isExpanded}  
-                    onOk={handleExpand}
-                    onCancel={handleExpand}
-                    width={1000}  
-                    footer={null}
-                    bodyStyle={{
-                        backgroundColor:theme.fg,
-                        color:theme.text,
-                        borderRadius:"20px"
-                    }}
-                    style ={{
-                        marginTop:"8%",
-                        
-                    }}
-                >
-                    <LayerBody theme={theme} layer={layer} setters={setters} notify={notify}/>
-                    <Divider/>
-                    <Tooltip title="Delete Layer" placement="left"><Button onClick={onDelete}><DeleteOutlined/></Button></Tooltip>
-                </Modal>
+                <LayerBody 
+                    theme={theme} 
+                    layer={layer} 
+                    setters={setters} 
+                    notify={notify}
+                    expanded={isExpanded}
+                    handleExpand={handleExpand}
+                    onDelete={onDelete}
+                />
         </div>
-    )
+    )  
     
 
 }
