@@ -164,18 +164,16 @@ function LayerBody({layer, theme, notify, setters, expanded, handleExpand, onDel
                         <Title style={{fontFamily:"recoleta-medium"}}>{layer.name}</Title>    
                         <Divider/> 
                     </Col> 
-                    <Col>
-                        <PanelPicker layer={layer} setters={setters} theme={theme}/>
-                    </Col>
+                    
                      
                 </Row>
                 <Panel
-
                     header='Palette'
+                    expand={true}
                 >
                     <ColorBlock 
-                            pid={layer.pid}
-                            setPid={setters.pid}
+                            palette={layer.colors}
+                            setPalette={setters.palette}
                             notify={notify}
                         />
                 </Panel>

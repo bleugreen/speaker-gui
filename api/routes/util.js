@@ -74,7 +74,7 @@ utilRoute.post('/start', (req,res)=> {
 // end
 utilRoute.post('/end', (req,res)=> {
     //console.log(req.body);
-    client.publish("active", "kill", function(err,reply) {
+    client.publish("notify", "END", function(err,reply) {
         //console.log(reply)
         res.send(reply.toString());
     });

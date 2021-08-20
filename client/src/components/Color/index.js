@@ -16,11 +16,12 @@ const { Text } = Typography;
 
 // setPid - called on palette change or palette create
 // notify - called when 
-function ColorBlock({pid, setPid, notify}){
+function ColorBlock({palette="palette:20", setPalette, notify}){
     const [loading, setLoading] = useState(true);
     const [saveVisible, setSaveVisible] = useState(false);
-    const [palette, setPalette] = useState({});
+    const [colors, setColors] = useState({});
     const [savedPalettes, setSaved] = useState([]);
+    const [savedName, setSavedName] = useState("Select Palette...");
     
     useEffect(() =>{
         if(loading){
@@ -45,26 +46,16 @@ function ColorBlock({pid, setPid, notify}){
     // Get palette associated with given pid
     // Called on initial load
     const initColor = () => {
-        getPalette(pid, (res) => {
-            let temp_palette = {
-                pid: pid,
-                name: res.name,
-                locked: (res.locked === "true"),
-                lerp: (res.lerp === "true"),
-                colors: res.colors
-            }
-            console.log("Init palette: "+temp_palette.name);
-            setPalette(temp_palette);
-            getPalettes();
-            setLoading(false);
-        })
+        setColors(palette.split(","));
+        getPalettes();
+        setLoading(false)
     }
 
     // Gets palette, returns through callback
     // Usage: getPalette(pid, (palette)=>{ //do stuff })
-    const getPalette = (pid, callback) => {
+    const getPalette = (name, callback) => {
         axios.get('/api/palette', {
-            params: { pid: pid }
+            params: { name: name }
         })
         .then( (response) => {callback(response.data)})
         .catch( (response) => {console.log(response)});
@@ -74,22 +65,15 @@ function ColorBlock({pid, setPid, notify}){
     const saveNewPalette = (name) => {
         const newPalette = {
             name: name,
-            locked:false,
-            lerp: true,  
-            colors: palette.colors,
+            colors: colors.toString(),
         };
         axios.request ({
-            url: '/api/palette/new',
+            url: '/api/palette/save',
             method: 'post',
             data: newPalette, 
         })
         .then(function (response) {
-            // update current palette
-            setPalette(newPalette);
-            // update current pid
-            setPid(response.data);
-            // add new palette to saved list
-            updateSavedPalettes(response.data);
+            getPalettes();
         })
         .catch((response) => { console.log(response) });
 
@@ -107,79 +91,20 @@ function ColorBlock({pid, setPid, notify}){
         .catch( (response) => { console.log(response) });
     }
 
-    // Updates saved list on palette change
-    // Only changes palette of given pid
-    const updateSavedPalettes = (pid) => {
-        console.log("update saved: "+pid);
-        getPalette(pid, function(res){
-            let temp_palette = {
-                pid: pid,
-                name: res.name,
-                locked: (res.locked=="true"),
-                lerp: (res.lerp=="true"),
-                colors: res.colors,
-            }
-            const newSaved = savedPalettes.filter(p => p.pid != pid);
-            newSaved.push(temp_palette);
-            setSaved(newSaved);
-        });
-    }
-
 /* ----------------------------------------
     Fields
 ---------------------------------------- */
-    const updateLocked = (locked) => {
-        axios.request ({
-            url: '/api/palette/locked',
-            method: 'post',
-            data: {
-                pid: pid,
-                locked: locked,
-            }, 
-        })
-        .then((response) => {console.log(response)})
-        .catch((response) =>{ console.log(response) });
-    }
 
-    const updateLerp = (lerp) => {
-        axios.request ({
-            url: '/api/palette/lerp',
-            method: 'post',
-            data: {
-                pid: pid,
-                lerp: lerp,
-            }, 
-        })
-        .then((response) => {console.log(response); notify('pid', pid)})
-        .catch((response) =>{ console.log(response) });
-    }
 
 /* ----------------------------------------
     Color List
 ---------------------------------------- */
     // Updates single color in palette
     const updateColor = (index, color) => {
-        if(!palette.locked){
-        // send palette to db
-        // refresh palette list
-            console.log("update "+index);
-            //console.log(palette.colors);  
-            axios.request ({
-                url: '/api/palette/update',
-                method: 'post',
-                data: {
-                    pid: pid,
-                    index: index,
-                    color: color,
-                }, 
-            })
-            .then(function (response) {
-                console.log("save: "+response.data);
-                updateSavedPalettes(pid);
-                notify('pid', pid)
-            })
-            .catch(response => {console.log(response)});
-        }
+        let tempPalette = [...colors];
+        tempPalette[index] = color;
+        setColors(tempPalette);
+        setPalette(tempPalette.toString());
     }
 
 /* ----------------------------------------
@@ -197,61 +122,21 @@ function ColorBlock({pid, setPid, notify}){
         saveNewPalette(name);
     }
 
-    const onDelete = () => {
-        if(palette.locked){
-            message.error({
-                content: 'Palette Locked',
-                style: { marginTop: '8vh'}
-            });
-        }
-        else{
-            axios.delete('/api/palette/', {
-                params: {
-                    pid: pid,
-                    name: palette.name,
-                }
-            })
-            .then(function (response) {
-                //remove palette from saved list
-                setSaved(savedPalettes.filter(p => p.pid != pid));
-                // find new palette in list
-                let it = 0;
-                while(savedPalettes[it].pid == pid) it++;
-                // set new palette
-                setPalette(savedPalettes[it]);
-                setPid(savedPalettes[it].pid);
-
-            })
-            .catch((response)=>{ console.log(response)});
-        }
-    }
+    
 
     // on dropdown select, set pid, find matching palette, and set palette
     const handlePaletteChange = (data) => {
         console.log(data);
-        setPid(data);
+        setSavedName(data);
         savedPalettes.map(item => {
-            if(data == item.pid){
-                setPalette(item);
+            if(data == item.name){
+                setColors(item.colors.split(","));
+                setPalette(item.colors);
             }
         })
     }
 
-    const onLock = () => {
-        updateLocked(!palette.locked);
-        setPalette({
-            ...palette,
-            locked: !palette.locked,
-        });
-    }
 
-    const onLerp = () => {
-        updateLerp(!palette.lerp);
-        setPalette({
-            ...palette,
-            lerp: !palette.lerp,
-        });
-    }
 
 
 /* ----------------------------------------
@@ -259,73 +144,41 @@ function ColorBlock({pid, setPid, notify}){
 ---------------------------------------- */
     // update local palette on color change
     const handleColorChange = (index, color) => {
-        let tempcolors = [...palette.colors];
+        let tempcolors = [...colors];
         tempcolors[index] = color;
-        setPalette({
-            ...palette,
-            colors: tempcolors
-        });
-    
+        setColors(tempcolors);
     };
 
     // when change is complete, update saved palette
     const handleColorComplete = (index, color) => {
-        let tempcolors = [...palette.colors];
+        let tempcolors = [...colors];
         tempcolors[index] = color;
-        setPalette({
-            ...palette,
-            colors: tempcolors
-        });
+        setColors(tempcolors);
         updateColor(index,color);
-        notify('pid', pid);
     };
 
 
     // push new color to current palette
     const addColor = () => {
-        if(palette.colors.length >= 7){
+        if(colors.length >= 7){
             message.error("Cannot add more colors")
         }
         else{
-            axios.request ({
-                url: '/api/palette/push',
-                method: 'post',
-                data: {
-                    pid: pid,
-                    name: palette.name,  
-                    color: palette.colors[0],
-                }, 
-            })
-            .then(function (response) {
-                setPalette({
-                    ...palette,
-                    colors: [...palette.colors, palette.colors[0]],
-                });
-                updateSavedPalettes(pid);
-                notify('pid', pid);
-            })
-            .catch(function (response) { console.log(response) });
+            const newPalette = [...colors, colors[0]]
+            setColors(newPalette);
+            console.log(newPalette);
+            setPalette(newPalette.toString());
         }
     };
 
     // pop last color from current palette
     const removeColor = () => {
-        if(palette.colors.length < 2){
+        if(colors.length < 2){
             message.error("Cannot delete more colors")
         }
         else{
-            axios.delete('/api/palette/pop', {
-                params: {
-                    pid: pid,
-                    name: palette.name,
-                }
-            })
-            .then(function (response) {
-                setPalette({...palette, colors:palette.colors.slice(0,-1)});
-                updateSavedPalettes(pid);
-                notify('pid', pid);
-            })
-            .catch(function (response) { console.log(response) });
+            setPalette(colors.slice(0,-1).toString());
+            setColors(colors.slice(0,-1));
         }
     };
 
@@ -337,15 +190,15 @@ function ColorBlock({pid, setPid, notify}){
         const paletteItems = [];
         for (const [index, value] of savedPalettes.entries()) {
             paletteItems.push(
-                <Select.Option value={value.pid} key={index} >
-                    <PaletteListItem name={value.name} colors={value.colors} />
+                <Select.Option value={value.name} key={index} >
+                    <PaletteListItem name={value.name} colors={value.colors.split(",")} />
                 </Select.Option>
             );
           }
         return(
             <Select
-                defaultValue={palette.name}
-                value={palette.name}
+                defaultValue={savedName}
+                value={savedName}
                 onChange={handlePaletteChange}
                 size='large'
                 style={{width:'250px'}}
@@ -356,47 +209,7 @@ function ColorBlock({pid, setPid, notify}){
         );
     }
 
-    const renderLock = () => {
-        if(palette.locked){
-            return  (
-                <Tooltip title="Locked">
-                    <Button type="default" onClick={onLock} >
-                        <LockTwoTone twoToneColor="red" />
-                    </Button>
-                </Tooltip>
-            )
-        }
-        else{
-            return  (
-                <Tooltip title="Unlocked">
-                    <Button type="default" onClick={onLock} >
-                        <UnlockOutlined/>
-                    </Button>
-                </Tooltip>
-            )
-        }
-    }
-
-    const renderLerp = () => {
-        if(palette.lerp){
-            return  (
-                <Tooltip title="Interpolate">
-                    <Button type="default" onClick={onLerp} >
-                        <LineChartOutlined/>
-                    </Button>
-                </Tooltip>
-            )
-        }
-        else{
-            return (
-                <Tooltip title="Discrete">
-                    <Button type="default" onClick={onLerp} >
-                        <BarChartOutlined/>
-                    </Button>
-                </Tooltip>
-            )
-        }
-    }
+    
 
     function renderColorBlock(){
         if(!loading){
@@ -411,19 +224,12 @@ function ColorBlock({pid, setPid, notify}){
                                         <FileAddOutlined  style={{verticalAlign:'baseline'}}/>
                                     </Button>
                                 </Tooltip>
-                                <Tooltip title="Delete Palette" >
-                                    <Button type="default" onClick={onDelete} >
-                                        <DeleteOutlined style={{verticalAlign:'baseline'}}/> 
-                                    </Button>
-                                </Tooltip>
                                 <Divider type="vertical"/>
-                                {renderLock()}
-                                {renderLerp()}
                             </Space>
                         </Space>
                     <PalettePicker 
-                        colors={palette.colors}
-                        locked={palette.locked}
+                        colors={colors}
+                        locked={false}
                         onChange={handleColorChange}
                         onComplete={handleColorComplete}
                         addColor={addColor}

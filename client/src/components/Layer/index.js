@@ -55,12 +55,12 @@ function Layer({sid, lid, theme, onDeleteLayer}){
                 ...response.data,
                 pos:response.data.pos.toString().split(","),
                 visible: (response.data.visible=='true'),
-                colors:[],
+                colors:response.data.colors.toString(),
                 loading:false
             };
             console.log(initLayer);
             setLayer({...layer, ...initLayer});
-            getColors(response.data.pid);
+            //getColors(response.data.pid);
         })
         .catch( (response) => {console.log(response)});
     }
@@ -71,21 +71,23 @@ function Layer({sid, lid, theme, onDeleteLayer}){
 
 
     const getColors = (pid) => {
-        axios.get('/api/palette/colors', {
-            params: {pid: pid}
+        axios.get('/api/palette/', {
+            params: {name: pid}
         })
         .then((response) =>{
-            setLayer((layer)=>({
-                ...layer,
-                colors:response.data
-            }));
+            console.log(response.data)
+            const colorlist = response.data.split(",")
+            // setLayer({
+            //     ...layer,
+            //     colors: colorlist
+            // })
         })
     }
 
     const notify = (field, value) => {
-        if(field == 'pid'){
-            getColors(value);
-        }
+        // if(field == 'pid'){
+        //     getColors(value);
+        // }
         axios.request ({
             url: '/api/layer/notify',
             method: 'post',
@@ -105,7 +107,7 @@ function Layer({sid, lid, theme, onDeleteLayer}){
             ...layer,
             pid:pid
         });
-        getColors(pid);
+        
         axios.request ({
             url: '/api/layer/pid',
             method: 'post',
@@ -169,6 +171,7 @@ function Layer({sid, lid, theme, onDeleteLayer}){
         pos: (t)=>{setField('pos', t)},
         layout: (e)=>{setField('layout', e.target.value)},
         tile: (t)=>{setField('tile', t)},
+        palette: (p)=>{setField('colors',p)},
         
         pattern: (pat)=>{setField('pattern', pat)},
         direction: (e)=>{setField('direction', e.target.value)},

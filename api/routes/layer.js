@@ -20,7 +20,8 @@ layerRoute.post('/new', (req,res) => {
             "pos", "left,right,center",
             "layout", "left,right",
             "tile", "repeat",
-            "pid", 0
+            "pid", 0,
+            "colors", "#ff0000,#00ff00,#0000ff"
         ];
         switch(req.body.type){
             case "single":
@@ -70,7 +71,7 @@ layerRoute.delete('/', (req,res) => {
     .del("layer:"+req.body.lid)
     .exec(
         function(err,replies){
-            res.send(req.body.lid.toString());
+            res.send(req.body.lid.toString()+' deleted');
         }
     )
 });
@@ -95,8 +96,8 @@ layerRoute.post('/field', (req,res) => {
     client.hset("layer:"+req.body.lid, 
         req.body.field, req.body.value,
         function(err, reply){
-            message = "layer:"+req.body.lid+":action:update:field:"+req.body.field+":value:"+req.body.value;
-            client.publish("active", message);
+            message = req.body.sid+":"+req.body.lid+":update:"+req.body.field+":"+req.body.value;
+            client.publish("notify", message);
             res.send(reply.toString());
         }
     );
@@ -109,7 +110,7 @@ layerRoute.post('/field', (req,res) => {
 //notify
 layerRoute.post('/notify', (req,res) => {
     console.log("MSG: lid:"+req.body.lid+" and "+req.body.field+": "+req.body.value); 
-    message = "layer:"+req.body.lid+":action:update:field:"+req.body.field+":value:"+req.body.value;
+    message = req.body.sid+":"+req.body.lid+":update:"+req.body.field+":"+req.body.value;
     client.publish("active", message);
     res.send('sent');
     

@@ -7,8 +7,8 @@ import { ArrowRightOutlined, CaretRightOutlined, RightOutlined } from '@ant-desi
 import colorTheme from '../themes';
 
 
-function Panel({header, children}){
-    const [expanded, setExpanded] = useState(false);
+function Panel({header, children, expand=false}){
+    const [expanded, setExpanded] = useState(expand);
 
     const style = {
         backgroundColor:colorTheme().fg,
