@@ -63,7 +63,7 @@ const SceneListItem = ({sid, active, setOpen, setActive, tags, theme}) => {
                     />
                 </Col>
                 <Col sm={3}>
-                    <Button href={"/scene?sid="+sid}><RightOutlined/></Button>
+                    <Button href={"/scene/"+sid}><RightOutlined/></Button>
                 </Col>
             </Row>
             

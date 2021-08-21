@@ -74,7 +74,6 @@ function Home() {
         
           <div className="site-layout-background" style={{ padding: 24, minHeight: 380, backgroundColor:theme.bg, }}>
             {renderScene()}
-            <a href='/list'>LIST</a>
           </div>
   );
   

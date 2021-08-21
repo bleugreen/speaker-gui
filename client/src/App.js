@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
-import { Route } from 'react-router';
+import { Redirect, Route } from 'react-router';
 import { Col, Collapse, Row, Menu, Space, Spin } from 'antd';
 import { Layout } from 'antd';
 
@@ -32,20 +32,22 @@ class App extends Component {
             
             <Switch>
               <Route exact path="/">
-                <Home/>
+                <Redirect to="/list"/>
               </Route>
-              <Route path="/palettes">
-                <PaletteManager/>
+
+              <Route path="/list">
+                {/* TODO change to scenelist */}
+                <Home/> 
               </Route>
-              <Route path="/midi">
-                <MidiManager/>
-              </Route>
-              <Route path="/scene">
+              
+              <Route path="/scene/:sid">
                 <SceneWrapper theme={theme}/>
               </Route>
-              <Route path="*">
-                <NotFound/>
-              </Route>
+
+              <Route path="/palettes" component={PaletteManager}/>
+              <Route path="/midi" component={MidiManager}/>
+              <Route path="/scene"><Redirect to="/list"/></Route>
+              <Route path="*" component={NotFound}/>
             </Switch>
 
           </Content>
