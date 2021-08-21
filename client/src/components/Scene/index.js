@@ -120,7 +120,7 @@ function Scene({sid, theme, active, setActive}) {
       <Button
         style={{position:'fixed', top:80, left:10}}
         type='ghost'
-        onClick={()=>setActive('list')}
+        href="/"
       >
         <RollbackOutlined/>
       </Button>

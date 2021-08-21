@@ -26,8 +26,7 @@ function Home() {
 
   useEffect(() => {
       if(loading){
-        init();
-        console.log(theme.red);
+        setLoading(false);
       }
 
       // SSE - keeps track of whether pi is connected / running
@@ -48,84 +47,9 @@ function Home() {
       }
   }, []);
 
-  const init = () => {
-    // get connected
-    axios.get('/api/util/connected', {})
-    .then(function (response) {
-      setConnected(response.data);
-      axios.get('/api/util/running', {})
-      .then(function (response) {
-        setRunning(response.data);
-        axios.get('/api/util/layout', {})
-        .then(function (response) {
-          setLayout(response.data);
-          axios.get('/api/scene/active', {})
-          .then(function (response) {
-            setActive(response.data);
-            setLoading(false);
-          })
-          
-        })
-        .catch(function (response) {console.log(response)});
-      })
-      .catch(function (response) {console.log(response)});
-    }).catch(function (response) {
-      //handle error
-      console.log(response);
-    });
-  }
-
-  const onShutdown = () => {
-    axios.request ({
-      url: '/api/util/shutdown',
-      method: 'post',
-      data: { sid: 0 }
-    })
-    .then(function (response) {console.log(response)})
-    .catch(function (response) { console.log(response) });
-  }
-  const onReboot = () => {
-    axios.request ({
-      url: '/api/util/reboot',
-      method: 'post',
-      data: { sid: 0 }
-    })
-    .then(function (response) {console.log(response)})
-    .catch(function (response) { console.log(response) });
-  }
-  const onStart = () => {
-    axios.request ({
-      url: '/api/util/start',
-      method: 'post',
-      data: { sid: 0 }
-    })
-    .then(function (response) {console.log(response)})
-    .catch(function (response) { console.log(response) });
-  }
-  const onEnd = () => {
-    axios.request ({
-      url: '/api/util/end',
-      method: 'post',
-      data: { sid: 0 }
-    })
-    .then(function (response) {console.log(response)})
-    .catch(function (response) { console.log(response) });
-  }
-
-  const updateLayout = (data) => {
-    setLayout(data);
-    axios.request ({
-      url: '/api/util/layout',
-      method: 'post',
-      data: { layout: data }
-    })
-    .then(function (response) {console.log(response)})
-    .catch(function (response) { console.log(response) });
-  }
-
   const renderScene = () => {
     if(open=='list'){
-      return <SceneList theme={theme} setActive={handleActive} setOpen={setOpen} active={active} />
+      return <SceneList theme={theme} setActive={(handleActive)} setOpen={setOpen} active={active} />
     }
     else{
       return <Scene theme={theme} sid={open} setActive={setOpen}/>
@@ -145,45 +69,13 @@ function Home() {
 
   if(loading) return <Spin/>;
   return (
-      <Layout style={{height:"100%"}}>
-        <Header 
-          style={{ 
-            position: 'fixed', 
-            zIndex: 1, 
-            width: '100%', 
-            textAlign:"left",
-            backgroundColor:theme.header
-          }}
-        >
-          <Row justify="space-between" align="middle">
-            <Col sm={8} xs={14}>
-              <Title level={2}style={{color:theme.headerText, fontFamily:"RecoletaBold"}}>Cymatism</Title>
-            </Col>
-            <Col sm={3} xs={6}>
-              <SystemMenu 
-                theme={theme}
-                running={running} 
-                connected={connected} 
-                layout={layout} 
-                setLayout={updateLayout} 
-                start={onStart}
-                end={onEnd}
-                shutdown={onShutdown}
-                reboot={onReboot}
-                style={{marginLeft:"auto", textAlign:"right"}}
-              />
-            </Col>
-          
 
-          </Row>
-          
-        </Header>
-        <Content className="site-layout" style={{ marginTop: 64, backgroundColor:theme.bg, height:"100%" }}>
+        
+        
           <div className="site-layout-background" style={{ padding: 24, minHeight: 380, backgroundColor:theme.bg, }}>
             {renderScene()}
+            <a href='/list'>LIST</a>
           </div>
-        </Content>
-      </Layout>
   );
   
 };
