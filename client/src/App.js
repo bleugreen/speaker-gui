@@ -4,7 +4,7 @@ import { Redirect, Route } from 'react-router';
 import { Col, Collapse, Row, Menu, Space, Spin } from 'antd';
 import { Layout } from 'antd';
 
-import Home from './components/Home';
+
 
 import './App.css';
 
@@ -12,11 +12,12 @@ import Title from 'antd/lib/typography/Title';
 import colorTheme from './components/themes';
 import Navbar from './components/Navbar';
 const { Header, Content } = Layout;
-import SceneList from './components/Home/scenelist';
 import NotFound from './components/NotFound';
 import PaletteManager from './components/PaletteManager';
 import MidiManager from './components/MidiManager';
 import SceneWrapper from './components/SceneWrapper';
+import SceneList from './components/SceneList';
+import Scene from './components/Scene';
 
 const theme = colorTheme();
 
@@ -25,25 +26,26 @@ const theme = colorTheme();
 class App extends Component {
   render() {
     return (
-      <Router>   
-        <Layout style={{height:"100%"}}>
+
+      <Layout style={{height:"100%"}}>
           <Navbar theme={theme}/>
+         
+        
           <Content className="site-layout" style={{ marginTop: 64, backgroundColor:theme.bg, height:"100%" }}>
             
             <Switch>
+              <Route path="/scene/:sid">
+                <Scene theme={theme}/>
+              </Route>
+
               <Route exact path="/">
                 <Redirect to="/list"/>
               </Route>
 
               <Route path="/list">
-                {/* TODO change to scenelist */}
-                <Home/> 
+                <SceneList theme={theme} />
               </Route>
-              
-              <Route path="/scene/:sid">
-                <SceneWrapper theme={theme}/>
-              </Route>
-
+                
               <Route path="/palettes" component={PaletteManager}/>
               <Route path="/midi" component={MidiManager}/>
               <Route path="/scene"><Redirect to="/list"/></Route>
@@ -51,8 +53,10 @@ class App extends Component {
             </Switch>
 
           </Content>
-        </Layout>  
-      </Router>
+         
+      
+      </Layout> 
+   
     )
   }
 }

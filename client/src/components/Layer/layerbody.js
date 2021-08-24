@@ -11,6 +11,7 @@ import PanelPicker from './panelpicker';
 import Panel from '../Panel';
 import './style.css';
 import colorTheme from '../themes';
+import Parameter from './parameter';
 
 
 const { Option } = Select;
@@ -23,24 +24,19 @@ function LayerBody({layer, theme, notify, setters, expanded, handleExpand, onDel
       }
 
     const opacity = (
-        <Row align='middle'>
-            <Col sm={4} xs={7}>
-                <Text >Opacity</Text>
-            </Col>
-            <Col sm={1}>
-                <EyeButton visible={layer.visible} setVisible={setters.visible} theme={theme}/>
-            </Col>
-            <Col sm={9}>
-                <Slider 
+        <Parameter title="Opacity">
+            <Space>
+            <EyeButton visible={layer.visible} setVisible={setters.visible} theme={theme}/>
+            <Slider 
                     tipFormatter={formatter} 
                     min={0} 
                     max={100}
                     defaultValue={layer.opacity} 
                     onAfterChange={setters.opacity}
-                    style={{width:180}} />
-            </Col>
-            
-        </Row>
+                    style={{marginLeft:'15px', minWidth:100}} 
+            />
+            </Space>
+        </Parameter>
     );
 
     const layout = () => {
@@ -183,30 +179,7 @@ function LayerBody({layer, theme, notify, setters, expanded, handleExpand, onDel
                     header='General'
                 >
                     {opacity}
-                        <Divider/>
-                        {layout()}
-                        <Divider/>
-                        <Row align="middle" justify="start">
-                            <Col sm={4} xs={9}>
-                                <Text >Panels</Text>
-                            </Col>
-                            <Col sm={12}>
-                                <Select
-                                    mode="multiple"
-                                    allowClear
-                                    placeholder="Please select"
-                                    defaultValue={layer.pos}
-                                    onChange={setters.pos}
-                                    style={{minWidth:180, backgroundColor:theme.fg}}
-                                    dropdownStyle={{color:theme.fg}}
-                                >
-                                    <Option key='left'>Left</Option>
-                                    <Option key='right'>Right</Option>
-                                    <Option key='center'>Center</Option>
-                                </Select>
-                            </Col>                  
-                        </Row>
-                        <Divider/>
+
                         <Row align="middle">
                             <Col sm={4} xs={9}>
                                 <Text>Pattern</Text>
@@ -224,6 +197,66 @@ function LayerBody({layer, theme, notify, setters, expanded, handleExpand, onDel
                         </Row>
                         <Divider/>
                         {pattern()}
+                        <Parameter title="Flexibility">
+                            <Slider
+                                max={100}
+                                min={0}
+                                step={1}
+                                defaultValue={layer.flex || 50}
+                                onAfterChange={setters.flex}
+                                style={{minWidth:'100px'}}
+                            />
+                        </Parameter>
+                        <Parameter title="Max Drops">
+                            <Slider
+                                max={500}
+                                min={0}
+                                step={1}
+                                defaultValue={layer.numdrops || 50}
+                                onAfterChange={setters.numdrops}
+                                style={{minWidth:'100px'}}
+                            />
+                        </Parameter>
+                        <Parameter title="Spawn Chance">
+                            <Slider
+                                max={100}
+                                min={0}
+                                step={1}
+                                defaultValue={layer.spawn || 50}
+                                onAfterChange={setters.spawn}
+                                style={{minWidth:'100px'}}
+                            />
+                        </Parameter>
+                        <Parameter title="Length">
+                            <Slider
+                                max={15}
+                                min={0.1}
+                                step={0.1}
+                                defaultValue={layer.l0 || 50}
+                                onAfterChange={setters.l0}
+                                style={{minWidth:'100px'}}
+                            />
+                        </Parameter>
+                        <Parameter title="Velocity">
+                            <Slider
+                                max={100}
+                                min={0}
+                                step={1}
+                                defaultValue={layer.v0 || 50}
+                                onAfterChange={setters.v0}
+                                style={{minWidth:'100px'}}
+                            />
+                        </Parameter>
+                        <Parameter title="Acceleration">
+                            <Slider
+                                max={100}
+                                min={0}
+                                step={0.1}
+                                defaultValue={layer.a || 0.05}
+                                onAfterChange={setters.a}
+                                style={{minWidth:'100px'}}
+                            />
+                        </Parameter>
                 </Panel>
             </div>
             <Divider/>

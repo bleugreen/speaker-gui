@@ -1,24 +1,27 @@
-import { Col, Collapse, Row, Menu, Space, Button, Divider } from 'antd';
+import { Col, Row, Space, Button, Divider, Input } from 'antd';
 import React, { useState, useEffect } from 'react';
-import Mode from '../Mode';
-import { Layout } from 'antd';
 import axios from 'axios';
+import { Link, useParams
+} from "react-router-dom";
+
 
 import './style.css';
 import LayerList from './layerlist'
 import Panel from '../Panel'
 import Title from 'antd/lib/typography/Title';
 import NewLayerModal from './newlayermodal';
-const { Header, Content } = Layout;
+
 
 import Reorder, {
   reorder
 } from 'react-reorder';
-import { PlusCircleOutlined, PlusSquareFilled, PlusSquareOutlined, RollbackOutlined } from '@ant-design/icons';
+import { RollbackOutlined } from '@ant-design/icons';
 import Text from 'antd/lib/typography/Text';
+import TagList from './taglist';
 
-function Scene({sid, theme, active, setActive}) {
+function Scene({theme, active}) {
   const [loading, setLoading] = useState(true);
+  const [ready, setReady] = useState(false);
   const [layers, setLayers] = useState([]);
   const [sceneParams, setScene] = useState({
     name: 'Default',
@@ -27,33 +30,26 @@ function Scene({sid, theme, active, setActive}) {
   });
   const [modalVisible, setModalVisible] = useState(false);
 
+  let { sid } = useParams();
+
   useEffect(() => {
     if(loading){
       init();
+      setLoading(false);
     }  
   });
 
   const init = () => {
-   // get layers
-   setLoading(false); 
-    axios.get('/api/scene', {
-    params: { sid: sid }
-    })
-    .then( (response) => {
-    console.log(response.data);
-    //setScene(response.data);
-
-    })
-    .catch( (response) => {console.log(response)});
-   axios.get('/api/scene/layers', {
+      axios.get('/api/scene', {
       params: { sid: sid }
-    })
-    .then( (response) => {
-      console.log(response.data);
-      setLayers(response.data);
-      
-    })
-    .catch( (response) => {console.log(response)});
+      })
+      .then( (response) => {
+        console.log(response.data);
+        setScene(response.data);
+        setLayers(response.data.layers);
+        setReady(true);
+      })
+      .catch( (response) => {console.log(response)});
   }
 
   
@@ -98,6 +94,26 @@ function Scene({sid, theme, active, setActive}) {
     setModalVisible(false);
   }
 
+  const setField = (field, value) => {
+    setScene({
+      ...sceneParams,
+      [field]: value
+    });
+    axios.request ({
+      url: '/api/scene/field',
+      method: 'post',
+      data: {
+        sid: sid,
+        field: field,  
+        value: value
+      }
+    })
+    .then(function (response) {})
+    .catch(function (response) { console.log(response) });
+
+  }
+
+
   const onNewLayerClick = () => { setModalVisible(true) }
   const onNewLayerCancel = () => { setModalVisible(false) }
 
@@ -115,21 +131,25 @@ function Scene({sid, theme, active, setActive}) {
     .catch(function (response) { console.log(response) });
   };
 
+  if(!ready){
+    return <div></div>
+  }
+
   return (
-    <div>
-      <Button
-        style={{position:'fixed', top:80, left:10}}
-        type='ghost'
-        href="/"
-      >
+    <div className="site-layout-background" style={{ padding: 24, minHeight: 380, backgroundColor:theme.bg}}>
+      <Link to="/list">
+      <Button style={{position:'fixed', top:80, left:10}} type='ghost'>
         <RollbackOutlined/>
       </Button>
+      </Link>
     <div style={{width:"90%", margin:'auto'}}>
       
       <Row>
         <Col sm={12} xs={24}> 
           <Title style={{fontFamily:"RecoletaMedium"}}>{sceneParams.name}</Title>
+          <Title style={{fontFamily:"RecoletaMedium"}}><Input size="large"/></Title>
           <Text>{sceneParams.desc}</Text>
+          <TagList theme={theme} tags={sceneParams.tags.split(',')} setTags={(tags)=>{setField('tags',tags)}}/>
         </Col>
         <Col sm={12} xs={24}>
           
@@ -143,7 +163,7 @@ function Scene({sid, theme, active, setActive}) {
             
           </Col>
           <Col sm={{span:1, offset:9}} xs={{span:1, offset:12}}>
-          <Button type="ghost" onClick={onNewLayerClick}>New</Button>
+          
           </Col>
           
         </Row>
@@ -162,6 +182,11 @@ function Scene({sid, theme, active, setActive}) {
 
             
             <Divider/>
+            <div style={{float:'right'}}>
+            <Button type="ghost" style={{borderColor:theme.text2}}onClick={onNewLayerClick}>New Layer</Button>
+            <Button type="ghost" style={{marginLeft:'10px', borderColor:theme.text2}}>Duplicate Scene</Button>
+            <Button type="ghost" style={{ marginLeft:'10px',borderColor:theme.text2}}>Delete Scene</Button>
+            </div>
             
           </Col>
         </Row>

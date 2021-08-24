@@ -5,7 +5,6 @@ import React, { useState, useEffect } from 'react';
 import { Switch } from 'antd';
 import ReactTooltip from 'react-tooltip';
 
-import Mode from '../Mode';
 
 const { Title, Text } = Typography;
 
@@ -181,7 +180,15 @@ function Layer({sid, lid, theme, onDeleteLayer}){
         graphdir: (a)=>{setField('graphdir', a)},
         mirrorx: (m)=>{setField('mirrorx', m)},
         mirrory: (m)=>{setField('mirrory', m)},
-        visible: () => {setVisible()}
+        visible: () => {setVisible()},
+
+        flex: (t)=>{setField('flex', t)},
+        v0: (t)=>{setField('v0', t)},
+        l0: (t)=>{setField('l0', t)},
+        a: (t)=>{setField('a', t)},
+        numdrops: (t)=>{setField('numdrops', t)},
+        spawn: (t)=>{setField('spawn', t)},
+        
     };
 
 

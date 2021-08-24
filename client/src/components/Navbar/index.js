@@ -1,22 +1,39 @@
-import { Col, Collapse, Row, Menu, Space, Spin, Divider } from 'antd';
+import { Col, Collapse, Row, Menu, Space, Spin, Divider, Button } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { Layout } from 'antd';
+import axios from 'axios';
 import {
-    BrowserRouter as Router,
-    Switch,
     useLocation
   } from "react-router-dom";
 
 import Title from 'antd/lib/typography/Title';
+import NavLink from './navlink';
 
 const { Header, Content } = Layout;
-const { Panel } = Collapse;
 
 
 function Navbar({theme}) {
     const [loading, setLoading] = useState(true);
-    const [active, setActive] = useState('list');
-    const [open, setOpen] = useState('list');
+    const [connected, setConnected] = useState(false);
+    const [running, setRunning] = useState(false);
+
+    useEffect(()=>{
+        // SSE - keeps track of whether pi is connected / running
+        let eventSource = new EventSource("http://localhost:3000/api/util/stream")
+        eventSource.onmessage = e => {
+            var msg = e.data.split(":");
+            if(msg.length > 0){
+                console.log(msg);
+                if(msg[0] == "connected"){
+                    setConnected(msg[1]=="true");
+                }
+                if(msg[0] == "running"){
+                    console.log(msg[1]=="true");
+                    setRunning(msg[1]=="true");
+                }
+            }
+        }
+    }, [])
 
     let location = useLocation();
     const inactiveStyle = {
@@ -29,19 +46,18 @@ function Navbar({theme}) {
 
     const renderLinks = () => {
         let listStyle = inactiveStyle;
-        if(location.pathname == '/list') listStyle = activeStyle;
-
         let paletteStyle = {...inactiveStyle, marginLeft:'25px'};
-        if(location.pathname == '/palettes') paletteStyle = {...activeStyle, marginLeft:'25px'};
-
         let midiStyle = {...inactiveStyle, marginLeft:'25px'};
-        if(location.pathname == '/midi') midiStyle = {...activeStyle, marginLeft:'25px'};
+        
+        if(location.pathname == '/list') listStyle = activeStyle;
+        else if(location.pathname == '/palettes') paletteStyle = {...activeStyle, marginLeft:'25px'};
+        else if(location.pathname == '/midi') midiStyle = {...activeStyle, marginLeft:'25px'};
         
         return(
         <Col sm={16} xs={0}>
-                    <a href="/" style={listStyle}>Scenes</a>
-                    <a href="/palettes" style={paletteStyle}>Palettes</a>
-                    <a href="/midi" style={midiStyle}>Midi Map</a>
+                    <NavLink to="/list" theme={theme} marginLeft="0">Scenes</NavLink>
+                    <NavLink to="/palettes" theme={theme} marginLeft="25px">Palettes</NavLink>
+                    <NavLink to="/midi" theme={theme} marginLeft="25px">Midi Map</NavLink>
         </Col>
         )
     }
@@ -50,7 +66,7 @@ function Navbar({theme}) {
         if(loading){
           setLoading(false);
         }
-          
+
         // SSE - keeps track of whether pi is connected / running
         let eventSource = new EventSource("http://localhost:3000/api/util/stream")
         eventSource.onmessage = e => {
@@ -68,6 +84,12 @@ function Navbar({theme}) {
           
         }
     }, []);
+
+    const killPressed = () => {
+        axios.request ({ url: '/api/util/end', method: 'post' })
+          .then(function (response) {})
+          .catch(function (response) { console.log(response) });
+    }
 
     return(
         <Header 
@@ -89,6 +111,9 @@ function Navbar({theme}) {
               </a>
             </Col>
             {renderLinks()}
+            <Col span={3}>
+                <Button type='ghost' style={{color:theme.headerText}} onClick={killPressed}>Kill Lights</Button>
+            </Col>
           </Row>
         </Header>
     )
