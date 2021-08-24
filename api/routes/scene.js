@@ -22,19 +22,24 @@ sceneRoute.get('/', (req,res) => {
     console.log("GET: "+sid);
     client.multi()
         .hgetall("scene:"+sid)
-        .zrange("scene:"+sid+":layers", 0, -1)
+        .zrange('scene:'+req.query.sid+":layers", 0, -1)
     .exec(
         function(err, replies){
-            if(replies[0]){
-                const scene = {
-                    sid: sid,
-                    name: replies[0].name,
-                    layers: replies[1]
-                };
-                res.send(scene);
+            if(err){
+                console.log(err)
             }
             else{
-                res.send("Scene "+sid+" does not exist");
+                if(replies[0]){
+                    const scene = {
+                        sid: sid,
+                        ...replies[0],
+                        layers: replies[1]
+                    };
+                    res.send(scene);
+                }
+                else{
+                    res.send("Scene "+sid+" does not exist");
+                }
             }
         }
     );
@@ -90,6 +95,46 @@ sceneRoute.get('/name', (req,res) => {
     });
 });
 
+// get tags
+sceneRoute.get('/tags', (req,res) => {
+    console.log("GET: saved tags");
+    client.smembers('scene:tags', function(err, reply){
+        !err && res.send(reply.toString());
+    });
+});
+
+// add tag
+sceneRoute.post('/tags', (req,res)=> {
+    //console.log(req.body);
+    client.sadd('scene:tags', req.body.tag, function(err,reply) {
+        !err && res.send(reply.toString());
+    });
+});
+
+// remove tag
+sceneRoute.delete('/tags', (req,res)=> {
+    //console.log(req.body);
+    client.srem('scene:tags', req.body.tag, function(err,reply) {
+        !err && res.send(reply.toString());
+    });
+});
+
+// get field
+sceneRoute.get('/field', (req,res) => {
+    console.log("GET: scene "+req.query.field+", sid: "+req.query.sid);
+    client.hget('scene:'+req.query.sid, req.query.field, function(err, reply){
+        res.send(reply.toString());
+    });
+});
+
+// set field
+sceneRoute.post('/field', (req,res)=> {
+    //console.log(req.body);
+    client.hset('scene:'+req.body.sid, req.body.field, req.body.value, function(err,reply) {
+        !err && res.send(reply.toString());
+    });
+});
+
 /* - - - - - - - - - - - - - - - - 
     Layer List
 - - - - - - - - - - - - - - - - */
@@ -97,7 +142,7 @@ sceneRoute.get('/name', (req,res) => {
 sceneRoute.get('/layers', (req,res) => {
     console.log("GET: scene layers");
     client.zrange('scene:'+req.query.sid+":layers", 0, -1, function(err, reply){
-        res.send(reply);
+        res.send(reply.toString());
     });
 });
 
@@ -108,7 +153,7 @@ sceneRoute.post('/layer', (req,res) => {
     const lid = req.body.lid;
     client.multi()
     .zadd('scene:'+sid+":layers", index, lid)
-    .publish('active', 'scene:'+sid+':new:'+lid+':')
+    .publish('notify', sid+lid+':new:null:null')
     .exec(
         function(err, replies){
             res.send(replies);
@@ -122,7 +167,7 @@ sceneRoute.delete('/layer', (req,res) => {
     const lid = req.body.lid;
     client.multi()
     .zrem('scene:'+sid+":layers", lid)
-    .publish('active', 'scene:'+sid+':delete:'+lid+':')
+    .publish('notify', sid+lid+':delete:null:null')
     .exec(
         function(err, replies){
             res.send(replies);
@@ -138,9 +183,8 @@ sceneRoute.post('/reorder', (req,res) => {
     for (const [index, value] of list.entries()) {
        multi.zadd("scene:"+sid+":layers", index, value);
        multi.hset("layer:"+value, "index", index);
-       multi.publish("active", "layer:"+value+":update:index:"+index);
+       multi.publish("notify", sid+":"+value+":update:index:"+index);
     }
-    multi.publish("active", "scene:"+sid+":reorder::")
     multi.exec(function(err, replies) {
         res.send(replies);
     });
@@ -153,21 +197,21 @@ sceneRoute.post('/reorder', (req,res) => {
 sceneRoute.get('/idgen', (req,res) => {
     console.log("GET: scene id");
     client.incr('scene:idgen', function(err, reply){
-        res.send(reply.toString());
+        !err && res.send(reply.toString());
     });
 });
 
 // get list of scenes
 sceneRoute.get('/list', (req,res) => {
     client.smembers('scene:list', function(err, reply){
-        res.send(reply);
+        !err && res.send(reply.toString());
     });
 });
 
 // get active scene
 sceneRoute.get('/active', (req,res) => {
     client.get('scene:active', function(err, reply){
-        res.send(reply);
+        !err && res.send(reply.toString());
     });
 });
 
@@ -175,8 +219,8 @@ sceneRoute.get('/active', (req,res) => {
 sceneRoute.post('/active', (req,res)=> {
     //console.log(req.body);
     client.set("scene:active", req.body.sid, function(err,reply) {
-        client.publish("active", "scene:"+req.body.sid+":change::");
-        res.sendStatus(reply.toString());
+        client.publish("notify", req.body.sid+":null:changescene:null:null");
+        !err && res.send(reply.toString());
     });
 });
 

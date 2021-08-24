@@ -98,7 +98,7 @@ layerRoute.post('/field', (req,res) => {
         function(err, reply){
             message = req.body.sid+":"+req.body.lid+":update:"+req.body.field+":"+req.body.value;
             client.publish("notify", message);
-            res.send(reply.toString());
+            !err && res.send(reply.toString());
         }
     );
 });

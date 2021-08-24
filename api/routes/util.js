@@ -76,7 +76,7 @@ utilRoute.post('/end', (req,res)=> {
     //console.log(req.body);
     client.publish("notify", "END", function(err,reply) {
         //console.log(reply)
-        res.send(reply.toString());
+        !err && res.send(reply.toString());
     });
 });
 
