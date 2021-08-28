@@ -1,9 +1,11 @@
 var express = require('express');
 require('dotenv').config();
-
+const axios = require('axios');
 
 var sceneRoute = express.Router();
 var client = require('../client.js');
+
+const url = "https://localhost:3000"
 
 /* - - - - - - - - - - - - - - - - 
     Scene
@@ -65,8 +67,9 @@ sceneRoute.post('/new', (req,res) => {
 });
 
 // delete scene
-sceneRoute.delete('/del', (req,res) => {
-    const sid = req.query.sid;
+sceneRoute.delete('/', (req,res) => {
+    const sid = req.body.sid;
+    console.log('delete sid:'+sid);
     client.multi()
         // get lids assoc. with scene
         .zrange("scene:"+sid+":layers", 0, -1)
@@ -78,14 +81,52 @@ sceneRoute.delete('/del', (req,res) => {
         .srem("scene:list", sid)
     .exec(
         function(err, replies){
-            // delete hash of each layer
-            replies[0].map(lid => {
-                client.del("layer:"+lid);
-            })
-            res.send(replies);
+            if(!err){
+                // delete hash of each layer
+                replies[0].map(lid => {
+                    client.del("layer:"+lid);
+                })
+                res.send(replies);
+            }
+            else{
+                res.send(err)
+            }
         }
     )
 });
+
+// duplicate scene
+sceneRoute.get('/duplicate', (req,res)=> {
+    var fullUrl = req.protocol + '://' + req.get('host')
+    client.multi()
+    .incr('scene:idgen')
+    .hgetall("scene:"+req.query.sid)
+    .zrange('scene:'+req.query.sid+":layers", 0, -1)
+    .exec(function(err, replies){
+        if(!err){
+            const sid = replies[0].toString();
+            const scene = replies[1];
+            const layerlist = replies[2];
+            let multi = client.multi();
+            multi.sadd("scene:list", sid)
+            for(const prop in scene){
+                multi.hset('scene:'+sid, prop, scene[prop])
+            }
+            multi.exec();
+            for(i in layerlist){
+                axios.get(fullUrl+'/api/layer/duplicate', {params: {lid:layerlist[i]}})
+                .then((response)=>{
+                    const newLid = response.data.toString();
+                    client.zadd('scene:'+sid+':layers', 0, newLid);
+                })
+                .catch( (response) => {console.log(response)});
+            }
+            console.log(layerlist);
+            res.send(sid.toString())
+        }
+    });
+});
+
 
 // get name
 sceneRoute.get('/name', (req,res) => {

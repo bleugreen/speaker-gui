@@ -9,7 +9,7 @@ import './style.css';
 
 
 function SceneList({theme}){
-    const [active, setActive] = useState('list');
+    const [active, setActive] = useState(-1);
     const [scenes, setScenes] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -32,7 +32,9 @@ function SceneList({theme}){
         axios.get('/api/scene/list')
         .then((response) =>{
             console.log(response.data)
-            setScenes([response.data]);
+            const data = response.data;
+            if(data.length > 1) setScenes(response.data.split(","));
+            else setScenes([response.data]);
         })
     }
 
@@ -49,8 +51,9 @@ function SceneList({theme}){
 
     const renderList = () => {
         let sceneList = []
-        for (const s in scenes){
-            sceneList.push(<SceneListItem theme={theme} key={s} sid={s} active={active} setActive={setActive} />)
+        for (const i in scenes){
+            console.log('pushing: '+scenes[i])
+            sceneList.push(<SceneListItem theme={theme} key={scenes[i]} sid={scenes[i]} active={active} setActive={handleActive} />)
         }
         return sceneList
     }

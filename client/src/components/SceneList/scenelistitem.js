@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import colorTheme from "../themes"
 import { useLocation, Link } from "react-router-dom";
+import ActiveButton from "../ActiveButton"
 
 const SceneListItem = ({sid, active, setActive, theme}) => {
     const [name, setName] = useState(sid);
@@ -20,8 +21,9 @@ const SceneListItem = ({sid, active, setActive, theme}) => {
                 setName(response.data);
                 setLoading(false);
             })
+            .catch(function(response){console.log(response)})
         }
-    })
+    }, [active])
 
     const itemStyle = {
         backgroundColor: theme.fg,
@@ -30,7 +32,8 @@ const SceneListItem = ({sid, active, setActive, theme}) => {
         padding: "5%",
         cursor: "pointer", 
         lineHeight: 1.5715,
-        borderRadius: "20px"
+        borderRadius: "20px",
+        marginBottom:"20px"
     }
     
     return (
@@ -39,14 +42,9 @@ const SceneListItem = ({sid, active, setActive, theme}) => {
             <Col sm={6}>
                 <Title align="left" style={{margin:0, color:theme.text}}>{name}</Title>
             </Col>
-            {/* <Col sm={3}>
-                <Switch
-                    defaultChecked={active==sid}
-                    checkedChildren="Active"
-                    unCheckedChildren={<CloseOutlined/>}
-                    onChange={handleActive}
-                />
-            </Col> */}
+            <Col sm={3}>
+                <ActiveButton sid={sid} theme={theme} active={active} setActive={setActive}/>
+            </Col>
             <Col sm={3}>
                 <Link to={"/scene/"+sid}><Button><RightOutlined/></Button></Link>
             </Col>

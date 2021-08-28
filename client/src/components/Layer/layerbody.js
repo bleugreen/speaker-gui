@@ -149,6 +149,7 @@ function LayerBody({layer, theme, notify, setters, expanded, handleExpand, onDel
                     }}
                     style ={{
                         marginTop:"8%",
+                        borderRadius:"20%",
                         
                     }}
                 >

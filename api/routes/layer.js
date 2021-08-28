@@ -65,6 +65,28 @@ layerRoute.get('/', (req,res) => {
     );
 });
 
+// duplicate
+layerRoute.get('/duplicate', (req,res)=>{
+    client.multi()
+    .incr('layer:idgen') 
+    .hgetall("layer:"+req.query.lid)
+    .exec(
+        function(err, replies){
+            const lid = replies[0]
+            const layer = replies[1]
+            console.log('layer get:')
+            let multi = client.multi();
+            for(const property in layer){
+                console.log(`${property} = ${layer[property]}`)
+                multi.hset("layer:"+lid, property, layer[property])
+            }
+            multi.exec(function(err, replies){
+                res.send(lid.toString())
+            })
+        }
+    );
+})
+
 // delete
 layerRoute.delete('/', (req,res) => {
     client.multi()

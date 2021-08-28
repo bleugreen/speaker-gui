@@ -18,8 +18,11 @@ import Reorder, {
 import { RollbackOutlined } from '@ant-design/icons';
 import Text from 'antd/lib/typography/Text';
 import TagList from './taglist';
+import DuplicateButton from './duplicateModal';
+import ActiveButton from '../ActiveButton';
 
-function Scene({theme, active}) {
+
+function Scene({theme}) {
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
   const [layers, setLayers] = useState([]);
@@ -29,6 +32,9 @@ function Scene({theme, active}) {
     tags: 'Test,Util,Ambient'
   });
   const [modalVisible, setModalVisible] = useState(false);
+  const [titleChange, setTitleChange] = useState(false);
+  const [descChange, setDescChange] = useState(false);
+  const [active, setActive] = useState(-1);
 
   let { sid } = useParams();
 
@@ -47,9 +53,64 @@ function Scene({theme, active}) {
         console.log(response.data);
         setScene(response.data);
         setLayers(response.data.layers);
-        setReady(true);
+        axios.get('/api/scene/active')
+        .then((response) => {
+          console.log("active:"+(response.data==sid));
+          setActive(response.data);
+          setReady(true);
+        })
+        
       })
       .catch( (response) => {console.log(response)});
+  }
+
+  const onActive = (val) => {
+    axios.request ({
+      url: '/api/scene/active',
+      method: 'post',
+      data: {
+        sid: val,
+      }
+    })
+    .then(function (response) {
+      console.log(response);
+      setActive(val)
+    })
+    .catch(function (response) { console.log(response) });
+  }
+
+  const onDuplicate = (name) => {
+    axios.get('/api/scene/duplicate', {params:{sid:sid}})
+    .then((response)=>{
+      console.log(response.data)
+      const newSid = response.data;
+      axios.request ({
+        url: '/api/scene/field',
+        method: 'post',
+        data: {
+          sid: newSid,
+          field: 'name',  
+          value: name
+        }
+      })
+      .then(function (response) {})
+      .catch(function (response) { console.log(response) });
+    })
+  }
+
+  const onDelete = () => {
+    if(sid != 0)
+    {
+      axios.request ({
+        url: '/api/scene/',
+        method: 'delete',
+        data: {
+          sid: sid,
+        }
+      })
+      .then(function (response) {console.log(response)})
+      .catch(function (response) { console.log(response) });
+    }
   }
 
   
@@ -116,6 +177,11 @@ function Scene({theme, active}) {
 
   const onNewLayerClick = () => { setModalVisible(true) }
   const onNewLayerCancel = () => { setModalVisible(false) }
+  const onSetName = (e) => { 
+    console.log(e.target.value);
+    setField('name', e.target.value);
+    setTitleChange(false); 
+  }
 
   const onReorder = (event, previousIndex, nextIndex) =>{
     setLayers( reorder(layers, previousIndex, nextIndex) );
@@ -130,6 +196,15 @@ function Scene({theme, active}) {
     .then(function (response) {console.log(response)})
     .catch(function (response) { console.log(response) });
   };
+
+  const renderTitle = () => {
+    if(titleChange){
+     return  <Input size='large' defaultValue={sceneParams.name} onPressEnter={onSetName}/>
+    }
+    else{
+      return <Title style={{fontFamily:"RecoletaMedium"}}>{sceneParams.name}</Title>
+    }
+  }
 
   if(!ready){
     return <div></div>
@@ -146,8 +221,12 @@ function Scene({theme, active}) {
       
       <Row>
         <Col sm={12} xs={24}> 
-          <Title style={{fontFamily:"RecoletaMedium"}}>{sceneParams.name}</Title>
-          <Title style={{fontFamily:"RecoletaMedium"}}><Input size="large"/></Title>
+         <div onDoubleClick={()=>{setTitleChange(!titleChange)}}> 
+         {
+           renderTitle()
+         }
+         </div>
+
           <Text>{sceneParams.desc}</Text>
           <TagList theme={theme} tags={sceneParams.tags.split(',')} setTags={(tags)=>{setField('tags',tags)}}/>
         </Col>
@@ -155,11 +234,11 @@ function Scene({theme, active}) {
           
         </Col>
       </Row>
-      <div>
+      <div >
         <Divider/>
         <Row justify="start" align="top">
           <Col sm={9} xs={8}>
-            <Title style={{fontFamily:"RecoletaMedium"}} level={2}>Layers</Title>
+            <Title  style={{fontFamily:"RecoletaMedium"}} level={2}>Layers</Title>
             
           </Col>
           <Col sm={{span:1, offset:9}} xs={{span:1, offset:12}}>
@@ -183,21 +262,17 @@ function Scene({theme, active}) {
             
             <Divider/>
             <div style={{float:'right'}}>
-            <Button type="ghost" style={{borderColor:theme.text2}}onClick={onNewLayerClick}>New Layer</Button>
-            <Button type="ghost" style={{marginLeft:'10px', borderColor:theme.text2}}>Duplicate Scene</Button>
-            <Button type="ghost" style={{ marginLeft:'10px',borderColor:theme.text2}}>Delete Scene</Button>
+            <ActiveButton theme={theme} sid={sid} active={active} setActive={onActive} />
+            <Button type="ghost" style={{marginLeft:'10px',borderColor:theme.text2}}onClick={onNewLayerClick}>New Layer</Button>
+            <DuplicateButton name={sceneParams.name} theme={theme} onDuplicate={onDuplicate} margin="10px"/>
+            <Link to="/list"><Button type="ghost" style={{ marginLeft:'10px',borderColor:theme.text2}} onClick={onDelete}>Delete Scene</Button></Link>
+            
             </div>
             
           </Col>
         </Row>
-        
-        
-        
       </div>
       <div>
-      
-        {/* <Title>Star</Title> */}
-        {/* Star Block */}
       </div>
       <NewLayerModal visible={modalVisible} onSubmit={onCreateLayer} onCancel={onNewLayerCancel} />
     </div>
