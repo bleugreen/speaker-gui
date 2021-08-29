@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 const { Tag, Input, Menu, Dropdown } = require("antd")
 
 const TagList = ({theme, tags, setTags}) => {
-    const testTags = ['Static', 'Gradient', 'Experimental'];
     const [inputVisible, setInputVisible]= useState(false)
     const [tagMenuVisible, setTagMenuVisible] = useState(false);
     const [savedTags, setSavedTags] = useState([]);
@@ -90,6 +89,7 @@ const TagList = ({theme, tags, setTags}) => {
     const handleTagClose = (e) => {
         const deletedTag = e.target.parentElement.id || e.target.id
         let newTags = tags.filter(t=> t != deletedTag);
+        console.log(newTags.toString());
         setTags(newTags.toString());
     }
 
@@ -135,6 +135,7 @@ const TagList = ({theme, tags, setTags}) => {
        <div style={{marginTop:'10px'}}>
             {
                 tags.map((tag, index) => {
+                    if(tag){
                     return(
                         <Tag key={tag}
                             closable={true}
@@ -144,14 +145,10 @@ const TagList = ({theme, tags, setTags}) => {
                         >
                             {tag}
                         </Tag>
-                    )
+                    )}
                 })
             }
-            {
-                
-                 addTag()   
-                
-            }
+            { addTag() }
        </div>
     )
 }

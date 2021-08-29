@@ -47,6 +47,18 @@ sceneRoute.get('/', (req,res) => {
     );
 });
 
+sceneRoute.get('/params', (req, res) =>{
+    const sid = req.query.sid;
+    client.hgetall("scene:"+sid, function(err, reply){
+        if(err){
+            res.send(err);
+        }
+        else{
+            res.send(reply);
+        }
+    })
+});
+
 // create scene
 sceneRoute.post('/new', (req,res) => {
     // get unique id
@@ -194,7 +206,7 @@ sceneRoute.post('/layer', (req,res) => {
     const lid = req.body.lid;
     client.multi()
     .zadd('scene:'+sid+":layers", index, lid)
-    .publish('notify', sid+lid+':new:null:null')
+    .publish('notify', sid+":"+lid+':new:null:null')
     .exec(
         function(err, replies){
             res.send(replies);
@@ -208,7 +220,7 @@ sceneRoute.delete('/layer', (req,res) => {
     const lid = req.body.lid;
     client.multi()
     .zrem('scene:'+sid+":layers", lid)
-    .publish('notify', sid+lid+':delete:null:null')
+    .publish('notify', sid+":"+lid+':delete:null:null')
     .exec(
         function(err, replies){
             res.send(replies);

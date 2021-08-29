@@ -3,7 +3,6 @@ import ColorDot from "../Color/colordot"
 
 const ColorPreview = ({colors}) => {
     let colorRow = []
-    console.log(colors.split(","));
     colors.split(",").map(c => {
         colorRow.push(<ColorDot color={c} key={c}/> )
     });

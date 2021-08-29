@@ -171,6 +171,7 @@ function Layer({sid, lid, theme, onDeleteLayer}){
         layout: (e)=>{setField('layout', e.target.value)},
         tile: (t)=>{setField('tile', t)},
         palette: (p)=>{setField('colors',p)},
+        name: (n)=>{setField('name',n)},
         
         pattern: (pat)=>{setField('pattern', pat)},
         direction: (e)=>{setField('direction', e.target.value)},

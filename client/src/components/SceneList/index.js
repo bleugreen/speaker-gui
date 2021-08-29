@@ -1,4 +1,4 @@
-import { Col, Collapse, Row, Menu, Space, Spin } from 'antd';
+import { Col, Collapse, Row, Menu, Space, Spin, Button } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { Layout } from 'antd';
 import axios from 'axios';
@@ -12,6 +12,7 @@ function SceneList({theme}){
     const [active, setActive] = useState(-1);
     const [scenes, setScenes] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState([]);
 
     useEffect(() => {
         if(loading){
@@ -38,6 +39,16 @@ function SceneList({theme}){
         })
     }
 
+    const onNewScene = () => {
+        axios.get('/api/scene/duplicate', {params:{sid:'default'}})
+        .then((response)=>{
+          console.log(response.data)
+          const newSid = response.data;
+          setScenes([...scenes, newSid]);
+        })
+        .catch(function (response) { console.log(response) });
+      }
+
     const handleActive = (sid) => {
         setActive(sid);
         axios.request ({
@@ -53,7 +64,16 @@ function SceneList({theme}){
         let sceneList = []
         for (const i in scenes){
             console.log('pushing: '+scenes[i])
-            sceneList.push(<SceneListItem theme={theme} key={scenes[i]} sid={scenes[i]} active={active} setActive={handleActive} />)
+            sceneList.push(
+                <SceneListItem 
+                    theme={theme} 
+                    key={scenes[i]} 
+                    sid={scenes[i]} 
+                    active={active} 
+                    setActive={handleActive} 
+                    filter={filter}
+                />
+            )
         }
         return sceneList
     }
@@ -62,6 +82,7 @@ function SceneList({theme}){
     return (
           <div className="site-layout-background" style={{ padding: 24, minHeight: 380, backgroundColor:theme.bg, }}>
             {renderList()}
+            <Button onClick={onNewScene}>New Scene</Button>
           </div>
     );
 

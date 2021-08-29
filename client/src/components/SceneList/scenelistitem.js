@@ -8,22 +8,37 @@ import colorTheme from "../themes"
 import { useLocation, Link } from "react-router-dom";
 import ActiveButton from "../ActiveButton"
 
-const SceneListItem = ({sid, active, setActive, theme}) => {
+const SceneListItem = ({sid, active, setActive, theme, filter}) => {
     const [name, setName] = useState(sid);
     const [loading, setLoading] = useState(true);
+    const [ready, setReady] = useState(false);
+    const [params, setParams] = useState({
+        name:"",
+        desc:"",
+        tags:""
+    });
 
     useEffect(()=>{
         if(loading){
-            axios.get('/api/scene/name', {
+            setLoading(false);
+            axios.get('/api/scene/params', {
                 params: { sid: sid }
                 })
             .then(function(response){
-                setName(response.data);
-                setLoading(false);
+                setParams(response.data);
+                setReady(true);
             })
             .catch(function(response){console.log(response)})
         }
-    }, [active])
+    }, [active, filter])
+
+    const checkFilter = () => {
+        let result = true;
+        for(const i in filter){
+            result = result && params.tags.includes(filter[i]);
+        }
+        return result
+    }
 
     const itemStyle = {
         backgroundColor: theme.fg,
@@ -35,21 +50,25 @@ const SceneListItem = ({sid, active, setActive, theme}) => {
         borderRadius: "20px",
         marginBottom:"20px"
     }
+    if(ready){
+        return checkFilter() &&(
+            <div style={itemStyle}>
+                <Row align="middle">
+                    <Col sm={6}>
+                        <Title align="left" style={{margin:0, color:theme.text}}>{params.name}</Title>
+                        <Text>{params.desc}</Text>
+                    </Col>
+                    <Col sm={3}>
+                        <ActiveButton sid={sid} theme={theme} active={active} setActive={setActive}/>
+                    </Col>
+                    <Col sm={3}>
+                        <Link to={"/scene/"+sid}><Button><RightOutlined/></Button></Link>
+                    </Col>
+                </Row>
+            </div>
+            )
+    }
+    else return <div></div>
     
-    return (
-    <div style={itemStyle}>
-        <Row align="middle">
-            <Col sm={6}>
-                <Title align="left" style={{margin:0, color:theme.text}}>{name}</Title>
-            </Col>
-            <Col sm={3}>
-                <ActiveButton sid={sid} theme={theme} active={active} setActive={setActive}/>
-            </Col>
-            <Col sm={3}>
-                <Link to={"/scene/"+sid}><Button><RightOutlined/></Button></Link>
-            </Col>
-        </Row>
-    </div>
-    )
 }
 export default SceneListItem;

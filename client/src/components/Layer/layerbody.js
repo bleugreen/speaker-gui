@@ -12,6 +12,7 @@ import Panel from '../Panel';
 import './style.css';
 import colorTheme from '../themes';
 import Parameter from './parameter';
+import RenamableTitle from '../Renamable/title';
 
 
 const { Option } = Select;
@@ -157,8 +158,8 @@ function LayerBody({layer, theme, notify, setters, expanded, handleExpand, onDel
                 backgroundColor:theme.fg
             }}>
                 <Row >
-                    <Col sm={24} xs={24}>
-                        <Title style={{fontFamily:"recoleta-medium"}}>{layer.name}</Title>    
+                    <Col sm={24} xs={24}>   
+                        <RenamableTitle theme={theme} text={layer.name} onSubmit={setters.name}/>
                         <Divider/> 
                     </Col> 
                     

@@ -1,25 +1,19 @@
 import { Col, Row, Space, Button, Divider, Input } from 'antd';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link, useParams
-} from "react-router-dom";
-
+import { Link, useParams } from "react-router-dom";
+import Reorder, { reorder } from 'react-reorder';
+import { RollbackOutlined } from '@ant-design/icons';
 
 import './style.css';
 import LayerList from './layerlist'
-import Panel from '../Panel'
 import Title from 'antd/lib/typography/Title';
 import NewLayerModal from './newlayermodal';
-
-
-import Reorder, {
-  reorder
-} from 'react-reorder';
-import { RollbackOutlined } from '@ant-design/icons';
-import Text from 'antd/lib/typography/Text';
 import TagList from './taglist';
 import DuplicateButton from './duplicateModal';
 import ActiveButton from '../ActiveButton';
+import RenamableTitle from '../Renamable/title';
+import RenamableText from '../Renamable/text';
 
 
 function Scene({theme}) {
@@ -32,8 +26,6 @@ function Scene({theme}) {
     tags: 'Test,Util,Ambient'
   });
   const [modalVisible, setModalVisible] = useState(false);
-  const [titleChange, setTitleChange] = useState(false);
-  const [descChange, setDescChange] = useState(false);
   const [active, setActive] = useState(-1);
 
   let { sid } = useParams();
@@ -110,6 +102,17 @@ function Scene({theme}) {
       })
       .then(function (response) {console.log(response)})
       .catch(function (response) { console.log(response) });
+      if(active == sid){
+        axios.request ({
+          url: '/api/scene/active',
+          method: 'post',
+          data: {
+            sid: -1,
+          }
+        })
+        .then(function (response) {console.log(response)})
+        .catch(function (response) { console.log(response) });
+      }
     }
   }
 
@@ -177,11 +180,9 @@ function Scene({theme}) {
 
   const onNewLayerClick = () => { setModalVisible(true) }
   const onNewLayerCancel = () => { setModalVisible(false) }
-  const onSetName = (e) => { 
-    console.log(e.target.value);
-    setField('name', e.target.value);
-    setTitleChange(false); 
-  }
+  
+  const onSetName = (name) => { setField('name', name) }
+  const onSetDesc = (desc) => { setField('desc', desc) }
 
   const onReorder = (event, previousIndex, nextIndex) =>{
     setLayers( reorder(layers, previousIndex, nextIndex) );
@@ -196,15 +197,6 @@ function Scene({theme}) {
     .then(function (response) {console.log(response)})
     .catch(function (response) { console.log(response) });
   };
-
-  const renderTitle = () => {
-    if(titleChange){
-     return  <Input size='large' defaultValue={sceneParams.name} onPressEnter={onSetName}/>
-    }
-    else{
-      return <Title style={{fontFamily:"RecoletaMedium"}}>{sceneParams.name}</Title>
-    }
-  }
 
   if(!ready){
     return <div></div>
@@ -221,13 +213,8 @@ function Scene({theme}) {
       
       <Row>
         <Col sm={12} xs={24}> 
-         <div onDoubleClick={()=>{setTitleChange(!titleChange)}}> 
-         {
-           renderTitle()
-         }
-         </div>
-
-          <Text>{sceneParams.desc}</Text>
+        <RenamableTitle theme={theme} text={sceneParams.name} onSubmit={onSetName}/>
+         <RenamableText theme={theme} text={sceneParams.desc} onSubmit={onSetDesc}/>
           <TagList theme={theme} tags={sceneParams.tags.split(',')} setTags={(tags)=>{setField('tags',tags)}}/>
         </Col>
         <Col sm={12} xs={24}>
