@@ -2,7 +2,8 @@ var redis = require('redis');
 var sub = redis.createClient({
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT, 
-    password: process.env.REDIS_PW
+    password: process.env.REDIS_PW,
+    max_attempts: true
 }); //creates a new client
 
 sub.on('connect', function() {

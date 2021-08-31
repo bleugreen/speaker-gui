@@ -1,9 +1,15 @@
+.swatchModal {
+    border-radius: 5%;
+    border-collapse: separate; 
+    background-color: rgba(255, 255, 255, 0)
+};
+
 .colordot {
     width: 15px;
     height: 15px;
     border-radius: 10px;
     box-shadow: 0 0 0 1px rgba(0,0,0,.1);
-}
+};
 
 /* palette picker */
 .anticon svg { 
@@ -20,3 +26,4 @@ div.sketch-picker {
     background-color: rgba(255, 255, 255, 1);
     touch-action: none;
 };
+

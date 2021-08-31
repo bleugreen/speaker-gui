@@ -15,7 +15,7 @@ const RenamableTitle = ({theme, text, onSubmit}) => {
             return <RenameInput theme={theme} value={text} onSubmit={handleSubmit} />
         }
         else{
-            return <Title style={{fontFamily:"RecoletaMedium"}}>{text}</Title>
+            return <Title>{text}</Title>
         }
     }
 

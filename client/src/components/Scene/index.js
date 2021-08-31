@@ -1,4 +1,4 @@
-import { Col, Row, Space, Button, Divider, Input } from 'antd';
+import { Col, Row, Space, Button, Divider, Input, Slider } from 'antd';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useParams } from "react-router-dom";
@@ -14,6 +14,8 @@ import DuplicateButton from './duplicateModal';
 import ActiveButton from '../ActiveButton';
 import RenamableTitle from '../Renamable/title';
 import RenamableText from '../Renamable/text';
+import Panel from '../Panel';
+import Parameter from '../Layer/parameter';
 
 
 function Scene({theme}) {
@@ -209,23 +211,35 @@ function Scene({theme}) {
         <RollbackOutlined/>
       </Button>
       </Link>
-    <div style={{width:"90%", margin:'auto'}}>
+    <div style={{width:"90%", margin:'auto', marginTop:"30px"}}>
       
-      <Row>
-        <Col sm={12} xs={24}> 
+      <Row >
+        <Col sm={24} xs={24}> 
         <RenamableTitle theme={theme} text={sceneParams.name} onSubmit={onSetName}/>
          <RenamableText theme={theme} text={sceneParams.desc} onSubmit={onSetDesc}/>
           <TagList theme={theme} tags={sceneParams.tags.split(',')} setTags={(tags)=>{setField('tags',tags)}}/>
         </Col>
-        <Col sm={12} xs={24}>
-          
+        <Divider/>
+        <Col sm={24} xs={24}>
+          <Panel style={{width:'100%'}}header="Parameters">
+            <Parameter title="Brightness">
+              <Slider
+                max={100}
+                min={0.1}
+                step={0.1}
+                defaultValue={sceneParams.brightness || 90}
+                onAfterChange={(b)=>{setField('brightness', b)}}
+                style={{minWidth:'100px'}}
+              />
+            </Parameter>
+          </Panel>
         </Col>
       </Row>
       <div >
         <Divider/>
         <Row justify="start" align="top">
           <Col sm={9} xs={8}>
-            <Title  style={{fontFamily:"RecoletaMedium"}} level={2}>Layers</Title>
+            <Title level={2}>Layers</Title>
             
           </Col>
           <Col sm={{span:1, offset:9}} xs={{span:1, offset:12}}>

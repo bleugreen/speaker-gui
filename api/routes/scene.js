@@ -47,18 +47,6 @@ sceneRoute.get('/', (req,res) => {
     );
 });
 
-sceneRoute.get('/params', (req, res) =>{
-    const sid = req.query.sid;
-    client.hgetall("scene:"+sid, function(err, reply){
-        if(err){
-            res.send(err);
-        }
-        else{
-            res.send(reply);
-        }
-    })
-});
-
 // create scene
 sceneRoute.post('/new', (req,res) => {
     // get unique id
@@ -139,20 +127,28 @@ sceneRoute.get('/duplicate', (req,res)=> {
     });
 });
 
+/* - - - - - - - - - - - - - - - - 
+    Fields / Params
+- - - - - - - - - - - - - - - - */
+
+// get params (name, desc, tags)
+sceneRoute.get('/params', (req, res) =>{
+    const sid = req.query.sid;
+    client.hgetall("scene:"+sid, function(err, reply){
+        if(err){
+            res.send(err);
+        }
+        else{
+            res.send(reply);
+        }
+    })
+});
 
 // get name
 sceneRoute.get('/name', (req,res) => {
     console.log("GET: scene name");
     client.hget('scene:'+req.query.sid, 'name', function(err, reply){
         res.send(reply);
-    });
-});
-
-// get tags
-sceneRoute.get('/tags', (req,res) => {
-    console.log("GET: saved tags");
-    client.smembers('scene:tags', function(err, reply){
-        !err && res.send(reply.toString());
     });
 });
 
@@ -184,7 +180,11 @@ sceneRoute.get('/field', (req,res) => {
 sceneRoute.post('/field', (req,res)=> {
     //console.log(req.body);
     client.hset('scene:'+req.body.sid, req.body.field, req.body.value, function(err,reply) {
-        !err && res.send(reply.toString());
+        if(!err) {
+            client.publish('notify', req.body.sid+":-1:update:"+req.body.field+":"+req.body.value)
+            res.send(reply.toString());
+        }
+
     });
 });
 
@@ -261,6 +261,17 @@ sceneRoute.get('/list', (req,res) => {
     });
 });
 
+// get saved tags (full list)
+sceneRoute.get('/tags', (req,res) => {
+    console.log("GET: saved tags");
+    client.smembers('scene:tags', function(err, reply){
+        !err && res.send(reply.toString());
+    });
+});
+
+/* - - - - - - - - - - - - - - - - 
+    Active
+- - - - - - - - - - - - - - - - */
 // get active scene
 sceneRoute.get('/active', (req,res) => {
     client.get('scene:active', function(err, reply){

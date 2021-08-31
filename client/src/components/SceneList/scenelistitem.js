@@ -1,5 +1,5 @@
 import { CloseOutlined, CloseSquareOutlined, RightOutlined } from "@ant-design/icons"
-import { Button, Col, Row, Switch } from "antd"
+import { Button, Col, Row, Space, Switch } from "antd"
 import Title from "antd/lib/typography/Title"
 import Text from "antd/lib/typography/Text"
 import { useEffect, useState } from "react"
@@ -26,6 +26,7 @@ const SceneListItem = ({sid, active, setActive, theme, filter}) => {
                 })
             .then(function(response){
                 setParams(response.data);
+                console.log(response.data)
                 setReady(true);
             })
             .catch(function(response){console.log(response)})
@@ -48,27 +49,27 @@ const SceneListItem = ({sid, active, setActive, theme, filter}) => {
         cursor: "pointer", 
         lineHeight: 1.5715,
         borderRadius: "20px",
-        marginBottom:"20px"
+        marginBottom:"10px"
     }
     if(ready){
         return checkFilter() &&(
-            <div style={itemStyle}>
-                <Row align="middle">
-                    <Col sm={6}>
+            <Col xl={7} lg={10} md={{span:20}} sm={{span:22}} xs={23} style={itemStyle}>
+                    <div style={{width:'100%', marginBottom:"20px"}}>
                         <Title align="left" style={{margin:0, color:theme.text}}>{params.name}</Title>
                         <Text>{params.desc}</Text>
-                    </Col>
-                    <Col sm={3}>
+                    </div>
+                    <div style={{textAlign:'right'}}>
+                    
+                    
                         <ActiveButton sid={sid} theme={theme} active={active} setActive={setActive}/>
-                    </Col>
-                    <Col sm={3}>
-                        <Link to={"/scene/"+sid}><Button><RightOutlined/></Button></Link>
-                    </Col>
-                </Row>
-            </div>
+                    
+                    
+                        <Link to={"/scene/"+sid}><Button style={{marginLeft:'10px'}}><RightOutlined/></Button></Link>
+                    </div>
+            </Col>
             )
     }
-    else return <div></div>
+    else return <div style={itemStyle}></div>
     
 }
 export default SceneListItem;

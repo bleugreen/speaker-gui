@@ -189,6 +189,9 @@ function Layer({sid, lid, theme, onDeleteLayer}){
         a: (t)=>{setField('a', t)},
         numdrops: (t)=>{setField('numdrops', t)},
         spawn: (t)=>{setField('spawn', t)},
+        time: (t)=>{setField('time', t)},
+        angle: (t)=>{setField('angle', t)},
+        size: (t)=>{setField('size', t)},
         
     };
 

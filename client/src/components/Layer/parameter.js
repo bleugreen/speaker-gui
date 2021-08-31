@@ -3,7 +3,7 @@ import { Col, Divider, Row } from 'antd';
 
 const Parameter = ({title, children}) => {
     return(
-        <div>
+        <div style={{textAlign:'left'}}>
             <Row align="middle">
                 <Col sm={4} xs={9}>
                     <Text>{title}</Text>

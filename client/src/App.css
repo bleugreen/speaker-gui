@@ -5,3 +5,7 @@ main > .container {
 .body {
     background-color: aqua;
 }
+
+h1, h2 {
+    font-family: RecoletaMedium;
+}

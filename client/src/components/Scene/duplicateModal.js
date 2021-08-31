@@ -1,5 +1,7 @@
-import { Button, Divider, Input } from "antd";
+import { Button, Divider, Input, Space } from "antd";
 import Modal from "antd/lib/modal/Modal";
+import Text from "antd/lib/typography/Text";
+import Title from "antd/lib/typography/Title";
 import { useRef, useState } from "react";
 
 const DuplicateButton = ({theme, onDuplicate, margin, name}) => {
@@ -56,19 +58,28 @@ const DuplicateButton = ({theme, onDuplicate, margin, name}) => {
                 bodyStyle={modalBodyStyle}
                 
             >
-                <Input 
-                    style={{marginTop:'20px'}}
-                    defaultValue={dupName} 
-                    value={dupName} 
-                    onChange={onNameChange}
-                    onPressEnter={onSubmit}
-                    ref={inputRef}
-                    onClick={onInputClick}
+                <div style={{marginTop:'20px', marginBottom:'10px', textAlign:'center'}}>
+                    <Title align="center" style={{marginBottom:'20px'}}  level={3}>Duplicate Scene</Title>
+                    <Input 
+                        
+                        defaultValue={dupName} 
+                        value={dupName} 
+                        onChange={onNameChange}
+                        onPressEnter={onSubmit}
+                        ref={inputRef}
+                        onClick={onInputClick}
+                    
+                    />
+                    <Divider/>
+                    
+                        <Space style={{margin:'auto'}} align='center'>
+                        <Button onClick={onSubmit}>Duplicate</Button>
+                        <Button style={{marginLeft:"10px"}}onClick={onCancel}>Cancel</Button>
+                        </Space>
+        
+                    
+                </div>
                 
-                />
-                <Divider/>
-                <Button style={{marginLeft:"50%"}}onClick={onSubmit}>Duplicate</Button>
-                <Button style={{marginLeft:"10px"}}onClick={onCancel}>Cancel</Button>
             </Modal>
             <Button type="ghost" style={buttonStyle} onClick={handleClick}>Duplicate Scene</Button>
         </>

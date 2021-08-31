@@ -81,7 +81,10 @@ function SceneList({theme}){
     if(loading) return <Spin/>;
     return (
           <div className="site-layout-background" style={{ padding: 24, minHeight: 380, backgroundColor:theme.bg, }}>
+            <Row gutter={[16,16]} align="middle" justify="space-around">
             {renderList()}
+            </Row>
+            
             <Button onClick={onNewScene}>New Scene</Button>
           </div>
     );

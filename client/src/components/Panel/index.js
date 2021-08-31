@@ -7,10 +7,10 @@ import { ArrowRightOutlined, CaretRightOutlined, RightOutlined } from '@ant-desi
 import colorTheme from '../themes';
 
 
-function Panel({header, children, expand=false}){
+function Panel({header, children, style, expand=false}){
     const [expanded, setExpanded] = useState(expand);
 
-    const style = {
+    const divStyle = {
         backgroundColor:colorTheme().fg,
         borderRadius:"10px",
         stroke:"2px",
@@ -20,7 +20,8 @@ function Panel({header, children, expand=false}){
         padding:"15px",
         paddingBottom:"45px",
         marginBottom:"10px",
-        overflow:"hidden"
+        overflow:"hidden",
+        ...style
     };
 
     const props = useSpring({ to: { opacity: 1 }, from: { opacity: 0 } })

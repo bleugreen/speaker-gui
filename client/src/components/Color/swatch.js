@@ -61,19 +61,24 @@ class SwatchCircle extends React.Component {
           onOk={this.handleClose}
           onCancel={this.handleClose}
           closable={false}
-          width={'80%'}
+          width={'60%'}
+          wrapClassName="modalWrapper"
+          bodyStyle={{
+            borderRadius:'20px'
+          }}
+          className="swatchModal"
           
         >
-          <div className="picker">
+          <div className="picker" style={{boxShadow:'0', padding:'0 0 0 0'}}>
           <SketchPicker   
-            className="picker"
+            className="swatchModal"
             color={ this.props.color } 
             onChange={ this.handleChange } 
             onChangeComplete= {this.handleComplete}
             disableAlpha={true}
             presetColors={[]}
             width={'100%'}
-            style={{boxShadow:0, padding:0}}
+            styles={{picker:{borderRadius:'20px',boxShadow:'0', padding:'0 0 0 0'}}}
           />
           </div>
         </Modal>

@@ -6,10 +6,18 @@ var utilRoute = express.Router();
 var client = require('../client.js');
 var sub = require('../subscriber.js');
 
+let messages = [];
+const addMessage = (msg) => {
+    messages.push(msg);
+}
+sub.on("message", function (channel, message) {
+    addMessage(message);
+    console.log("Incoming: "+message);
+});
+
 /* - - - - - - - - - - - - - - - - 
     System
 - - - - - - - - - - - - - - - - */
-
 // get connected
 utilRoute.get('/connected', (req,res) => {
     client.get('connected', function(err, reply){
@@ -54,7 +62,6 @@ utilRoute.post('/layout', (req,res)=> {
 /* - - - - - - - - - - - - - - - - 
     Lights
 - - - - - - - - - - - - - - - - */
-
 // get running
 utilRoute.get('/running', (req,res) => {
     client.get('running', function(err, reply){
@@ -78,15 +85,6 @@ utilRoute.post('/end', (req,res)=> {
         //console.log(reply)
         !err && res.send(reply.toString());
     });
-});
-
-let messages = [];
-const addMessage = (msg) => {
-    messages.push(msg);
-}
-sub.on("message", function (channel, message) {
-    addMessage(message);
-    console.log("Incoming: "+message);
 });
 
 // stream

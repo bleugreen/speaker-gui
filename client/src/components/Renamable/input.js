@@ -59,6 +59,7 @@ const RenameInput = ({theme, value, onCancel, onSubmit, size='large'}) => {
             value={input} 
             onChange={handleChange} 
             onPressEnter={handleSubmit}
+            style={{width:'250px'}}
         />
     </div>
     )

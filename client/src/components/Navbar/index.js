@@ -35,32 +35,6 @@ function Navbar({theme}) {
         }
     }, [])
 
-    let location = useLocation();
-    const inactiveStyle = {
-        color:theme.bg
-    }
-    const activeStyle = {
-        color:theme.headerText,
-        fontWeight:"bold"
-    }
-
-    const renderLinks = () => {
-        let listStyle = inactiveStyle;
-        let paletteStyle = {...inactiveStyle, marginLeft:'25px'};
-        let midiStyle = {...inactiveStyle, marginLeft:'25px'};
-        
-        if(location.pathname == '/list') listStyle = activeStyle;
-        else if(location.pathname == '/palettes') paletteStyle = {...activeStyle, marginLeft:'25px'};
-        else if(location.pathname == '/midi') midiStyle = {...activeStyle, marginLeft:'25px'};
-        
-        return(
-        <Col sm={16} xs={0}>
-                    <NavLink to="/list" theme={theme} marginLeft="0">Scenes</NavLink>
-                    <NavLink to="/palettes" theme={theme} marginLeft="25px">Palettes</NavLink>
-                    <NavLink to="/midi" theme={theme} marginLeft="25px">Midi Map</NavLink>
-        </Col>
-        )
-    }
 
     useEffect(() => {
         if(loading){
@@ -101,17 +75,21 @@ function Navbar({theme}) {
             backgroundColor:theme.header
           }}
         >
-          <Row justify="start" align="middle">
+          <Row justify="space-between" align="middle">
             <Col xl={4} lg={5} md={6} sm={8} xs={0}>
-              <Title level={2}style={{marginTop:'10px', color:theme.headerText, fontFamily:"RecoletaBold"}}>Cymatism</Title>
+              <Title level={2}style={{textAlign:'left',marginTop:'10px', color:theme.headerText, fontFamily:"RecoletaBold"}}>Cymatism</Title>
             </Col>
-            <Col sm={0} xs={24}>
+            <Col sm={0} xs={14}>
             <a href="/">
               <Title level={1}style={{marginTop:'10px', color:theme.headerText, fontFamily:"RecoletaBold", textAlign:'center'}}>Cymatism</Title>
               </a>
             </Col>
-            {renderLinks()}
-            <Col span={3}>
+            <Col sm={10} xs={0}>
+                    <NavLink to="/list" theme={theme} marginLeft="0">Scenes</NavLink>
+                    <NavLink to="/palettes" theme={theme} marginLeft="25px">Palettes</NavLink>
+                    <NavLink to="/midi" theme={theme} marginLeft="25px">Midi Map</NavLink>
+            </Col>
+            <Col sm={3} xs={6}>
                 <Button type='ghost' style={{color:theme.headerText}} onClick={killPressed}>Kill Lights</Button>
             </Col>
           </Row>

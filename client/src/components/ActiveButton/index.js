@@ -9,39 +9,32 @@ const ActiveButton = ({sid, theme, active, setActive}) => {
     }, [active]);
 
     const handleClick = () => {
-        setIsActive(!isActive);
-        if(sid != active){
-            setActive(sid)
-        }
-        else{
-            setActive(-1);
-        }
+        const newSid = (sid != active) ? sid : -1;
+        setActive(newSid);
+        setIsActive(newSid == active);
     }
 
-    if(isActive){
-        return <Button 
-            type="primary" 
-            onClick={handleClick} 
-            style={{
-                backgroundColor:theme.blue,
-                color: theme.fg
-            }}
-        >
-            Active
-        </Button>
+    const activeProps = {
+        style:{
+            backgroundColor:theme.blue,
+            color: theme.fg
+        },
+        type:"primary",
+        children:<p>Active</p>
+    };
+
+    const inactiveProps = {
+        style:{
+            backgroundColor:theme.fg,
+            borderColor:theme.blue,
+            color: theme.blue
+        },
+        type:"default",
+        children:<p>Set Active</p>
     }
-    else{
-        return <Button 
-            type="default" 
-            onClick={handleClick}
-            style={{
-                backgroundColor:theme.fg,
-                borderColor:theme.blue,
-                color: theme.blue
-            }}
-        >
-            Set Active
-        </Button>
-    }
+
+    const props = (isActive) ? activeProps : inactiveProps;
+
+    return <Button {...props} onClick={handleClick}/>
 }
 export default ActiveButton;
