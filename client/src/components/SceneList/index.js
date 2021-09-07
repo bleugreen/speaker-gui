@@ -6,6 +6,7 @@ import axios from 'axios';
 import SceneListItem from './scenelistitem'
 
 import './style.css';
+import SceneFilter from './scenefilter';
 
 
 function SceneList({theme}){
@@ -81,6 +82,7 @@ function SceneList({theme}){
     if(loading) return <Spin/>;
     return (
           <div className="site-layout-background" style={{ padding: 24, minHeight: 380, backgroundColor:theme.bg, }}>
+            <SceneFilter theme={theme} filter={filter} setFilter={setFilter}/>
             <Row gutter={[16,16]} align="middle" justify="space-around">
             {renderList()}
             </Row>
