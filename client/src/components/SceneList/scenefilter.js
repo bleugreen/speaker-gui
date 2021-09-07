@@ -27,10 +27,10 @@ const SceneFilter = ({theme, filter, setFilter}) => {
         setFilter([...filter, newTag]);
     }
 
-    const handleTagClose = (e) => {
-        const deletedTag = e.target.parentElement.id || e.target.id
-        let newTags = filter.filter((t)=> t != deletedTag);
-        setFilter(filter.filter(t=> t != deletedTag))
+    const handleTagClose = (closedTag) => {
+        let newTags = filter.filter(t=> t != closedTag);
+        console.log('tags after delete: '+newTags);
+        setFilter(newTags)
     }
 
 
@@ -51,7 +51,7 @@ const SceneFilter = ({theme, filter, setFilter}) => {
             <Col xs={{span:7, offset:0}} sm={{span:5, offset:1}} md={{span:4, offset:2}} lg={{span:4, offset:1}} xl={{span:4, offset:1}}>
             <Dropdown overlay={menu} >
             <p style={{backgroundColor:theme.fg, padding:"5%", borderRadius:"8px",color:theme.text2, cursor:"pointer"}} onClick={e => e.preventDefault()}>
-            Tag Filter <DownOutlined />
+            Filter <DownOutlined />
             </p>
                 </Dropdown>
             </Col>
@@ -62,8 +62,9 @@ const SceneFilter = ({theme, filter, setFilter}) => {
                     return(
                         <Tag key={tag}
                             closable={true}
+                            onClose={(e)=>{handleTagClose(tag)}}
                             style={{backgroundColor:theme.fg, color:theme.text2, padding:"2%", borderRadius:"8px", marginLeft:"10px", marginBottom:"10px"}}
-                            closeIcon={<CloseOutlined id={tag} onClick={handleTagClose} style={{color:theme.text2}}/>}
+                            closeIcon={<CloseOutlined id={tag}  style={{color:theme.text2}}/>}
                             
                         >
                             {tag}

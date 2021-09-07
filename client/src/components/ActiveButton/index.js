@@ -1,3 +1,4 @@
+import { PlayCircleOutlined, PlaySquareOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { useEffect, useState } from "react";
 
@@ -26,11 +27,10 @@ const ActiveButton = ({sid, theme, active, setActive}) => {
     const inactiveProps = {
         style:{
             backgroundColor:theme.fg,
-            borderColor:theme.blue,
             color: theme.blue
         },
-        type:"default",
-        children:<p>Set Active</p>
+        type:"ghost",
+        children:<p>Activate</p>
     }
 
     const props = (isActive) ? activeProps : inactiveProps;

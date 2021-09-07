@@ -30,6 +30,7 @@ function Panel({header, children, style, expand=false}){
         from:{rotate:0},
         to: {rotate:expanded ? 90 : 0},
         config:{mass:1, tension:200, friction:15},
+        
     });
 
     const [ref, { height: viewHeight }] = useMeasure()
