@@ -8,6 +8,7 @@ import SceneFilter from './scenefilter';
 import './style.css';
 import MyButton from './buttonTest';
 import { PlusOutlined } from '@ant-design/icons';
+import { useHistory } from 'react-router';
 
 function SceneList(){
     const [active, setActive] = useState(-1);
@@ -75,6 +76,7 @@ function SceneList(){
         })
     }
 
+    const history = useHistory();
 
 
     const onNewScene = () => {
@@ -82,7 +84,8 @@ function SceneList(){
         .then((response)=>{
           console.log(response.data)
           const newSid = response.data;
-          setScenes([...scenes, newSid]);
+          history.push('/scene/'+newSid)
+        //   getScenes()
         })
         .catch(function (response) { console.log(response) });
       }
@@ -115,6 +118,7 @@ function SceneList(){
             <SceneFilter 
                 filter={filter}
                 setFilter={setFilter}
+                onNewScene={onNewScene}
             />
             <Row 
                 gutter={[16,16]} 

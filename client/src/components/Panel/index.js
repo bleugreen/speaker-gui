@@ -10,22 +10,6 @@ import colorTheme from '../themes';
 function Panel({header, children, style, expand=false}){
     const [expanded, setExpanded] = useState(expand);
 
-    const divStyle = {
-        backgroundColor:colorTheme().fg,
-        borderRadius:"10px",
-        stroke:"2px",
-        color:colorTheme().text,
-        width:"90%",
-        marginLeft:"5%",
-        padding:"15px",
-        paddingBottom:"45px",
-        marginBottom:"10px",
-        overflow:"hidden",
-        ...style
-    };
-
-    const props = useSpring({ to: { opacity: 1 }, from: { opacity: 0 } })
-
     const angle = useSpring({
         from:{rotate:0},
         to: {rotate:expanded ? 90 : 0},
@@ -41,23 +25,9 @@ function Panel({header, children, style, expand=false}){
             height: expanded ? viewHeight+90 : 50,
             opacity: expanded ? 1 : 0,
         },
-        config:{ mass: 1.5, tension: 150, friction: 25 }
+        config:{ mass: 1.5, tension: 170, friction: 25 }
     
     })
-
-    
-    const bodyHeight = useSpring({
-        from: { height: 60 },
-        to:{
-            height: expanded ? 240 : 55,
-        },
-        onStart:()=>{setDone(false)}
-    })
-
-    const scale = useSpring({
-        from:{scale: 0},
-        to:{scale:expanded? 1:0}
-    });
 
 
     const handleClick = () => {
