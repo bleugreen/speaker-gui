@@ -6,6 +6,8 @@ import SceneListItem from './scenelistitem'
 import SceneFilter from './scenefilter';
 
 import './style.css';
+import MyButton from './buttonTest';
+import { PlusOutlined } from '@ant-design/icons';
 
 function SceneList(){
     const [active, setActive] = useState(-1);
@@ -30,33 +32,44 @@ function SceneList(){
     }
 
     const getScenes = () => {
-        axios.get('/api/scene/list')
+        axios.get('/api/scene/paramlist')
         .then((response) =>{
-            
-            const data = response.data;
-            let sidList = [];
-            if(data.length > 1) sidList = response.data.split(",");
-            else sidList = [response.data];
-
-            let reqs = []
-            for (const i in sidList){
-                reqs.push(axios.get('/api/scene/params', {params: {sid: sidList[i]}}))
-                
+            console.log(response.data);
+            let sceneList = [];
+            for(const[index, value] of response.data.entries()){
+                const scene = {
+                    sid:value.sid,
+                    name:value.name,
+                    tags:value.tags.split(",")
+                }
+                sceneList.push(scene);
             }
-            axios.all(reqs)
-                .then(axios.spread((...responses) =>{
-                    let sceneList = []; 
-                    for(const i in responses){
-                         const scene = {
-                             sid: sidList[i],
-                             name:responses[i].data.name,
-                             tags:responses[i].data.tags.split(","),
-                         }
-                         sceneList.push(scene);
-                     }
-                     setScenes(sceneList);
-                     setReady(true)
-                }))
+            setScenes(sceneList);
+            setReady(true);
+            // const data = response.data;
+            // let sidList = [];
+            // if(data.length > 1) sidList = response.data.split(",");
+            // else sidList = [response.data];
+
+            // let reqs = []
+            // for (const i in sidList){
+            //     reqs.push(axios.get('/api/scene/params', {params: {sid: sidList[i]}}))
+                
+            // }
+            // axios.all(reqs)
+            //     .then(axios.spread((...responses) =>{
+            //         let sceneList = []; 
+            //         for(const i in responses){
+            //              const scene = {
+            //                  sid: sidList[i],
+            //                  name:responses[i].data.name,
+            //                  tags:responses[i].data.tags.split(","),
+            //              }
+            //              sceneList.push(scene);
+            //          }
+            //          setScenes(sceneList);
+            //          setReady(true)
+            //     }))
             
 
         })
@@ -129,7 +142,7 @@ function SceneList(){
                     })
                 }
             </Row>
-            
+            <MyButton><PlusOutlined/></MyButton>
             <Button onClick={onNewScene}>New Scene</Button>
           </div>
     );  

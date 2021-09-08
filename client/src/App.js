@@ -11,7 +11,7 @@ import MidiManager from './components/MidiManager';
 import SceneList from './components/SceneList';
 import Scene from './components/Scene';
 
-import 'antd/dist/antd.css'
+
 import './App.css'
 const theme = colorTheme();
 const { Content } = Layout;

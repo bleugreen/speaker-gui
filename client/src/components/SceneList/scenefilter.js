@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Col, Row, Tag, Menu, Dropdown } from "antd";
+import { Col, Row, Tag, Menu, Dropdown, Space } from "antd";
 import { CloseOutlined, DownOutlined } from "@ant-design/icons";
 
 import './style.css';
@@ -62,20 +62,26 @@ const SceneFilter = ({filter, setFilter}) => {
             </Col>
 
             <Col span={10}>
+            <Space>
             {
                 filter.map((tag, index) => {
                     if(tag){
                     return(
-                        <Tag key={tag} className="filterTag" closable={true}
-                            onClose={(e)=>{handleTagClose(tag)}}
-                            closeIcon={<CloseOutlined className="smallMarginLeft"/>}
-                        >
-                            {tag}
-                        </Tag>
+                        <div key={tag} className="tag">
+                            <Space>
+                                {tag} 
+                                <CloseOutlined 
+                                    size="small" 
+                                    className="smallMarginLeft" 
+                                    onClick={()=>{handleTagClose(tag)}}
+                                />
+                            </Space>
+                        </div>
                     )}
                     else return
                 })
             }
+            </Space>
             </Col>
         </Row>
     )

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Button, Col, Tag } from "antd"
+import { Button, Col, Space, Tag } from "antd"
 import Title from "antd/lib/typography/Title"
 import { EllipsisOutlined } from "@ant-design/icons"
 
@@ -13,12 +13,17 @@ const SceneListItem = ({sid, active, setActive, filter, name, tags, addToFilter}
         <Col className="sceneItem" xl={7} lg={10} md={20} sm={22} xs={23}>
             <div className="sceneItemTop">
                 <Title align="left">{name}</Title>
+                <Space>
                 {
                     tags.map((tag, index)=>{
                         const colorStyle = (filter.includes(tag)) ? "tagMatch" : "tagNoMatch"
-                        return tag && <Tag key={tag} className={colorStyle} onClick={handleTagClick}>{tag}</Tag>
+                        return tag && <p 
+                        key={tag} 
+                        className={"tag "+colorStyle}
+                        onClick={handleTagClick}>{tag}</p>
                     })
                 }
+                </Space>
             </div>
             <div className="sceneItemBottom">
                 <ActiveButton sid={sid} active={active} setActive={setActive}/>

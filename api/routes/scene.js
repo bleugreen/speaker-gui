@@ -243,6 +243,35 @@ sceneRoute.post('/reorder', (req,res) => {
     });
 });
 
+
+sceneRoute.get('/paramlist', (req, res)=> {
+    client.smembers('scene:list', function(err, reply){
+        if(err) res.send(err);
+        else{
+            const sidList = reply;
+            const multi = client.multi();
+            for(const [index, value] of sidList.entries()){
+                multi.hgetall("scene:"+value);
+            }
+            multi.exec(function(err, replies) {
+                if(err) res.send(err);
+                else{
+                    let paramlist = [];
+                    for(const [index, value] of replies.entries()){
+                        let scene = {
+                            sid: sidList[index],
+                            name: value.name,
+                            tags: value.tags,
+                        }
+                        paramlist.push(scene);
+                    }
+                    res.send(paramlist)
+                }
+            });
+        }
+    });
+})
+
 /* - - - - - - - - - - - - - - - - 
     Global
 - - - - - - - - - - - - - - - - */
