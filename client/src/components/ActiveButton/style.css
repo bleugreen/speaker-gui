@@ -1,0 +1,11 @@
+.active {
+    background-color: var(--blue);
+    color: var(--fg);
+    border-radius: 8px;
+}
+
+.inactive {
+    background-color: var(--fg);
+    color: var(--blue);
+    border-radius: 8px;
+}

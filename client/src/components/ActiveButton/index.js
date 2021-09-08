@@ -1,13 +1,12 @@
-import { PlayCircleOutlined, PlaySquareOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import { CaretRightFilled, PlayCircleOutlined, PlaySquareOutlined } from "@ant-design/icons";
+import { Button, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 
-const ActiveButton = ({sid, theme, active, setActive}) => {
-    const [isActive, setIsActive] = useState(sid == active);
+import './style.css'
 
-    useEffect(()=>{
-        setIsActive(sid == active)
-    }, [active]);
+const ActiveButton = ({sid, active, setActive}) => {
+    const [isActive, setIsActive] = useState(sid == active);
+    useEffect(()=>{ setIsActive(sid == active)}, [active]);
 
     const handleClick = () => {
         const newSid = (sid != active) ? sid : -1;
@@ -16,25 +15,20 @@ const ActiveButton = ({sid, theme, active, setActive}) => {
     }
 
     const activeProps = {
-        style:{
-            backgroundColor:theme.blue,
-            color: theme.fg
-        },
+        className: 'active',
         type:"primary",
-        children:<p>Active</p>
+        children:<CaretRightFilled/>
     };
 
     const inactiveProps = {
-        style:{
-            backgroundColor:theme.fg,
-            color: theme.blue
-        },
+        className: 'inactive',
         type:"ghost",
-        children:<p>Activate</p>
+        
     }
 
     const props = (isActive) ? activeProps : inactiveProps;
+    const tooltipText = (isActive) ? "Active" : "Set Active"
 
-    return <Button {...props} onClick={handleClick}/>
+    return <Tooltip title={tooltipText}><Button {...props} onClick={handleClick}><CaretRightFilled/></Button></Tooltip>
 }
 export default ActiveButton;

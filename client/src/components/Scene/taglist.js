@@ -140,7 +140,7 @@ const TagList = ({theme, tags, setTags}) => {
                         <Tag key={tag}
                             closable={true}
                             style={{backgroundColor:theme.fg, color:theme.text2, }}
-                            closeIcon={<CloseOutlined id={tag} onClick={handleTagClose} style={{color:theme.text2}}/>}
+                            closeIcon={<CloseOutlined id={tag} onClick={handleTagClose} style={{color:theme.text2,marginLeft:"5px"}}/>}
                             
                         >
                             {tag}

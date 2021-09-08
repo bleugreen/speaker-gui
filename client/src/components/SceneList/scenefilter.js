@@ -1,9 +1,9 @@
-import { CloseOutlined, DownOutlined } from "@ant-design/icons";
-import { Col, Row, Tag, Input, Menu, Dropdown, Divider } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Col, Row, Tag, Menu, Dropdown } from "antd";
+import { CloseOutlined, DownOutlined } from "@ant-design/icons";
 
-const SceneFilter = ({theme, filter, setFilter}) => {
+const SceneFilter = ({filter, setFilter}) => {
     const [taglist, setTaglist] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -13,9 +13,7 @@ const SceneFilter = ({theme, filter, setFilter}) => {
             // get tags
             axios.get('/api/scene/tags')
             .then((response) => {
-                const saved = response.data.split(',');
-                setTaglist(saved);
-
+                setTaglist(response.data.split(','));
             })
             .catch( (response) => {console.log(response)});
             setLoading(false)
@@ -29,7 +27,6 @@ const SceneFilter = ({theme, filter, setFilter}) => {
 
     const handleTagClose = (closedTag) => {
         let newTags = filter.filter(t=> t != closedTag);
-        console.log('tags after delete: '+newTags);
         setFilter(newTags)
     }
 
@@ -44,36 +41,40 @@ const SceneFilter = ({theme, filter, setFilter}) => {
             }
         </Menu>
     );
-    if(loading) return <div></div>
 
+    if(loading) return <div></div>
     return(
         <Row gutter={[16,16]} align="start" justify="start">
-            <Col xs={{span:7, offset:0}} sm={{span:5, offset:1}} md={{span:4, offset:2}} lg={{span:4, offset:1}} xl={{span:4, offset:1}}>
-            <Dropdown overlay={menu} >
-            <p style={{backgroundColor:theme.fg, padding:"5%", borderRadius:"8px",color:theme.text2, cursor:"pointer"}} onClick={e => e.preventDefault()}>
-            Filter <DownOutlined />
-            </p>
+            <Col 
+                xs={{span:7, offset:0}} 
+                sm={{span:4, offset:1}} 
+                md={{span:4, offset:2}} 
+                lg={{span:4, offset:1}} 
+                xl={{span:4, offset:1}}
+            >
+                <Dropdown overlay={menu} >
+                    <p className="dropdownButton" onClick={e => e.preventDefault()}>
+                        Filter <DownOutlined />
+                    </p>
                 </Dropdown>
             </Col>
+
             <Col span={10}>
             {
                 filter.map((tag, index) => {
                     if(tag){
                     return(
-                        <Tag key={tag}
-                            closable={true}
+                        <Tag key={tag} className="filterTag" closable={true}
                             onClose={(e)=>{handleTagClose(tag)}}
-                            style={{backgroundColor:theme.fg, color:theme.text2, padding:"2%", borderRadius:"8px", marginLeft:"10px", marginBottom:"10px"}}
-                            closeIcon={<CloseOutlined id={tag}  style={{color:theme.text2}}/>}
-                            
+                            closeIcon={<CloseOutlined className="smallMarginLeft"/>}
                         >
                             {tag}
                         </Tag>
                     )}
+                    else return
                 })
             }
             </Col>
-
         </Row>
     )
 

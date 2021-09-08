@@ -5,12 +5,13 @@ import axios from 'axios';
 
 import SceneListItem from './scenelistitem'
 
-import './style.css';
+
 import SceneFilter from './scenefilter';
 import { ConsoleSqlOutlined } from '@ant-design/icons';
 
+import './style.css';
 
-function SceneList({theme}){
+function SceneList(){
     const [active, setActive] = useState(-1);
     const [scenes, setScenes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -53,7 +54,7 @@ function SceneList({theme}){
                          const scene = {
                              sid: sidList[i],
                              name:responses[i].data.name,
-                             tags:responses[i].data.tags,
+                             tags:responses[i].data.tags.split(","),
                          }
                          sceneList.push(scene);
                      }
@@ -88,21 +89,49 @@ function SceneList({theme}){
         .catch(function (response) { console.log(response) });
     }
 
+    const addToFilter = (tag) => {
+        if(filter.includes(tag)){
+            setFilter(filter.filter(t => t!=tag));
+        }
+        else{
+            setFilter([...filter, tag]);
+        }
+        
+    }
 
-    if(!ready) return <Spin/>
-    return ready && (
-          <div className="site-layout-background" style={{ padding: 24, minHeight: 380, backgroundColor:theme.bg, }}>
-            <SceneFilter theme={theme} filter={filter} setFilter={setFilter}/>
-            <Row gutter={[16,16]} align="middle" justify="space-around">
-            {scenes.map((scene)=>{
-                let filterCheck = true
-                for(const i in filter){
-                    filterCheck = filterCheck && scene.tags.includes(filter[i]);
+
+    
+    return  (
+          <div className="background">
+            <SceneFilter 
+                filter={filter}
+                setFilter={setFilter}
+            />
+            <Row 
+                gutter={[16,16]} 
+                align="middle" 
+                justify="space-around"
+            >
+                {
+                    scenes.map((scene)=>{
+                        let filterCheck = true
+                        for(const i in filter){ filterCheck = filterCheck && scene.tags.includes(filter[i]) }
+                        if(filterCheck && ready) {
+                            return <SceneListItem 
+                                        sid={scene.sid} 
+                                        key={scene.sid} 
+                                        active={active} 
+                                        filter={filter} 
+                                        name={scene.name} 
+                                        tags={scene.tags} 
+                                        setActive={handleActive}
+                                        addToFilter={addToFilter}
+                                    />
+                        
+                        }
+                        else return
+                    })
                 }
-                if(filterCheck) return <SceneListItem sid={scene.sid} key={scene.sid} theme={theme} active={active} name={scene.name} setActive={handleActive}/>
-                else return
-            })
-            }
             </Row>
             
             <Button onClick={onNewScene}>New Scene</Button>

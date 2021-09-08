@@ -9,3 +9,15 @@ main > .container {
 h1, h2 {
     font-family: RecoletaMedium;
 }
+
+:root {
+    --text: #10182d;
+    --text2: #475977;
+    --fg: #e4f2f0;
+    --bg: #c3dee0;
+    --red: #ea3b3b;
+    --blue: #138bce;
+    --green: #2bd8aa;
+    --header: #253d60;
+    --header: #f6f7f7;
+}

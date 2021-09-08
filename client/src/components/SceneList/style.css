@@ -1,0 +1,81 @@
+/* SceneList */
+.background {
+    padding: 24px;
+    min-height: 380px;
+    background-color: var(--bg);
+}
+
+/* SceneFilter */
+.filterTag {
+    padding: 2% ; 
+    border-radius: 8px;
+    margin-left: 10px; 
+    margin-bottom: 10px;
+    background-color: var(--fg);
+    color: var(--text2);
+}
+
+.dropdownButton {
+    border: 1px solid; 
+    padding: 5%; 
+    text-align: center; 
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: var(--bg);
+    border-color: var(--text2);
+    color: var(--text2);
+}
+
+/* SceneListItem */
+.sceneItem {
+    background-color: var(--fg);
+    color: var(--text);
+    transition: all 0.3s, visibility 0.3s, display 0.5s;
+    cursor: pointer;
+    line-height: 1.5715;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+.sceneItemTop{
+    padding: 6% 4% 2% 4%;
+    width:100%; 
+    margin-bottom:0px;
+}
+
+.sceneItemTop h1{
+    color: var(--text)
+}
+
+.tag {
+    padding: 1.5%; 
+    border-radius: 8px;
+    margin-right: 10px; 
+    margin-bottom: 10px;
+}
+
+.tagMatch {
+    background-color: var(--fg);
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.tagNoMatch {
+    background-color: var(--fg);
+    color: (--text2);
+}
+
+.sceneItemBottom {
+    text-align: right;
+    padding: 0% 3% 4% 0%;
+}
+
+.detailsButton {
+    margin-left: 10px;
+    border-radius: 8px;
+}
+
+/* Misc */
+.smallMarginLeft {
+    margin-left: 5px;
+}
