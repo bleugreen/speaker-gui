@@ -1,13 +1,9 @@
-import { Col, Collapse, Row, Menu, Space, Spin, Button } from 'antd';
+import { Row, Button } from 'antd';
 import React, { useState, useEffect } from 'react';
-import { Layout } from 'antd';
 import axios from 'axios';
 
 import SceneListItem from './scenelistitem'
-
-
 import SceneFilter from './scenefilter';
-import { ConsoleSqlOutlined } from '@ant-design/icons';
 
 import './style.css';
 

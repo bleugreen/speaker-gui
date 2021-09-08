@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Col, Row, Tag, Menu, Dropdown } from "antd";
 import { CloseOutlined, DownOutlined } from "@ant-design/icons";
 
+import './style.css';
+
 const SceneFilter = ({filter, setFilter}) => {
     const [taglist, setTaglist] = useState([]);
     const [loading, setLoading] = useState(true);

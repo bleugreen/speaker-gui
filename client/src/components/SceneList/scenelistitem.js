@@ -4,6 +4,7 @@ import Title from "antd/lib/typography/Title"
 import { EllipsisOutlined } from "@ant-design/icons"
 
 import ActiveButton from "../ActiveButton"
+import './style.css';
 
 const SceneListItem = ({sid, active, setActive, filter, name, tags, addToFilter}) => {
     const handleTagClick = (e) => { addToFilter(e.target.innerText) }
@@ -15,7 +16,7 @@ const SceneListItem = ({sid, active, setActive, filter, name, tags, addToFilter}
                 {
                     tags.map((tag, index)=>{
                         const colorStyle = (filter.includes(tag)) ? "tagMatch" : "tagNoMatch"
-                        return tag && <Tag key={tag} className={"tag "+colorStyle} onClick={handleTagClick}>{tag}</Tag>
+                        return tag && <Tag key={tag} className={colorStyle} onClick={handleTagClick}>{tag}</Tag>
                     })
                 }
             </div>

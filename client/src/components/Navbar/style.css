@@ -1,4 +1,9 @@
-.activelink {
+.activeLink {
+    color: var(--header-text);
     font-weight: bold;
-    
+}
+
+.inactiveLink {
+    color: var(--bg);
+    font-weight: normal;
 }

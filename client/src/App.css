@@ -2,12 +2,28 @@ main > .container {
     padding: 60px 15px 0;
 }
 
-.body {
-    background-color: aqua;
+body {
+    background-color: var(--bg);
+    height: 100%;
 }
 
 h1, h2 {
     font-family: RecoletaMedium;
+}
+
+.background {
+    padding: 24px;
+    min-height: 380px;
+    background-color: var(--bg);
+}
+
+.layout {
+    background-color: var(--bg);
+    height: 100%;
+}
+
+.content {
+    margin-top: 64px;
 }
 
 :root {
@@ -19,5 +35,5 @@ h1, h2 {
     --blue: #138bce;
     --green: #2bd8aa;
     --header: #253d60;
-    --header: #f6f7f7;
+    --header-text: #f6f7f7;
 }

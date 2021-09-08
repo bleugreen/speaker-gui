@@ -9,6 +9,8 @@ import {
 import Title from 'antd/lib/typography/Title';
 import NavLink from './navlink';
 
+import "./style.css"
+
 const { Header, Content } = Layout;
 
 
