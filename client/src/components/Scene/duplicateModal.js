@@ -49,7 +49,7 @@ const DuplicateButton = ({theme, onDuplicate, margin, name}) => {
 
 
     return(
-        <>
+        <div>
             <Modal
                 centered
                 visible={visible}
@@ -82,7 +82,7 @@ const DuplicateButton = ({theme, onDuplicate, margin, name}) => {
                 
             </Modal>
             <Button type="ghost" style={buttonStyle} onClick={handleClick}>Duplicate Scene</Button>
-        </>
+        </div>
     )
 }
 

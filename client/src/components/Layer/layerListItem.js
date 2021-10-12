@@ -22,23 +22,6 @@ function LayerListItem({layer, setVisible, theme, onExpand, onRename}) {
         setRenaming(false);
     }
 
-    const renderTitle = () =>{
-        if(renaming){
-            return<Input
-                placeholder={layer.name}
-                maxLength={20}
-                value={nameField}
-                defaultValue={layer.name}
-                onChange={(e)=>{setNameField(e.target.value)}}
-                onPressEnter={onRenameComplete}
-                autoFocus={true}
-            />
-        }
-        else{
-            return <Text style={{userSelect:"none"}}> {layer.name}</Text>
-        }
-    }
-
     const renderIcon = () => {
         switch(layer.type){
             case "single":
@@ -50,7 +33,6 @@ function LayerListItem({layer, setVisible, theme, onExpand, onRename}) {
         }
     };
 
-    const titleStyle = { textAlign:"left" };
     const itemStyle = {
         backgroundColor: theme.fg,
         color: theme.text,
@@ -66,7 +48,7 @@ function LayerListItem({layer, setVisible, theme, onExpand, onRename}) {
         <div style={itemStyle} >
         <Row align="top" justify="start">
             <Col sm={2} xs={3} style={{ textAlign:"left", verticalAlign:"middle" }}>
-                <EyeButton visible={layer.visible} setVisible={setVisible} theme={theme}/>
+                <EyeButton visible={layer.visible} setVisible={setVisible}/>
             </Col>
             <Col sm={{span:5}} xs={12} style={{ textAlign:"left", verticalAlign:"middle" }}>
                 <Title level={4}>{layer.name}</Title>

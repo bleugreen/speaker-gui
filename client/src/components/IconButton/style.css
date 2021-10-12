@@ -1,0 +1,37 @@
+.btn {
+    padding: 4px 8px; 
+    border-radius: 8px;
+    font-size: small;
+    border: 1px solid; 
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btn-default {
+    color: var(--text2);
+    background-color: var(--bg);
+}
+
+.btn-hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    transition: all 0.4s;
+}
+
+.btn-down {
+    transition: all 0s;
+    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
+}
+
+.btn-up {
+    transition: all 0.5s;
+    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2);
+}
+
+.detailsButton {
+    margin-left: 10px;
+    border-radius: 8px;
+    background-color: var(--fg);
+    color: var(--text2);
+    border-color: #a1a1a9;
+}

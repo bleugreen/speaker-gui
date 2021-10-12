@@ -1,6 +1,7 @@
-import { CaretRightFilled, PlayCircleOutlined, PlaySquareOutlined } from "@ant-design/icons";
-import { Button, Tooltip } from "antd";
+import { CaretRightFilled } from "@ant-design/icons";
+import { Tooltip } from "antd";
 import { useEffect, useState } from "react";
+import IconButton from "../IconButton";
 
 import './style.css'
 
@@ -16,19 +17,18 @@ const ActiveButton = ({sid, active, setActive}) => {
 
     const activeProps = {
         className: 'active',
-        type:"primary",
-        children:<CaretRightFilled/>
     };
 
     const inactiveProps = {
         className: 'inactive',
-        type:"ghost",
         
     }
+
+    const className = (isActive) ? 'active' : 'inactive'
 
     const props = (isActive) ? activeProps : inactiveProps;
     const tooltipText = (isActive) ? "Active" : "Set Active"
 
-    return <Tooltip title={tooltipText}><Button {...props} onClick={handleClick}><CaretRightFilled/></Button></Tooltip>
+    return <IconButton tooltip={tooltipText} className={className} onClick={handleClick}><CaretRightFilled/></IconButton>
 }
 export default ActiveButton;

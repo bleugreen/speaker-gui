@@ -1,7 +1,7 @@
 import { Slider } from "antd";
-import Parameter from "../Layer/parameter";
+import Parameter from "./parameter";
 
-const RainParams = ({theme, layer, setters}) => {
+const RainParams = ({ layer, setters}) => {
     return(
         <div>
             <Parameter title="Flexibility">
@@ -11,7 +11,7 @@ const RainParams = ({theme, layer, setters}) => {
                     step={1}
                     defaultValue={layer.flex || 50}
                     onAfterChange={setters.flex}
-                    style={{minWidth:'100px'}}
+              
                 />
             </Parameter>
             <Parameter title="Max Drops">
@@ -21,7 +21,7 @@ const RainParams = ({theme, layer, setters}) => {
                     step={1}
                     defaultValue={layer.numdrops || 50}
                     onAfterChange={setters.numdrops}
-                    style={{minWidth:'100px'}}
+           
                 />
             </Parameter>
             <Parameter title="Spawn Chance">
@@ -31,7 +31,7 @@ const RainParams = ({theme, layer, setters}) => {
                     step={1}
                     defaultValue={layer.spawn || 50}
                     onAfterChange={setters.spawn}
-                    style={{minWidth:'100px'}}
+             
                 />
             </Parameter>
             <Parameter title="Length">
@@ -41,7 +41,7 @@ const RainParams = ({theme, layer, setters}) => {
                     step={0.1}
                     defaultValue={layer.l0 || 50}
                     onAfterChange={setters.l0}
-                    style={{minWidth:'100px'}}
+              
                 />
             </Parameter>
             <Parameter title="Velocity">
@@ -51,7 +51,7 @@ const RainParams = ({theme, layer, setters}) => {
                     step={1}
                     defaultValue={layer.v0 || 50}
                     onAfterChange={setters.v0}
-                    style={{minWidth:'100px'}}
+              
                 />
             </Parameter>
             <Parameter title="Acceleration">
@@ -61,7 +61,7 @@ const RainParams = ({theme, layer, setters}) => {
                     step={0.1}
                     defaultValue={layer.a || 0.05}
                     onAfterChange={setters.a}
-                    style={{minWidth:'100px'}}
+              
                 />
             </Parameter>
             <Parameter title="Speed">
@@ -71,7 +71,7 @@ const RainParams = ({theme, layer, setters}) => {
                     step={0.1}
                     defaultValue={layer.time || 0.05}
                     onAfterChange={setters.time}
-                    style={{minWidth:'100px'}}
+            
                 />
             </Parameter>
         </div>

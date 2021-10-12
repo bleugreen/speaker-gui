@@ -60,3 +60,17 @@ h4 {
     border-radius: 20px;
     background-color: inherit;
 }
+
+.eye-red {
+    font-size: 16pt;
+    vertical-align: middle; 
+    color:var(--red);
+    transition: all 0.3s;
+}
+
+.eye-blue {
+    font-size: 16pt;
+    vertical-align: middle; 
+    color:var(--blue);
+    transition: all 0.3s;
+}

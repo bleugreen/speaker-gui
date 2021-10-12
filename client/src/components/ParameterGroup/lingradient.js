@@ -1,7 +1,7 @@
 import { Slider } from "antd";
-import Parameter from "../Layer/parameter";
+import Parameter from "./parameter";
 
-const LinGradientParams = ({theme, layer, setters}) => {
+const LinGradientParams = ({layer, setters}) => {
     return(
         <div>
             <Parameter title="Direction">
@@ -11,7 +11,7 @@ const LinGradientParams = ({theme, layer, setters}) => {
                     step={1}
                     defaultValue={layer.angle || 90}
                     onAfterChange={setters.angle}
-                    style={{minWidth:'100px'}}
+                
                 />
             </Parameter>
         </div>

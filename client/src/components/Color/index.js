@@ -8,15 +8,12 @@ import {
 import PalettePicker from './palettepicker';
 import PaletteListItem from './paletteListItem';
 import SaveModal from './savemodal';
-import Layer from '../Layer';
 import ReactTooltip from 'react-tooltip';
 
-const { Panel } = Collapse;
-const { Text } = Typography; 
 
 // setPid - called on palette change or palette create
 // notify - called when 
-function ColorBlock({palette="palette:20", setPalette, notify}){
+function ColorBlock({palette="palette:20", setPalette}){
     const [loading, setLoading] = useState(true);
     const [saveVisible, setSaveVisible] = useState(false);
     const [colors, setColors] = useState({});
@@ -33,12 +30,6 @@ function ColorBlock({palette="palette:20", setPalette, notify}){
     Styles
 ---------------------------------------- */
     const rowStyle = { width:"100%", backgroundColor:'transparent', display:'block'};
-    const radioStyle = { display: 'block' };
-    const radioButtonStyle = {
-        height: '30px',
-        lineHeight: '30px',
-        width:"30%",
-    }; 
 
 /* ----------------------------------------
     Palette Operations

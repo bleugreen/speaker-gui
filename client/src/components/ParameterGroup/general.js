@@ -1,8 +1,8 @@
 import { Select, Slider, Space } from "antd";
 import EyeButton from "../Layer/eyeButton";
-import Parameter from "../Layer/parameter";
+import Parameter from "./parameter";
 
-const GeneralParams = ({theme, layer, setters}) => {
+const GeneralParams = ({layer, setters}) => {
     function formatter(value) {
         return `${value}%`;
     }
@@ -11,14 +11,14 @@ const GeneralParams = ({theme, layer, setters}) => {
         <div>
             <Parameter title="Opacity">
                 <Space>
-                    <EyeButton visible={layer.visible} setVisible={setters.visible} theme={theme}/>
+                    <EyeButton visible={layer.visible} setVisible={setters.visible} />
                     <Slider 
                             tipFormatter={formatter} 
                             min={0} 
                             max={100}
                             defaultValue={layer.opacity} 
                             onAfterChange={setters.opacity}
-                            style={{marginLeft:'15px', minWidth:100}} 
+                            className="medLeftMargin"
                     />
                 </Space>
             </Parameter>

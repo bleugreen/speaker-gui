@@ -1,29 +1,4 @@
-.btn {
-    padding: 4px 8px; 
-    margin-right: 10px;
-    border-radius: 8px;
-    color: var(--text2);
-    background-color: var(--bg);
-    font-size: small;
-    border: 1px solid; 
-    transition: all 0.2s;
-}
 
-.btn-hover {
-    border-color: var(--blue);
-    color: var(--blue);
-    transition: all 0.4s;
-}
-
-.btn-down {
-    transition: all 0s;
-    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
-}
-
-.btn-up {
-    transition: all 0.3s;
-    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2);
-}
 
 
 
@@ -31,15 +6,16 @@
 
 /* SceneFilter */
 .tag {
-    padding: 4px 4px 4px 6px; 
+    padding:  4px 6px; 
     border-radius: 8px;
     margin-right: 5px; 
     margin-bottom: 10px;
-    
+    flex-wrap: nowrap;
     color: var(--text2);
     font-size: small;
     width: fit-content;
     border: 1px solid; 
+    flex: none;
 }
 
 .dropdownButton {
@@ -52,6 +28,10 @@
     background-color: var(--bg);
     border-color: var(--text2);
     color: var(--text2);
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;
 }
 
 /* SceneListItem */
@@ -62,13 +42,37 @@
     cursor: pointer;
     line-height: 1.5715;
     border-radius: 20px;
-    margin-bottom: 10px;
+}
+
+.sceneItemGhost {
+    background-color: var(--bg);
+    color: var(--bg);
+    transition: all 0.3s, visibility 0.3s, display 0.5s;
+    line-height: 1.5715;
+    border-radius: 20px;
 }
 
 .sceneItemTop{
     padding: 6% 4% 2% 4%;
     width:100%; 
-    margin-bottom:0px;
+    margin-bottom:-10px;
+}
+
+.scrollable {
+    overflow: scroll;
+    scrollbar-width: 0;
+    scrollbar-color: green;
+    display:flex;
+
+    width: inherit;
+    scroll-behavior: smooth;
+    scroll-margin-bottom: 0;
+}
+
+
+
+.filterTagBox {
+    padding-left: 10px;
 }
 
 .sceneItemTop h1{
@@ -77,13 +81,11 @@
 
 
 .tagMatch {
-    background-color: var(--fg);
     border-color: var(--blue);
     color: var(--blue);
 }
 
 .tagNoMatch {
-    background-color: var(--fg);
     color: #a1a1a9;
 }
 
@@ -91,10 +93,17 @@
     text-align: right;
     padding: 0% 3% 4% 0%;
 }
+button.sceneItemBottom {
+    text-align: right;
+    padding: 0% 0% 0% 0%;
+}
 
 .detailsButton {
     margin-left: 10px;
     border-radius: 8px;
+    background-color: var(--fg);
+    color: var(--text2);
+    border-color: #a1a1a9;
 }
 
 /* Misc */

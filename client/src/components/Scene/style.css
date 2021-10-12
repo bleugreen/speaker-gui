@@ -9,3 +9,22 @@ li {
 .dragged {
     opacity: 50%;
 }
+
+.tagBox {
+    padding: 10px 0px;
+    font-size: small;
+}
+
+.scene-tag {
+    padding:  4px 6px; 
+    border-radius: 8px;
+    margin-right: 5px; 
+    margin-bottom: 10px;
+    flex-wrap: nowrap;
+    color: var(--text2);
+    background-color: var(--bg);
+    font-size: small;
+    width: fit-content;
+    border: 1px solid; 
+    flex: none;
+}

@@ -1,4 +1,4 @@
-import { Row, Button } from 'antd';
+import { Col, Row } from 'antd';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -6,8 +6,6 @@ import SceneListItem from './scenelistitem'
 import SceneFilter from './scenefilter';
 
 import './style.css';
-import MyButton from './buttonTest';
-import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router';
 
 function SceneList(){
@@ -121,9 +119,9 @@ function SceneList(){
                 onNewScene={onNewScene}
             />
             <Row 
-                gutter={[16,16]} 
+                gutter={[24,24]} 
                 align="middle" 
-                justify="space-around"
+                justify="space-between"
             >
                 {
                     scenes.map((scene)=>{
@@ -140,14 +138,12 @@ function SceneList(){
                                         setActive={handleActive}
                                         addToFilter={addToFilter}
                                     />
-                        
                         }
                         else return
                     })
                 }
+                <Col className="sceneItemGhost" xl={7} lg={11} md={11}></Col>
             </Row>
-            <MyButton><PlusOutlined/></MyButton>
-            <Button onClick={onNewScene}>New Scene</Button>
           </div>
     );  
     
